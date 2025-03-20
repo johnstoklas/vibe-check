@@ -1,69 +1,80 @@
 const express = require('express');
 const router = express.Router();
 
-const connection = require('../database/connection').databaseConnection;
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
+const options = require('../connection/database').options;
 
 /* GET login page. */
 router.get('/', async (req, res) => {
-
-    const emailUserSQL = "SELECT email, username FROM accounts";
-    connection.query(emailUserSQL, (err, users) => {
-        if(err) throw err;
-        res.render('pages/auth', { title: 'Auth', users });
-    });
-
+    res.render('pages/auth', { title: 'Auth' });
 });
 
 /* POST login on auth page. */
 router.post('/login', async (req, res) => {
 
+    const connection = await mysql.createConnection(options);
+
     const loginSQL = "SELECT account_id, account_password FROM accounts WHERE account_username=?";
-    connection.query(loginSQL, [req.body.username], (err1, result) => {
+    const accounts = await connection.query(loginSQL, [req.body.username]);
 
-        if(err1) throw err1;
+    if(accounts.length == 0) {
+        console.log("User not found.");
+        res.redirect('../');
+        return await connection.close();
+    }
 
-        else if(result.length == 0)
-            console.log("User not found.");
+    else if(accounts.length != 1)
+        throw new Error("problem with MySQL database: duplicate entries found");
+        
+    const loginPassword = req.body.password;
+    const storedHash = accounts[0].account_password;
+    isEqual = await bcrypt.compare(loginPassword, storedHash);
 
-        else if(result.length == 1) {
+    if(!isEqual) {
+        console.log('Passwords do not match.');
+        res.redirect('../');
+        return await connection.close();
+    }
 
-            const loginPassword = req.body.password;
-            const storedHash = result[0].account_password;
+    req.session.isAuth = true;
+    req.session.accountID = req.body.account_id;
+    res.redirect("/");
 
-            bcrypt.compare(loginPassword, storedHash, (err2, equal) => {
-                if(err2) throw err2;
-                else if(equal) {
-                    res.redirect("/"); // TODO: add logic to actually sign in to your account
-                }
-                else
-                    console.log('Passwords do not match.');
-            });
-        }
-
-        else
-            throw new Error("problem found with the API or SQL: duplicate entries found");
-    });
-
+    await connection.close();
 });
 
 /* POST signup on auth page. */
 router.post('/signup', async (req, res) => {
 
-    const signupPassword = req.body.password;
+    const connection = await mysql.createConnection(options);
+
     const saltRounds = 10;
+    const hash = await bcrypt.hash(req.body.password, saltRounds);
 
-    bcrypt.hash(signupPassword, saltRounds, (err1, hash) => {
+    const users = await connection.query("SELECT account_id, account_email, account_username FROM accounts");
 
-        if(err1) throw err1;
+    for(const user of users) {
+        if(user.account_email === req.body.email) {
+            console.log("Account with that email already exists.");
+            res.redirect('../');
+            return await connection.close();
+        }
+        else if(user.account_username === req.body.username) {
+            console.log("Username already taken.");
+            res.redirect('../');
+            return await connection.close();
+        }
+    }
 
-        const signupSQL = "INSERT INTO accounts (account_email, account_username, account_password) VALUES (?, ?, ?)"
-        connection.query(signupSQL, [req.body.email, req.body.username, hash], (err2, result) => {
-            if(err2) throw err2;
-            res.redirect("/"); // TODO: add logic to actually sign in to your account
-        });
-    });
+    const signupSQL = "INSERT INTO accounts (account_email, account_username, account_password) VALUES (?, ?, ?)"
+    await connection.query(signupSQL, [req.body.email, req.body.username, hash]);
 
+    req.session.isAuth = true;
+    req.session.accountID = await connection.query("SELECT account_id FROM accounts WHERE account_username=?", [req.body.username]);
+    res.redirect("/");
+
+    await connection.close();
 });
 
 module.exports = router;

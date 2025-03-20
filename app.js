@@ -3,9 +3,11 @@ const app = express();
 
 const createError = require('http-errors');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+
+const session = require('express-session');
+const store = require('./connection/database').sessionStore;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -15,11 +17,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(cookieParser());
+
+// session app usage
 app.use(
     session({
-        secret: "hh8x8w@idmu^#rx7wz*qabk(8lnu2cpe)@y0a!^li!mx&gpv",
+        key: 'session_cookie_name',
+        secret: 'session_cookie_secret',
+        store: store,
         resave: false,
         saveUninitialized: false
     })

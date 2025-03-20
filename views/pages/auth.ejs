@@ -6,7 +6,7 @@
     <h1><%= title %></h1>
 
     <h2>Login with Account</h2>
-    <form name="login-form" action="auth/login" method="post">
+    <form name="login-form" action="/auth/login" method="post">
 
       <label for="username"><h3>Enter Username:</h3></label>
       <input type="text" id="username" name="username" required>
@@ -18,7 +18,7 @@
     </form>
 
     <h2>Create New Account</h2>
-    <form name="signup-form" action="auth/signup" onsubmit="return validateForm(users)" method="post">
+    <form name="signup-form" action="/auth/signup" onsubmit="return validateSignup()" method="post">
 
       <label for="email"><h3>Enter Email:</h3></label>
       <input type="text" id="email" name="email" required>
@@ -27,7 +27,7 @@
       <input type="text" id="username" name="username" required>
       
       <label for="password"><h3>Enter Password:</h3></label>
-      <input type="password" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number, one uppercase letter, one lowercase letter, and at least 8 characters." required>
+      <input type="password" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 or more characters" required>
 
       <label for="password-repeat"><h3>Repeat Password:</h3></label>
       <input type="password" id="password-repeat" name="password-repeat" required>
@@ -38,29 +38,18 @@
   </body>
   <script>
 
-    function validateSignUp(users) {
+    function validateSignup() {
 
-      let email = document.forms["signup-form"]["email"];
-      let username = document.forms["signup-form"]["username"];
-      let password = document.forms["signup-form"]["password"];
-      let passwordRepeat = document.forms["signup-form"]["password-repeat"];
-
-      for(user of users) {
-        if(user.email === email) {
-          alert("Account with that email already exists.");
-          return false;
-        } else if(user.username === username) {
-          alert("Username already taken.");
-          return false;
-        }
-      }
+      let password = document.forms["signup-form"]["password"].value;
+      let passwordRepeat = document.forms["signup-form"]["password-repeat"].value;
 
       if(passwordRepeat !== password) {
-        alert("Passwords must be the same.");
+        alert("Passwords do not match.");
         return false;
       }
 
       return true;
     }
+
   </script>
 </html>
