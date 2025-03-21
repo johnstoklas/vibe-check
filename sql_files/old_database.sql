@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS `vibecheck` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE  IF NOT EXISTS `vibecheck` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `vibecheck`;
 -- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
@@ -26,10 +26,10 @@ DROP TABLE IF EXISTS `accounts`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `accounts` (
   `admin` tinyint(1) DEFAULT NULL,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `userid` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `userid` int NOT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -40,7 +40,7 @@ CREATE TABLE `accounts` (
 
 LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-/*INSERT INTO `accounts` VALUES (0,'user1','password1','user1@example.com'),(1,'admin1','adminpassword','admin1@example.com'),(0,'user2','password2','user2@example.com');*/
+INSERT INTO `accounts` VALUES (0,'user1','password1','user1@example.com',1001),(1,'admin1','adminpassword','admin1@example.com',1002),(0,'user2','password2','user2@example.com',1003);
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -53,7 +53,7 @@ DROP TABLE IF EXISTS `characters`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `characters` (
   `favgift` varchar(255) DEFAULT NULL,
-  `favcompliment` varchar(255) DEFAULT NULL,
+  `fav_compliment` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `difficulty` int DEFAULT NULL,
   `characterid` int NOT NULL AUTO_INCREMENT,

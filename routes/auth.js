@@ -19,8 +19,11 @@ router.post('/login', async (req, res) => {
         return await connection.close();
     }
 
-    else if(accounts[0].length != 1)
-        throw new Error("problem with MySQL database: duplicate entries found");
+    else if(accounts[0].length != 1) {
+        console.assert(false, "Problem with MySQL database: duplicate entries found");
+        res.redirect('/');
+        return await connection.close();
+    }
         
     const loginPassword = req.body.password;
     const storedHash = accounts[0][0].password;
