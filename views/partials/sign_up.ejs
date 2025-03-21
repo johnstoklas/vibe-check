@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title> Vibe Check </title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
+  <%-include('./common_head.ejs')%>
   <script>
     function validateSignup() {
 
@@ -20,8 +17,8 @@
   </script>
   <body>
     <section id="sign-up-container" class="log-sign-container">
-        <h1> Sign Up </h1>
-        <form name="signup-form" action="/auth/signup" onsubmit="return validateSignup()" method="post">
+        <h1>Sign Up</h1>
+        <form name="signup-form" action="/signup" onsubmit="return validateSignup()" method="post">
 
         <div class="form-component-container">
             <label for="email"><h3>Enter Email:</h3></label>

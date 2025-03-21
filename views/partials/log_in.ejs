@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title> Vibe Check </title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
+  <%-include('./common_head.ejs')%>
   <body>
     <section id="log-in-container" class="log-sign-container">
-        <h1> Log In </h1>
-        <form name="login-form" action="/auth/login" method="post">
+        <h1>Log In</h1>
+        <form name="login-form" action="/login" method="post">
 
         <div class="form-component-container">
             <label for="username"><h3>Enter Username:</h3></label>
