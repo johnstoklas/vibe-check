@@ -15,20 +15,22 @@ router.post('/login', async (req, res) => {
 
     const connection = await mysql.createConnection(options);
 
-    const loginSQL = "SELECT account_id, account_password FROM accounts WHERE account_username=?";
+    const loginSQL = "SELECT userid, password FROM accounts WHERE username=?";
     const accounts = await connection.query(loginSQL, [req.body.username]);
 
-    if(accounts.length == 0) {
+    console.log(accounts);
+
+    if(accounts[0].length == 0) {
         console.log("User not found.");
         res.redirect('../');
         return await connection.close();
     }
 
-    else if(accounts.length != 1)
+    else if(accounts[0].length != 1)
         throw new Error("problem with MySQL database: duplicate entries found");
         
     const loginPassword = req.body.password;
-    const storedHash = accounts[0].account_password;
+    const storedHash = accounts[0][0].password;
     isEqual = await bcrypt.compare(loginPassword, storedHash);
 
     if(!isEqual) {
@@ -38,7 +40,7 @@ router.post('/login', async (req, res) => {
     }
 
     req.session.isAuth = true;
-    req.session.accountID = req.body.account_id;
+    req.session.accountID = req.body.userid;
     res.redirect("/");
 
     await connection.close();
@@ -52,7 +54,7 @@ router.post('/signup', async (req, res) => {
     const saltRounds = 10;
     const hash = await bcrypt.hash(req.body.password, saltRounds);
 
-    const users = await connection.query("SELECT account_id, account_email, account_username FROM accounts");
+    const users = await connection.query("SELECT userid, email, username FROM accounts");
 
     for(const user of users) {
         if(user.account_email === req.body.email) {
@@ -67,11 +69,11 @@ router.post('/signup', async (req, res) => {
         }
     }
 
-    const signupSQL = "INSERT INTO accounts (account_email, account_username, account_password) VALUES (?, ?, ?)"
+    const signupSQL = "INSERT INTO accounts (admin, email, username, password) VALUES (0, ?, ?, ?)"
     await connection.query(signupSQL, [req.body.email, req.body.username, hash]);
 
     req.session.isAuth = true;
-    req.session.accountID = await connection.query("SELECT account_id FROM accounts WHERE account_username=?", [req.body.username]);
+    req.session.accountID = await connection.query("SELECT userid FROM accounts WHERE username=?", [req.body.username]);
     res.redirect("/");
 
     await connection.close();
