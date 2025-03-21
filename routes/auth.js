@@ -5,12 +5,7 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const options = require('../connection/database').options;
 
-/* GET login page. */
-router.get('/', async (req, res) => {
-    res.render('pages/auth', { title: 'Auth' });
-});
-
-/* POST login on auth page. */
+/* POST login on auth portal. */
 router.post('/login', async (req, res) => {
 
     const connection = await mysql.createConnection(options);
@@ -20,12 +15,15 @@ router.post('/login', async (req, res) => {
 
     if(accounts[0].length == 0) {
         console.log("User not found.");
-        res.redirect('../');
+        res.redirect('/');
         return await connection.close();
     }
 
-    else if(accounts[0].length != 1)
-        throw new Error("problem with MySQL database: duplicate entries found");
+    else if(accounts[0].length > 1) {
+        console.assert(false, "Problem with MySQL database: duplicate entries found");
+        res.redirect('/');
+        return await connection.close();
+    }
         
     const loginPassword = req.body.password;
     const storedHash = accounts[0][0].password;
@@ -33,11 +31,11 @@ router.post('/login', async (req, res) => {
 
     if(!isEqual) {
         console.log('Passwords do not match.');
-        res.redirect('../');
+        res.redirect('/');
         return await connection.close();
     }
 
-    console.log("Succesful log in!");
+    console.log("Successful log in!");
 
     req.session.isAuth = true;
     req.session.accountID = req.body.userid;
@@ -46,7 +44,7 @@ router.post('/login', async (req, res) => {
     await connection.close();
 });
 
-/* POST signup on auth page. */
+/* POST signup on auth portal. */
 router.post('/signup', async (req, res) => {
 
     const connection = await mysql.createConnection(options);
@@ -57,14 +55,14 @@ router.post('/signup', async (req, res) => {
     const users = await connection.query("SELECT userid, email, username FROM accounts");
 
     for(const user of users) {
-        if(user.account_email === req.body.email) {
+        if(user[0].email === req.body.email) {
             console.log("Account with that email already exists.");
-            res.redirect('../');
+            res.redirect('/');
             return await connection.close();
         }
-        else if(user.account_username === req.body.username) {
+        else if(user[0].username === req.body.username) {
             console.log("Username already taken.");
-            res.redirect('../');
+            res.redirect('/');
             return await connection.close();
         }
     }
@@ -72,7 +70,7 @@ router.post('/signup', async (req, res) => {
     const signupSQL = "INSERT INTO accounts (admin, email, username, password) VALUES (0, ?, ?, ?)"
     await connection.query(signupSQL, [req.body.email, req.body.username, hash]);
 
-    console.log("Succesful sign up!");
+    console.log("Successful sign up!");
 
     req.session.isAuth = true;
     req.session.accountID = await connection.query("SELECT userid FROM accounts WHERE username=?", [req.body.username]);
