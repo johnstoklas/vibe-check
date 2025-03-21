@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const options = require('../connection/database').options;
 
-/* POST login on auth page. */
+/* POST login on auth portal. */
 router.post('/login', async (req, res) => {
 
     const connection = await mysql.createConnection(options);
@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
         return await connection.close();
     }
 
-    else if(accounts[0].length != 1) {
+    else if(accounts[0].length > 1) {
         console.assert(false, "Problem with MySQL database: duplicate entries found");
         res.redirect('/');
         return await connection.close();
@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
     await connection.close();
 });
 
-/* POST signup on auth page. */
+/* POST signup on auth portal. */
 router.post('/signup', async (req, res) => {
 
     const connection = await mysql.createConnection(options);
@@ -55,12 +55,12 @@ router.post('/signup', async (req, res) => {
     const users = await connection.query("SELECT userid, email, username FROM accounts");
 
     for(const user of users) {
-        if(user.account_email === req.body.email) {
+        if(user[0].email === req.body.email) {
             console.log("Account with that email already exists.");
             res.redirect('/');
             return await connection.close();
         }
-        else if(user.account_username === req.body.username) {
+        else if(user[0].username === req.body.username) {
             console.log("Username already taken.");
             res.redirect('/');
             return await connection.close();
