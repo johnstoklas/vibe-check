@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Vibe Check </title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <script>
+    function logInShow() {
+      const partial = document.getElementById('log-in-container');
+      const logSign = document.getElementById('log-sign-container');
+      if (partial) {
+        partial.style.display = 'block';
+        logSign.style.display = 'none';
+      }
+    }
+    function signUpShow() {
+      const partial = document.getElementById('sign-up-container');
+      const logSign = document.getElementById('log-sign-container');
+      if (partial) {
+        partial.style.display = 'block';
+        logSign.style.display = 'none';
+      }
+    }
+  </script>
+  <body>
+    <section id="log-sign-container" class="log-sign-container">
+        <h1> Welcome! </h1>
+        <div id="log-sign-button-container"> 
+          <button onclick="logInShow()"> Log In </button>
+          <button onclick="signUpShow()"> Sign Up </button>
+        </div>
+    </section>
+    <%- include('../partials/LogIn.ejs') %>
+    <%- include('../partials/SignUp.ejs') %>
+  </body>
+</html>
