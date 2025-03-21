@@ -18,8 +18,6 @@ router.post('/login', async (req, res) => {
     const loginSQL = "SELECT userid, password FROM accounts WHERE username=?";
     const accounts = await connection.query(loginSQL, [req.body.username]);
 
-    console.log(accounts);
-
     if(accounts[0].length == 0) {
         console.log("User not found.");
         res.redirect('../');
@@ -38,6 +36,8 @@ router.post('/login', async (req, res) => {
         res.redirect('../');
         return await connection.close();
     }
+
+    console.log("Succesful log in!");
 
     req.session.isAuth = true;
     req.session.accountID = req.body.userid;
@@ -71,6 +71,8 @@ router.post('/signup', async (req, res) => {
 
     const signupSQL = "INSERT INTO accounts (admin, email, username, password) VALUES (0, ?, ?, ?)"
     await connection.query(signupSQL, [req.body.email, req.body.username, hash]);
+
+    console.log("Succesful sign up!");
 
     req.session.isAuth = true;
     req.session.accountID = await connection.query("SELECT userid FROM accounts WHERE username=?", [req.body.username]);
