@@ -1,24 +1,10 @@
 <!DOCTYPE html>
 <html>
   <%-include('./common_head.ejs')%>
-  <script>
-    function validateSignup() {
-
-      let password = document.forms["signup-form"]["password"].value;
-      let passwordRepeat = document.forms["signup-form"]["password-repeat"].value;
-
-      if(passwordRepeat !== password) {
-        alert("Passwords do not match.");
-        return false;
-      }
-
-      return true;
-    }
-  </script>
   <body>
     <section id="sign-up-container" class="log-sign-container">
         <h1>Sign Up</h1>
-        <form name="signup-form" action="/signup" onsubmit="return validateSignup()" method="post">
+        <form name="signup-form" action="/signup" method="post">
 
         <div class="form-component-container">
             <label for="email"><h3>Enter Email:</h3></label>
