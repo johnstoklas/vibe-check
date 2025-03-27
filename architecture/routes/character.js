@@ -11,8 +11,4 @@ router.get('/characters/bytrait/:traitId', characterController.getCharactersByTr
 // Protected routes - require authentication
 router.get('/unlocked-characters', isAuthenticated, characterController.getUnlockedCharacters);
 
-// Admin only routes
-router.post('/characters/:characterId/traits/:traitId', isAdmin, characterController.addTraitToCharacter);
-router.delete('/characters/:characterId/traits/:traitId', isAdmin, characterController.removeTraitFromCharacter);
-
 module.exports = router;
