@@ -8,7 +8,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const session = require('express-session');
-const store = require('./connection/database').sessionStore;
+const store = require('./other/database').sessionStore;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,11 +32,15 @@ app.use(
 );
 
 // routers and URL routes
-const indexRouter = require('./routes/index');
-const authRouter = require('./routes/auth');
+const profileRouter = require('./architecture/routes/profile');
+const characterRouter = require('./architecture/routes/character');
+const scoresRouter = require('./architecture/routes/scores');
+const indexRouter = require('./architecture/routes/index');
 
+app.use('/', profileRouter);
+app.use('/', characterRouter);
+app.use('/', scoresRouter);
 app.use('/', indexRouter);
-app.use('/', authRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
