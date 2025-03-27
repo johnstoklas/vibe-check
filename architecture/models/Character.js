@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const db = require('../../other/database');
 
 class Character {
     constructor(characterid, name, difficulty) {

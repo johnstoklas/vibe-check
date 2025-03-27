@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 //Controllers
 const characterController = require('../controllers/characterController');
-const { isAuthenticated, isAdmin } = require('../architecture/controllers/auth');
+const { isAuthenticated, isAdmin } = require('../controllers/auth');
 
 // Public routes
 router.get('/characters', characterController.getAllCharacters);

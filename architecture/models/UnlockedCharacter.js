@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const db = require('../../other/database');
 
 class UnlockedCharacter {
     constructor(userid, characterid) {
