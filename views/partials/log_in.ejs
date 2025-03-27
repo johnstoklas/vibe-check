@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <%-include('./common_head.ejs')%>
+  <body>
+    <section id="log-in-container" class="log-sign-container">
+        <h1>Log In</h1>
+        <form name="login-form" action="/login" method="post">
+
+        <div class="form-component-container">
+            <label for="username"><h3>Enter Username:</h3></label>
+            <input type="text" id="username" name="username" required>
+        </div>
+
+        <div class="form-component-container">
+            <label for="password"><h3>Enter Password:</h3></label>
+            <input type="password" id="password" name="password" required>
+        </div>  
+        <br><br><input class="submit_button" type="submit" value="Submit">
+        </form>
+    </section>
+  </body>
+</html>

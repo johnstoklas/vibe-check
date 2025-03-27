@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <%-include('../partials/common_head.ejs')%>
+  <script>
+    function showLogSign() {
+      const partial = document.getElementById('log-sign-container');
+      if (partial) {
+        partial.style.display = 'flex';
+      }
+    }
+  </script>
+  <body>
+    <section id="main-header">
+      <div style="float: right;">
+        <button onclick="showLogSign()">P</button>
+      </div>
+      <div>
+        <button>L</button>
+      </div>
+    </section>
+    <section id="main-screen-container"> 
+      <h1>VIBE CHECK</h1>
+      <div id="button-container"> 
+        <button>Play Game</button>
+        <button>View Characters</button>
+        <button>Instructions</button>
+      </div>
+    </section> 
+    <%- include('../partials/auth_partial.ejs') %>
+  </body>
+</html>
