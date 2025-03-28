@@ -38,7 +38,7 @@ const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
 
 app.use('/', profileRouter);
-app.use('/', characterRouter);
+app.use('/api', characterRouter);
 app.use('/', scoresRouter);
 app.use('/', indexRouter);
 

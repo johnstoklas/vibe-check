@@ -6,4 +6,4 @@ const connection = require('../../other/database').databaseConnection;
 class Games {
 }
 
-module.exports = Users;
+exports.Games = Games;

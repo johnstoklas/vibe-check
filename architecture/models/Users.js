@@ -7,8 +7,8 @@ class Users {
 
     static async insert(email, username, hash) {
         const insertSQL = "INSERT INTO accounts (admin, email, username, password) VALUES (0, ?, ?, ?)"
-        const [account] = await connection.query(insertSQL, [email, username, hash]);
-        return account.userid;
+        const [info] = await connection.query(insertSQL, [email, username, hash]);
+        return info;
     }
     
     static async selectAll() {

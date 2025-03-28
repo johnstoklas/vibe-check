@@ -1,7 +1,6 @@
-CREATE DATABASE IF NOT EXISTS `vibecheck`;
+CREATE DATABASE  IF NOT EXISTS `vibecheck` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `vibecheck`;
-
--- MySQL dump 10.13  Distrib 8.0.41, for macos15 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
 -- Host: localhost    Database: vibecheck
 -- ------------------------------------------------------
@@ -46,6 +45,32 @@ INSERT INTO `accounts` VALUES (1,0,'user1','$2b$10$Lfa5x5ts9iFiY5lpNSp45uqn61vL5
 UNLOCK TABLES;
 
 --
+-- Table structure for table `character_traits`
+--
+
+DROP TABLE IF EXISTS `character_traits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_traits` (
+  `characterid` int NOT NULL,
+  `trait_id` int NOT NULL,
+  PRIMARY KEY (`characterid`,`trait_id`),
+  KEY `trait_id` (`trait_id`),
+  CONSTRAINT `character_traits_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`characterid`),
+  CONSTRAINT `character_traits_ibfk_2` FOREIGN KEY (`trait_id`) REFERENCES `traits` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `character_traits`
+--
+
+LOCK TABLES `character_traits` WRITE;
+/*!40000 ALTER TABLE `character_traits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `character_traits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `characters`
 --
 
@@ -54,8 +79,6 @@ DROP TABLE IF EXISTS `characters`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `characters` (
   `characterid` int NOT NULL AUTO_INCREMENT,
-  `favgift` varchar(255) DEFAULT NULL,
-  `favcompliment` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `difficulty` int DEFAULT NULL,
   PRIMARY KEY (`characterid`)
@@ -68,7 +91,7 @@ CREATE TABLE `characters` (
 
 LOCK TABLES `characters` WRITE;
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` VALUES (1,'Flowers','You are amazing!','Character1',1),(2,'Chocolate','You are so kind!','Character2',2),(3,'Books','You are so smart!','Character3',3);
+INSERT INTO `characters` VALUES (1,'Character1',1),(2,'Character2',2),(3,'Character3',3);
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -126,6 +149,30 @@ INSERT INTO `sessions` VALUES ('XvK1s5rNmPZzzCjQ97eJBgELt2xuaKIo',1742637487,'{\
 UNLOCK TABLES;
 
 --
+-- Table structure for table `traits`
+--
+
+DROP TABLE IF EXISTS `traits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `traits` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `trait_name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `trait_name` (`trait_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `traits`
+--
+
+LOCK TABLES `traits` WRITE;
+/*!40000 ALTER TABLE `traits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `traits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `unlocked_characters`
 --
 
@@ -161,4 +208,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-21  5:02:44
+-- Dump completed on 2025-03-27 14:20:52
