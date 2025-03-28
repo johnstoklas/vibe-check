@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS `vibecheck`;
+CREATE schema IF NOT EXISTS `vibecheck`;
 USE `vibecheck`;
 
 -- MySQL dump 10.13  Distrib 8.0.41, for macos15 (arm64)
