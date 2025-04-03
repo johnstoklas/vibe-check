@@ -3,6 +3,7 @@ const router = express.Router();
 
 // controllers
 const characterController = require('../controllers/character.js');
+const unlockedCharactersController = require('../controllers/unlockedCharacters.js');
 const authController = require('../controllers/auth');
 
 // GET requests

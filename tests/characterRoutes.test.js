@@ -1,10 +1,12 @@
 const axios = require('axios');
+const bcrypt = require('bcrypt');
+const { databaseConnection } = require('../other/database'); // Import the existing database connection
 
 // Configuration
 const BASE_URL = 'http://localhost:3000';
 const TEST_USER = {
     username: 'Pr0fessionalBum',
-    password: '$2b$10$badwolf1'  // Replace with your actual password
+    password: 'testPassword123'  // Replace with your actual password
 };
 
 // Create axios instance
@@ -16,11 +18,14 @@ const api = axios.create({
 // Test runner
 async function testCharacterRoutes() {
     console.log('=== Character Routes Test ===');
-    console.log('Date:', '2025-03-27 23:19:15');
+    console.log('Date:', '2025-04-03 20:17:42');
     console.log('User:', 'Pr0fessionalBum');
     console.log('================\n');
 
     try {
+        // Connect to the database using the existing connection
+        const connection = await databaseConnection;
+
         // Test 1: Get all characters (public route)
         console.log('Test 1: Get all characters (Public Route)');
         const allChars = await api.get('/api/characters');
@@ -28,9 +33,29 @@ async function testCharacterRoutes() {
         console.log('Sample character:', allChars.data.data[0]);
         console.log('================\n');
 
+        // New Step: Create user account using /signup route
+        console.log('Step: Create user account');
+        const createUserResponse = await api.post('/auth/signup', {
+            email: 'testuser@example.com',
+            username: TEST_USER.username,
+            password: TEST_USER.password,
+            password_repeat: TEST_USER.password
+        });
+        console.log('✓ User account created successfully!');
+        console.log('================\n');
+
+        // Alter the user to become an admin
+        console.log('Step: Promote user to admin');
+        await connection.query('UPDATE accounts SET admin = 1 WHERE username = ?', [TEST_USER.username]);
+        console.log('✓ User promoted to admin successfully!');
+        console.log('================\n');
+
         // Test 2: Login first
         console.log('Test 2: Login');
-        const loginResponse = await api.post('/auth/login', TEST_USER);
+        const loginResponse = await api.post('/auth/login', {
+            username: TEST_USER.username,
+            password: TEST_USER.password
+        });
         console.log('✓ Login successful!');
         console.log('================\n');
 
@@ -68,6 +93,9 @@ async function testCharacterRoutes() {
         console.log('================\n');
 
         console.log('All tests completed successfully! 🎉');
+
+        // Close the database connection
+        await connection.end();
 
     } catch (error) {
         console.error('❌ Test failed!');

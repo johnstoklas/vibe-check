@@ -7,40 +7,30 @@ const messageReturnEarly = require('../../other/utility').messageReturnEarly;
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
-
     try {
         const users = await usersModel.selectByUsername(req.body.username);
-
-        if(users.length == 0)
-            return messageReturnEarly("User not found.", '/', res);
-
-        else if(users.length > 1) {
+        if (users.length == 0)
+            return logReturnEarly("User not found.", '/', res);
+        else if (users.length > 1) {
             console.assert(false, "Problem with MySQL database: duplicate entries found");
             return res.redirect('/');
         }
-            
         const loginPassword = req.body.password;
         const storedHash = users[0].password;
-        isEqual = await bcrypt.compare(loginPassword, storedHash);
-
-        if(!isEqual)
-            return messageReturnEarly("Password is not correct.", '/', res);
-
-        // stores all necessary user information in session
+        const isEqual = await bcrypt.compare(loginPassword, storedHash);
+        if (!isEqual)
+            return logReturnEarly("Password is not correct.", '/', res);
         req.session.isAuth = true;
         req.session.accountID = users[0].userid;
         req.session.username = users[0].username;
         req.session.isAdmin = users[0].admin === 1;
-
         console.log("Successful log in!");
         res.redirect("/");
-
     } catch (error) {
         console.error("Login error: ", error);
-        return messageReturnEarly("An error occurred during login.", '/', res);
+        return logReturnEarly("An error occurred during login.", '/', res);
     }
-};
-
+}
 /* Registers a new user to the database, given that they provide the correct information. */
 async function addNewUser(req, res) {
 
