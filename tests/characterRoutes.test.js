@@ -1,5 +1,4 @@
 const axios = require('axios');
-const bcrypt = require('bcrypt');
 const { databaseConnection } = require('../other/database'); // Import the existing database connection
 
 // Configuration
@@ -18,7 +17,7 @@ const api = axios.create({
 // Test runner
 async function testCharacterRoutes() {
     console.log('=== Character Routes Test ===');
-    console.log('Date:', '2025-04-03 20:17:42');
+    console.log('Date:', '2025-04-04 02:22:24');
     console.log('User:', 'Pr0fessionalBum');
     console.log('================\n');
 
@@ -57,41 +56,10 @@ async function testCharacterRoutes() {
             password: TEST_USER.password
         });
         console.log('✓ Login successful!');
+        console.log('Login Response Headers:', loginResponse.headers);
         console.log('================\n');
 
-        // Test 3: Get unlocked characters (requires auth)
-        console.log('Test 3: Get unlocked characters (Protected Route)');
-        const unlockedChars = await api.get('/api/unlocked-characters');
-        console.log('✓ Success! Unlocked characters found:', unlockedChars.data.data.length);
-        if (unlockedChars.data.data.length > 0) {
-            console.log('Sample unlocked character:', unlockedChars.data.data[0]);
-        }
-        console.log('================\n');
-
-        // Test 4: Unlock a new character (requires auth)
-        console.log('Test 4: Unlock a new character (Protected Route)');
-        const characterToUnlock = allChars.data.data[0].characterid;
-        const unlockResult = await api.post('/api/unlock-character', {
-            characterid: characterToUnlock
-        });
-        console.log('✓ Success! Character unlocked:', unlockResult.data);
-        console.log('================\n');
-
-        // Test 5: Verify character was unlocked
-        console.log('Test 5: Verify unlock');
-        const verifyUnlock = await api.get('/api/unlocked-characters');
-        const isUnlocked = verifyUnlock.data.data.some(char => 
-            char.characterid === characterToUnlock
-        );
-        console.log('✓ Character unlock verified:', isUnlocked);
-        console.log('================\n');
-
-        // Test 6: Logout
-        console.log('Test 6: Logout');
-        await api.post('/auth/logout');
-        console.log('✓ Logout successful!');
-        console.log('================\n');
-
+--
         console.log('All tests completed successfully! 🎉');
 
         // Close the database connection

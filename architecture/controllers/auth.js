@@ -20,17 +20,22 @@ async function checkCredentials(req, res) {
         const isEqual = await bcrypt.compare(loginPassword, storedHash);
         if (!isEqual)
             return logReturnEarly("Password is not correct.", '/', res);
+        
+        // stores all necessary user information in session
         req.session.isAuth = true;
         req.session.accountID = users[0].userid;
         req.session.username = users[0].username;
         req.session.isAdmin = users[0].admin === 1;
+
+        console.log("Session Data after login:", req.session);
+
         console.log("Successful log in!");
         res.redirect("/");
     } catch (error) {
         console.error("Login error: ", error);
         return logReturnEarly("An error occurred during login.", '/', res);
     }
-}
+};
 /* Registers a new user to the database, given that they provide the correct information. */
 async function addNewUser(req, res) {
 
