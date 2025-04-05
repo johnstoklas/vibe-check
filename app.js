@@ -36,12 +36,14 @@ const profileRouter = require('./architecture/routes/profile');
 const characterRouter = require('./architecture/routes/character');
 const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
+const gameRouter = require('./architecture/routes/game');
 
 
 app.use('/', profileRouter);
 app.use('/api', characterRouter);
 app.use('/', scoresRouter);
 app.use('/', indexRouter);
+app.use('/game', gameRouter);
 
 
 // catch 404 and forward to error handler
