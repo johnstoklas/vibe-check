@@ -1,16 +1,14 @@
 const express = require('express');
 
 const mysql = require('mysql2/promise');
-const connection = require('../../other/database').databaseConnection;
+const connection = require('../database').databaseConnection;
 
 class Characters {
 
     static async selectAllWithTraits() {
         const [characters] = await connection.query(`
             SELECT 
-                c.characterid,
-                c.name,
-                c.difficulty,
+                c.*,
                 GROUP_CONCAT(t.trait_name) as traits
             FROM characters c
             LEFT JOIN character_traits ct ON c.characterid=ct.characterid
@@ -24,9 +22,7 @@ class Characters {
     static async selectByTrait(traitID) {
         const [characters] = await connection.query(`
             SELECT DISTINCT 
-                c.characterid,
-                c.name,
-                c.difficulty,
+                c.*,
                 GROUP_CONCAT(t.trait_name) as traits
             FROM characters c
             INNER JOIN character_traits ct ON c.characterid=ct.characterid

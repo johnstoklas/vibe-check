@@ -8,7 +8,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const session = require('express-session');
-const store = require('./other/database').sessionStore;
+const store = require('./architecture/database').sessionStore;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 
 const usersModel = require('../models/Users.js').Users;
-const messageReturnEarly = require('../../other/utility').messageReturnEarly;
+const {alertRedirect, noAlert} = require('../utility.js');
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
@@ -12,7 +12,7 @@ async function checkCredentials(req, res) {
         const users = await usersModel.selectByUsername(req.body.username);
 
         if(users.length == 0)
-            return messageReturnEarly("User not found.", '/', res);
+            return alertRedirect(req, res, "User not found.", '/');
 
         else if(users.length > 1) {
             console.assert(false, "Problem with MySQL database: duplicate entries found");
@@ -24,7 +24,7 @@ async function checkCredentials(req, res) {
         isEqual = await bcrypt.compare(loginPassword, storedHash);
 
         if(!isEqual)
-            return messageReturnEarly("Password is not correct.", '/', res);
+            return alertRedirect(req, res, "Password is not correct.", '/');
 
         // stores all necessary user information in session
         req.session.isAuth = true;
@@ -32,12 +32,11 @@ async function checkCredentials(req, res) {
         req.session.username = users[0].username;
         req.session.isAdmin = users[0].admin === 1;
 
-        console.log("Successful log in!");
-        res.redirect("/");
+        return noAlert(req, res, "Successful log in!");
 
     } catch (error) {
         console.error("Login error: ", error);
-        return messageReturnEarly("An error occurred during login.", '/', res);
+        return alertRedirect(req, res, "An error occurred during login.", '/');
     }
 };
 
@@ -47,16 +46,16 @@ async function addNewUser(req, res) {
     try {
         // checks that passwords match
         if(req.body.password !== req.body.password_repeat)
-            return messageReturnEarly("Passwords do not match.", '/', res);
+            return alertRedirect(req, res, "Passwords do not match.", '/');
 
         // checks for existing email and username
         const emailUsers = await usersModel.selectByEmail(req.body.email);
         if(emailUsers.length > 0)
-            return messageReturnEarly("Account with that email already exists.", '/', res);
+            return alertRedirect(req, res, "Account with that email already exists.", '/');
 
         const usernameUsers = await usersModel.selectByUsername(req.body.username);
         if(usernameUsers.length > 0)
-            return messageReturnEarly("Username already taken.", '/', res);
+            return alertRedirect(req, res, "Username already taken.", '/');
 
         // inserts new user with a new game record and the first unlockable character, assuming it starts at 1.
         const saltRounds = 10;
@@ -71,12 +70,11 @@ async function addNewUser(req, res) {
         req.session.username = req.body.username;
         req.session.isAdmin = false;
         
-        console.log("And successful log in!");
-        res.redirect("/");
+        return noAlert(req, res, "And successful log in!");
 
     } catch (error) {
         console.error("Registration error: ", error);
-        return messageReturnEarly("An error occurred during registration.", '/', res);
+        return alertRedirect(req, res, "An error occurred during registration.",  '/');
     }
 };
 
