@@ -37,26 +37,29 @@ const characterRouter = require('./architecture/routes/character');
 const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
 
+
 app.use('/', profileRouter);
 app.use('/api', characterRouter);
 app.use('/', scoresRouter);
 app.use('/', indexRouter);
 
+
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-    next(createError(404));
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
 });
 
 // error handler
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
+    console.error(err.stack);
     
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+    const status = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+    
+    res.status(status).json({
+        error: message
+    });
 });
-
 module.exports = app;
