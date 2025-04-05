@@ -5,7 +5,7 @@ const connection = require('../database').databaseConnection;
 
 class UnlockedCharacters {
 
-    static async addUnlockable(userID, characterID) {
+    static async unlock(userID, characterID) {
         const insertSQL = 'INSERT INTO unlocked_characters (userid, characterid) VALUES (?, ?)';
         return await connection.query(insertSQL, [userID, characterID]);
     }
