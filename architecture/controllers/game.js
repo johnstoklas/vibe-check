@@ -82,7 +82,7 @@ class Game {
         const charIndex = req.body.char_index;
 
         // randomly selects three actions from the list of actions
-        const actions = uniqueRandomItems(Game.#allActions, 3);
+        const actions = this.uniqueRandomItems(Game.#allActions, 3);
 
         // TODO: send actions back to HTML and CSS for player to choose from
 
