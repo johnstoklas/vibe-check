@@ -1,14 +1,15 @@
 const express = require('express');
 
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
-const {alertRedirect, noAlert} = require('../utility');
+const {alertRedirect, noAlertRedirect} = require('../utility');
 
+// a class that bundles all of our game objects together under a single Game object
 class Game {
 
-    // a private key, which makes our constructor private to anything outside the class.
+    // a private key, which makes our constructor private to anything outside the class
     static #privateKey = {};
 
-    // a hardcoded list of all available actions
+    // a private hardcoded list of all available actions
     static #allActions = [
         'Food',
         'Small Gift',
@@ -23,7 +24,7 @@ class Game {
     /* Constructs a Game from game objects. */
     constructor(characters, score, money, round, key) {
 
-        if(key !== MyClass.#privateKey)
+        if(key !== Game.#privateKey)
             throw new Error('Cannot instantiate directly. Rather, use \'initGame\' instead.');
 
         this.characters = characters;
@@ -34,12 +35,15 @@ class Game {
         this.hasEnded = false;
     }
 
-    /* Initializes the Game from our game objects (like characters, score, etc.). Uses the factory-method template to replace the use of a constructor. */
+    /* Initializes the Game by generating starting game objects (like characters, score, etc.). Uses the factory-method template to replace the use of a constructor. */
     static async init(req, res) {
 
-        // checks if the user's current session is authenticated.
+        // checks if the user's current session is authenticated
         if(!req.session.isAuth)
             return alertRedirect(req, res, "Authentication is required to play game.", '/');
+
+        // declares that the game is running and stores it in the session
+        req.session.isGameRunning = true;
 
         // preliminary information needed to create the game objects
         let randomChars = await unlockedCharactersModel.selectRandomWithTraits(req.session.accountID, 5);
@@ -65,7 +69,7 @@ class Game {
             });
 
         // "initialized" the Game object successful
-        noAlert(req, res, "Game initialized successful.");
+        console.log("Game initialized successful.");
 
         // returns the Game object
         return new Game(characters, 100, 50, 1, Game.#privateKey);
@@ -140,7 +144,7 @@ class Game {
         }
 
         // ends game round successful
-        noAlert(req, res, "Game round ended successful.");
+        console.log("Game round ended successful.");
     }
 
     /* Sends the score. */

@@ -7,13 +7,13 @@
         partial.style.display = 'flex';
     }
   </script>
-  <body> 
+  <body>
     <%-include('../partials/character_choice.ejs')%>
     <div id="header-container"> 
-      <button> Home </button>
+      <button>Home</button>
       <div id="score-container">
-        <div> Score: 100 </div> 
-        <div> Money: $50 </div>
+        <div>Score: <%=game.score%></div> 
+        <div>Money: $<%=game.money%></div>
       </div>
     </div>
     <div id="all-characters-container"> 

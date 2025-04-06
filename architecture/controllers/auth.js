@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 
 const usersModel = require('../models/Users.js').Users;
-const {alertRedirect, noAlert} = require('../utility.js');
+const {alertRedirect, noAlertRedirect} = require('../utility.js');
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
@@ -32,7 +32,7 @@ async function checkCredentials(req, res) {
         req.session.username = users[0].username;
         req.session.isAdmin = users[0].admin === 1;
 
-        return noAlert(req, res, "Successful log in!");
+        return noAlertRedirect(req, res, "Successful log in!", '/');
 
     } catch (error) {
         console.error("Login error: ", error);
@@ -70,7 +70,7 @@ async function addNewUser(req, res) {
         req.session.username = req.body.username;
         req.session.isAdmin = false;
         
-        return noAlert(req, res, "And successful log in!");
+        return noAlert(req, res, "And successful log in!", '/');
 
     } catch (error) {
         console.error("Registration error: ", error);

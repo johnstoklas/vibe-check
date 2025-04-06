@@ -9,10 +9,11 @@ async function alertRedirect(req, res, message, redirectPath) {
 };
 
 /* Indicates that no alert is required and logs a success message. */
-async function noAlert(req, res, message) {
+async function noAlertRedirect(req, res, message, redirectPath) {
     console.log(message);
     req.session.showAlert = false;
     req.session.alertMessage = "No alert required!";
+    res.redirect(redirectPath);
 };
 
-module.exports = {alertRedirect, noAlert}
+module.exports = {alertRedirect, noAlertRedirect}
