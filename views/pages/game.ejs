@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html>
-    <script>
-        function selectCharacter() {
-            const partial = document.getElementById('character-choice-container');
-            if (partial) {
-                partial.style.display = 'flex';
-            }
-        }
-    </script>
-    <body> 
-        <%-include('../partials/character_choice.ejs')%>
-        <div id="header-container"> 
-            <button> Home </button>
-            <div id="score-container">
-                <div> Score: 100 </div> 
-                <div> Money: $50 </div>
-            </div>
-        </div>
-        <div id="all-characters-container"> 
-            <div class="character-container">
-                <div class="character-image-container" onclick="selectCharacter()"></div>
-                <div class="character-score-container"></div>
-            </div>
-            <div class="character-container">
-                <div class="character-image-container" onclick="selectCharacter()"></div>
-                <div class="character-score-container"></div>
-            </div>
-            <div class="character-container">
-                <div class="character-image-container" onclick="selectCharacter()"></div>
-                <div class="character-score-container"></div>
-            </div>
-            <div class="character-container">
-                <div class="character-image-container" onclick="selectCharacter()"></div>
-                <div class="character-score-container"></div>
-            </div>
-            <div class="character-container">
-                <div class="character-image-container" onclick="selectCharacter()"></div>
-                <div class="character-score-container"></div>
-            </div>
-        </div>
-    </body>  
-    <style>
-        #header-container {
-            display: flex;
-            flex-direction: row;
-            gap: 50px;
-        }
-        #score-container {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-        }
-        #all-characters-container {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 140px;         
-        }
-        .character-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .character-image-container {
-            height: 200px;
-            width: 200px;
-            border: 1px solid black;
-        }
-        .character-score-container {
-            width: 200px;
-            height: 40px;
-            border: 1px solid black;
-        }
-    </style>
+  <script>
+    function selectCharacter() {
+      const partial = document.getElementById('character-choice-container');
+      if(partial)
+        partial.style.display = 'flex';
+    }
+  </script>
+  <body> 
+    <%-include('../partials/character_choice.ejs')%>
+    <div id="header-container"> 
+      <button> Home </button>
+      <div id="score-container">
+        <div> Score: 100 </div> 
+        <div> Money: $50 </div>
+      </div>
+    </div>
+    <div id="all-characters-container"> 
+      <div class="character-container">
+        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-score-container"></div>
+      </div>
+      <div class="character-container">
+        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-score-container"></div>
+      </div>
+      <div class="character-container">
+        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-score-container"></div>
+      </div>
+      <div class="character-container">
+        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-score-container"></div>
+      </div>
+      <div class="character-container">
+        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-score-container"></div>
+      </div>
+    </div>
+  </body>  
+  <style>
+    #header-container {
+      display: flex;
+      flex-direction: row;
+      gap: 50px;
+    }
+    #score-container {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+    }
+    #all-characters-container {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 140px;         
+    }
+    .character-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .character-image-container {
+      height: 200px;
+      width: 200px;
+      border: 1px solid black;
+    }
+    .character-score-container {
+      width: 200px;
+      height: 40px;
+      border: 1px solid black;
+    }
+  </style>
 </html>

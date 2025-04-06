@@ -2,46 +2,46 @@
 <html>
   <script>
     function ignoreCharacter() {
-        const partial = document.getElementById('character-choice-container');
-            if (partial) {
-                partial.style.display = 'none';
-            }
+      const partial = document.getElementById('character-choice-container');
+      if(partial) {
+          partial.style.display = 'none';
+      }
     }   
   </script>
   <body>
     <section id="character-choice-container">
-        <h4> Character Name </h4>
-        <div id="character-button-container">
-            <button> Choice 1 </button>
-            <button> Choice 2 </button>
-            <button> Choice 3 </button>
-        </div>
-        <button onclick="ignoreCharacter()"> Ignore </button>
+      <h4> Character Name </h4>
+      <div id="character-button-container">
+          <button> Choice 1 </button>
+          <button> Choice 2 </button>
+          <button> Choice 3 </button>
+      </div>
+      <button onclick="ignoreCharacter()"> Ignore </button>
     </section>
   </body>
   <style>
     #character-choice-container {
-        flex-direction: column;
-        display: none;
-        height: 400px;
-        width: 200px;
-        border: 1px solid black;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-left: -100px;
-        margin-top: -200px;
-        background-color: lightblue;
-        align-items: center;
+      flex-direction: column;
+      display: none;
+      height: 400px;
+      width: 200px;
+      border: 1px solid black;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -100px;
+      margin-top: -200px;
+      background-color: lightblue;
+      align-items: center;
     }
     h4 {
-        margin-bottom: 40px;
+      margin-bottom: 40px;
     }
     #character-button-container {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 40px;
-        gap: 10px;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 40px;
+      gap: 10px;
     }
   </style>
 </html>
