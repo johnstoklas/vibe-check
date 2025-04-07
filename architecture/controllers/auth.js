@@ -2,6 +2,7 @@ const express = require('express');
 
 const bcrypt = require('bcrypt');
 
+// models and utility
 const usersModel = require('../models/Users.js').Users;
 const {alertRedirect, noAlertRedirect} = require('../utility.js');
 

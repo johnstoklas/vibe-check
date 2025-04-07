@@ -4,18 +4,11 @@ const router = express.Router();
 // controllers
 const gameController = require('../controllers/game.js');
 
-// other fields
-const Game = gameController.Game
-var game;
+// GET requests through HTTP
+router.get('/', gameController.startGame);
 
-// GET requests
-router.get('/', async (req, res) => {
-
-    if(!req.session.isGameRunning)
-        game = await Game.init(req, res);
-
-    res.render('pages/game', {game: game});
-});
+// requests through Web Sockets
+router.ws('/', gameController.playGame);
 
 // exports
 module.exports = router;

@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 
 const session = require('express-session');
 const store = require('./architecture/database').sessionStore;
+const expressWs = require('express-ws')(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
