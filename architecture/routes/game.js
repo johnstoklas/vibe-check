@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+const expressWs = require('express-ws');
+expressWs(router);
+
 // controllers
 const gameController = require('../controllers/game.js');
 

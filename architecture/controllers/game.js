@@ -4,31 +4,35 @@ const express = require('express');
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
 const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
 
-// other fields
-var game;
-
 // middleware
-/* Starts the game for the player and renders the game page. */
+/* Checks for player authentication and renders the game page. */
 async function startGame(req, res) {
 
     // checks if the user's current session is authenticated
     if(!req.session.isAuth)
         return alertRedirect(req, res, "Authentication is required to play game.", '/');
 
-    // checks to see if the game has already been initialized, and if not, waits for it to initialize
-    if(!game)
-        game = await Game.init(req, res);
-
     // renders the game page
-    res.render('pages/game', {game: game});
+    res.render('pages/game');
 };
 
-/* Essentially plays the game and dynamically displays gameplay to the user, using the WebSocket API with Express. */
+/* Starts and plays the game and dynamically displays gameplay to the user, using the WebSocket API with Express. */
 async function playGame(ws, req) {
-    ws.on('message', function(msg) {
-        console.log(msg);
-    });
+
+    // logs a connection message with the client
+    console.log("New client connected");
+
+    // initializes the game and sends an "init" message to the client
+    const game = Game.init(ws, req);
+    ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
+    ws.on("updated", () => {});
+
     
+
+    // closes the connection to the client
+    ws.on("close", () => {
+        console.log("Client disconnected");
+    });
 }
 
 // class definitions
@@ -62,12 +66,11 @@ class Game {
         this.round = round;
 
         this.hasEnded = false;
-        this.reloadPage = false;
         this.isValidAction = false;
     }
 
     /* Initializes the Game by generating starting game objects (like characters, score, etc.). Uses the factory-method template to replace the use of a constructor. */
-    static async init(req, res) {
+    static async init(ws, req) {
 
         // declares that the game is running and stores it in the session
         req.session.isGameRunning = true;
@@ -115,9 +118,9 @@ class Game {
         const actions = uniqueRandomItems(Game.#allActions, 3);
 
         // reloads page to display actions to frontend for player to choose from
-        this.reloadPage = true;
-        await waitForValue(() => this.reloadPage, false);
-        console.log("Page has been reloaded!")
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("Page updated!", () => {});
+        console.log("Page has been updated!")
 
         // finds which action the player chose and decrements the cost of that action
         let actionIndex = req.body.action_index;
@@ -135,9 +138,9 @@ class Game {
         }
 
         // reloads page to display the player's new amount of money back to frontend for player to see
-        this.reloadPage = true;
-        await waitForValue(() => this.reloadPage, false);
-        console.log("Page has been reloaded again!");
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("Page updated!", () => {});
+        console.log("Page has been updated again!")
 
         // checks to see if a character was ignored or else if the action chosen corresponds negatively or positively to any of that character's traits
         if(actionIndex >= actions.length)
@@ -172,9 +175,9 @@ class Game {
         }
 
         // reloads page to display new healths back to frontend for player to see
-        this.reloadPage = true;
-        await waitForValue(() => this.reloadPage, false);
-        console.log("Page has been reloaded once more!");
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("Page updated!", () => {});
+        console.log("Page has been updated once more!")
 
         // checks whether any characters' health is equal to zero
         for(const char of this.characters)
@@ -195,6 +198,11 @@ class Game {
             // increments the round count
             this.round++;
         }
+
+        // updates page once last time for final changes to the game state
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("Page updated!", () => {});
+        console.log("Page has been updated on final time for this round!")
 
         // ends game round successful
         console.log("Game round ended successful.");
