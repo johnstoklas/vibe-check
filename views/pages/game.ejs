@@ -18,11 +18,64 @@
       }
     });
 
-    function selectCharacter() {
-      const partial = document.getElementById('character-choice-container');
+    let selectedCharIndex = null;
+    let selectedActionIndex = null;
+
+    socket.addEventListener("open", () => {
+      console.log("Connection established");
+    });
+
+    socket.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
+
+    console.log("Received actions:", data);
+
+
+    if (data.type === "update") {
+
+      document.getElementById("score").textContent = `Score: ${data.gameState.score}`;
+      document.getElementById("money").textContent = `Money: $${data.gameState.money}`;
+
+      // 👇 NEW: Update the character-choice buttons
+      if (data.actions) {
+        const buttons = document.querySelectorAll("#character-button-container button");
+
+        buttons.forEach((btn, i) => {
+          if (data.actions[i]) {
+            btn.textContent = data.actions[i].name;
+            btn.style.display = 'block';
+            btn.onclick = () => chooseAction(i); // 👈 this sets the click behavior
+          } else {
+            btn.style.display = 'none';
+            btn.onclick = null;
+          }
+        });
+
+      }
+    }
+});
+
+
+  function selectCharacter(index) {
+    const partial = document.getElementById('character-choice-container');
       if(partial)
         partial.style.display = 'flex';
-    }
+
+    selectedCharIndex = index;
+    socket.send(JSON.stringify({ type: "character_selection", char_index: index }));
+  }
+
+  function ignoreCharacter() {
+      const partial = document.getElementById('character-choice-container');
+      if(partial) {
+          partial.style.display = 'none';
+      }
+    }   
+
+  function chooseAction(index) {
+    selectedActionIndex = index;
+    socket.send(JSON.stringify({ type: "action_selection", action_index: index }));
+  }
   </script>
   <body>
     <%-include('../partials/character_choice.ejs')%>
@@ -35,23 +88,23 @@
     </div>
     <div id="all-characters-container"> 
       <div class="character-container">
-        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-image-container" onclick="selectCharacter(0)"></div>
         <div class="character-score-container"></div>
       </div>
       <div class="character-container">
-        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-image-container" onclick="selectCharacter(1)"></div>
         <div class="character-score-container"></div>
       </div>
       <div class="character-container">
-        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-image-container" onclick="selectCharacter(2)"></div>
         <div class="character-score-container"></div>
       </div>
       <div class="character-container">
-        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-image-container" onclick="selectCharacter(3)"></div>
         <div class="character-score-container"></div>
       </div>
       <div class="character-container">
-        <div class="character-image-container" onclick="selectCharacter()"></div>
+        <div class="character-image-container" onclick="selectCharacter(4)"></div>
         <div class="character-score-container"></div>
       </div>
     </div>
@@ -88,6 +141,29 @@
       width: 200px;
       height: 40px;
       border: 1px solid black;
+    }
+    #character-choice-container {
+      flex-direction: column;
+      display: none;
+      height: 400px;
+      width: 200px;
+      border: 1px solid black;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -100px;
+      margin-top: -200px;
+      background-color: lightblue;
+      align-items: center;
+    }
+    #character-choice-container h4 {
+      margin-bottom: 40px;
+    }
+    #character-button-container {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 40px;
+      gap: 10px;
     }
   </style>
 </html>

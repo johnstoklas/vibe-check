@@ -43,7 +43,9 @@ describe('Game class', () => {
 
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue(fakeCharacters);
 
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
 
         expect(game.characters.length).toBe(5);
         expect(game.score).toBe(100);
@@ -67,7 +69,9 @@ describe('Game class', () => {
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -81,9 +85,13 @@ describe('Game class', () => {
             }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Invite Out', 'Food']);
-    
-        await game.playRound(req, res);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Invite Out', cost: 0 },
+            { name: 'Food', cost: 15 }
+          ]);
+              
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(100); 
     
@@ -112,7 +120,9 @@ describe('Game class', () => {
             {}, {}, {}, {}
         ]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -126,9 +136,13 @@ describe('Game class', () => {
             }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Invite Out']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(55);
         expect(game.score).toBe(110);               
@@ -150,7 +164,9 @@ describe('Game class', () => {
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -160,9 +176,13 @@ describe('Game class', () => {
             decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Invite Out']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(40); 
         expect(game.score).toBe(90);               
@@ -183,7 +203,9 @@ describe('Game class', () => {
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -193,13 +215,150 @@ describe('Game class', () => {
             decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Surprise']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(50); 
         expect(game.score).toBe(100);              
     });
+
+    // money logic
+    test('if action costs money, the users money is lowered accordingly', async () => {
+        const req = {
+            session: { isAuth: true, accountID: 1 },
+            body: { char_index: 0, action_index: 0 }
+        };
+    
+        const res = {};
+        
+        const ws = {
+            send: jest.fn(),
+            on: jest.fn((event, cb) => {
+            })
+        };
+    
+        const testCharacter = {
+            name: 'MoneyChar',
+            traits: [{ trait_name: 'Food', is_positive: 1 }],
+            difficulty: 1
+        };
+    
+        UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
+    
+        const game = await Game.init(ws, req);
+    
+        game.characters = [{
+            character: testCharacter,
+            health: 50,
+            interactionlessRounds: 0,
+            incrementHealth(amount) { this.health = Math.min(this.health + amount, 100); },
+            decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
+        }];
+    
+        game.money = 50;
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Food', cost: 15 },
+            { name: 'Compliments', cost: 0 },
+            { name: 'Surprise', cost: 5 }
+        ]);
+    
+        await game.runRound(ws, req);
+    
+        expect(game.money).toBe(35);
+    });    
+
+    test('if a characters action costs but their score goes over 70, 80, or 90 the money goes up as well', async () => {
+        const req = {
+            session: { isAuth: true, accountID: 1 },
+            body: { char_index: 0, action_index: 0 }
+        };
+    
+        const res = {};
+        
+        const ws = {
+            send: jest.fn(),
+            on: jest.fn((event, cb) => {
+            })
+        };
+    
+        const testCharacter = {
+            name: 'MoneyChar',
+            traits: [{ trait_name: 'Food', is_positive: 1 }],
+            difficulty: 1
+        };
+    
+        UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
+    
+        const game = await Game.init(ws, req);
+    
+        game.characters = [{
+            character: testCharacter,
+            health: 78,
+            interactionlessRounds: 0,
+            incrementHealth(amount) { this.health = Math.min(this.health + amount, 100); },
+            decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
+        }];
+    
+        game.money = 50;
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Food', cost: 15 },
+            { name: 'Compliments', cost: 0 },
+            { name: 'Surprise', cost: 5 }
+        ]);
+    
+        await game.runRound(ws, req);
+    
+        expect(game.money).toBe(40);
+    });    
+
+    test('if a characters action costs money and the player does not have enough money, they cannot pay for the action', async () => {
+        const req = {
+            session: { isAuth: true, accountID: 1 },
+            body: { char_index: 0, action_index: 0 }
+        };
+    
+        const res = {};
+        
+        const ws = {
+            send: jest.fn(),
+            on: jest.fn((event, cb) => {
+            })
+        };
+    
+        const testCharacter = {
+            name: 'MoneyChar',
+            traits: [{ trait_name: 'Food', is_positive: 1 }],
+            difficulty: 1
+        };
+    
+        UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
+    
+        const game = await Game.init(ws, req);
+    
+        game.characters = [{
+            character: testCharacter,
+            health: 78,
+            interactionlessRounds: 0,
+            incrementHealth(amount) { this.health = Math.min(this.health + amount, 100); },
+            decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
+        }];
+    
+        game.money = 10;
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Food', cost: 15 },
+            { name: 'Compliments', cost: 0 },
+            { name: 'Surprise', cost: 5 }
+        ]);
+    
+        await game.runRound(ws, req);
+    
+        expect(game.money).toBe(40);
+    });   
 
     // ignore logic
     test('ignoring a character decreases only their health by 5 and does not affect the score', async () => {
@@ -207,7 +366,7 @@ describe('Game class', () => {
             session: { isAuth: true, accountID: 1 },
             body: {
                 char_index: 0,
-                action_index: 3 
+                action_index: 3
             }
         };
         const res = {};
@@ -223,7 +382,9 @@ describe('Game class', () => {
             {}, {}, {}, {}
         ]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -237,9 +398,13 @@ describe('Game class', () => {
             }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Invite Out']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 },
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(45); 
         expect(game.score).toBe(100);              
@@ -271,7 +436,9 @@ describe('Game class', () => {
             character0, character1, {}, {}, {}
         ]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [0, 1].map(i => ({
             character: i === 0 ? character0 : character1,
@@ -285,12 +452,16 @@ describe('Game class', () => {
             }
         }));
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Invite Out']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
         for (let i = 0; i < 3; i++) {
             req.body.char_index = 0;
             req.body.action_index = 0;
-            await game.playRound(req, res);
+            await game.runRound(ws, req);
         }
     
         expect(game.characters[1].health).toBe(38);
@@ -304,14 +475,16 @@ describe('Game class', () => {
         const res = {};
     
         const testCharacter = {
-            name: 'ForgetMeNot',
+            name: 'InteractionLess',
             traits: [{ trait_name: 'Compliments', is_positive: 1 }],
             difficulty: 1
         };
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -321,9 +494,13 @@ describe('Game class', () => {
             decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Invite Out', 'Food']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].interactionlessRounds).toBe(0); 
     });
@@ -346,7 +523,9 @@ describe('Game class', () => {
             testCharacter, {}, {}, {}, {}
         ]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -360,9 +539,13 @@ describe('Game class', () => {
             }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Invite Out']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(0);       
         expect(game.hasEnded).toBe(true);                
@@ -383,7 +566,9 @@ describe('Game class', () => {
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -393,9 +578,13 @@ describe('Game class', () => {
             decrementHealth(amount) { this.health = Math.max(this.health - amount, 0); }
         }];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Invite Out', 'Food']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.hasEnded).toBe(true);  
         expect(game.round).toBe(1);        
@@ -421,7 +610,9 @@ describe('Game class', () => {
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([mainChar, ignoredChar, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [
             {
@@ -440,9 +631,13 @@ describe('Game class', () => {
             }
         ];
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Invite Out', 'Food']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[1].health).toBe(0);    
         expect(game.hasEnded).toBe(true);              
@@ -463,7 +658,9 @@ describe('Game class', () => {
     
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
     
-        const game = await Game.init(req, res);
+        const ws = { send: jest.fn(), on: jest.fn() };
+        
+        const game = await Game.init(ws, req);
     
         game.characters = [{
             character: testCharacter,
@@ -475,9 +672,13 @@ describe('Game class', () => {
     
         game.hasEnded = true; 
     
-        game.uniqueRandomItems = jest.fn().mockReturnValue(['Compliments', 'Food', 'Invite Out']);
+        game.uniqueRandomItems = jest.fn().mockReturnValue([
+            { name: 'Compliments', cost: 0 },
+            { name: 'Food', cost: 15 },
+            { name: 'Invite Out', cost: 0 }
+        ]);
     
-        await game.playRound(req, res);
+        await game.runRound(ws, req);
     
         expect(game.characters[0].health).toBe(0); 
         expect(game.score).toBe(100);              
