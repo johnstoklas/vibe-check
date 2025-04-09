@@ -27,19 +27,18 @@ async function playGame(ws, req) {
     // logs a connection message with the client
     console.log("New client connected");
 
-    // initializes the game and sends an "init" message to the client
+    // initializes the game
     if (game == null || game.hasEnded) {
         game = await Game.init(ws, req);
     
-        // Fake body to trigger first round
+        // fake body to trigger first round
         req.body = {
-            char_index: 0,         // Can be dummy value
-            action_index: null     // Wait for real action from frontend
+            char_index: 0,         // can be dummy value
+            action_index: null     // waits for real action from frontend
         };
     
-        await game.runRound(ws, req); // ✅ Triggers the first update with actions
+        await game.runRound(ws, req); // ✅ triggers the first update with actions
     }
-    
 
     const state = {
         char_index: null,
@@ -56,35 +55,22 @@ async function playGame(ws, req) {
         if (data.type === "action_selection") {
             state.action_index = data.action_index;
 
-            // Put the selections into fake req.body
+            // puts the selections into fake req.body
             req.body = {
                 char_index: state.char_index,
                 action_index: state.action_index
             };
 
-            // Run a round of the game
+            // runs a round of the game
             await game.runRound(ws, req);
 
-            // Save to DB if game ends
+            // stores the game in the database, including the score and money, once the game ends
             if (game.hasEnded) {
                 await gamesModel.addGame(req.session.accountID, game.score, game.money);
                 ws.send(JSON.stringify({ type: "end", message: "Game over!", gameState: game }));
             }
         }
     });
-
-    ws.on("close", () => {
-        console.log("Client disconnected");
-    });
-        ws.on("updated", () => {});
-
-
-    // basic game loop, iterating over the rounds of the game
-    while(!game.hasEnded)
-        await game.runRound(ws, req);
-
-    // stores the game in the database, including the score and money, once the game ends
-    await gamesModel.addGame(req.session.accountID, game.score, game.money);
 
     // closes the connection to the client
     ws.on("close", () => {
@@ -184,19 +170,18 @@ class Game {
         this.isValidAction = false;
 
         if (req.body.action_index == null) {
-            // Only send actions
+            // only send actions
             const actions = this.uniqueRandomItems(Game.#allActions, 3);
             this.currentActions = actions; // store them to use later
           
             ws.send(JSON.stringify({
-              type: "update",
-              message: "Choose an action",
-              gameState: this,
-              actions: actions
+                type: "update",
+                message: "Choose an action",
+                gameState: this,
+                actions: actions
             }));
             return;
-          }
-          
+        }
 
         const wasIgnore = actionIndex >= actions.length || !actions[actionIndex];
 
@@ -256,7 +241,6 @@ class Game {
             currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
         }
 
-
         // updates page to display new healths back to frontend for player to see
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
         ws.on("updated", () => {});
@@ -280,7 +264,6 @@ class Game {
                     else if (char.health > 70)
                         this.money += 1;
                 }            
-
             }
 
             // increments the round count
@@ -299,9 +282,9 @@ class Game {
     /* Grabs random unique items from an array without changing the original array. */
     uniqueRandomItems(array, num) {
             
-        arr = array.slice(0);
+        let arr = array.slice(0);
 
-        items = [];
+        let items = [];
         for(let i = 0; i < num; i++) {
             const randomIndex = Math.floor(Math.random() * arr.length);
             items.push(arr[randomIndex]);

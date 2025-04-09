@@ -32,6 +32,9 @@ app.use(
     })
 );
 
+// Web Sockets port
+app.listen(8080);
+
 // routers and URL routes
 const profileRouter = require('./architecture/routes/profile');
 const characterRouter = require('./architecture/routes/character');

@@ -2,34 +2,19 @@
 <html>
   <script>
 
-    const socket = new WebSocket("ws://localhost:3000/game");
+    const socket = new WebSocket("ws://localhost:8080/game");
 
     socket.addEventListener("open", () => {
       console.log("Connection established");
-    });
-
-    socket.addEventListener("message", (event) => {
-
-      const data = JSON.parse(event.data);
-      if(data.type === "update") {
-        document.getElementById("score").textContent = `Score: ${data.gameState.score}`;
-        document.getElementById("money").textContent = `Money: $${data.gameState.money}`;
-        socket.send(JSON.stringify({ type: "message", message: "updated" }));
-      }
     });
 
     let selectedCharIndex = null;
     let selectedActionIndex = null;
 
-    socket.addEventListener("open", () => {
-      console.log("Connection established");
-    });
-
     socket.addEventListener("message", (event) => {
     const data = JSON.parse(event.data);
 
     console.log("Received actions:", data);
-
 
     if (data.type === "update") {
 
@@ -50,7 +35,6 @@
             btn.onclick = null;
           }
         });
-
       }
     }
 });
