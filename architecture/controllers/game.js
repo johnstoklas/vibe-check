@@ -2,7 +2,11 @@ const express = require('express');
 
 // models and utility
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
+const gamesModel = require('../models/Games').Games;
 const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
+
+// miscellaneous
+var game;
 
 // middleware
 /* Checks for player authentication and renders the game page. */
@@ -23,13 +27,18 @@ async function playGame(ws, req) {
     console.log("New client connected");
 
     // initializes the game and sends an "init" message to the client
-    const game = Game.init(ws, req);
-    ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
-    ws.on("updated", () => {});
+    if(game == null || game.hasEnded) {
+        game = await Game.init(ws, req);
+        ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
+        ws.on("updated", () => {});
+    }
 
     // basic game loop, iterating over the rounds of the game
     while(!game.hasEnded)
         await game.runRound(ws, req);
+
+    // stores the game in the database, including the score and money, once the game ends
+    await gamesModel.addGame(req.session.accountID, game.score, game.money);
 
     // closes the connection to the client
     ws.on("close", () => {
@@ -210,9 +219,6 @@ class Game {
         // ends game round successful
         console.log("Game round ended successful.");
     }
-
-    /* Sends the score. */
-    async sendScore(req, res) {};
 
     /* Grabs random unique items from an array without changing the original array. */
     uniqueRandomItems(array, num) {
