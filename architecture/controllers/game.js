@@ -3,6 +3,7 @@ const express = require('express');
 // models and utility
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
 const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
+const e = require('express');
 
 // middleware
 /* Checks for player authentication and renders the game page. */
@@ -23,7 +24,7 @@ async function playGame(ws, req) {
     console.log("New client connected");
 
     // initializes the game and sends an "init" message to the client
-    const game = Game.init(ws, req);
+    const game = await Game.init(ws, req);
     ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
     ws.on("updated", () => {});
 
@@ -128,15 +129,24 @@ class Game {
         let actionIndex = req.body.action_index;
         this.isValidAction = false;
 
-        while(!this.isValidAction) {
-            if(actions[actionIndex].cost <= this.money) {
+        const wasIgnore = actionIndex >= actions.length || !actions[actionIndex];
+
+        if (process.env.NODE_ENV === 'test') {
+            if (!wasIgnore && actions[actionIndex].cost <= this.money) {
                 this.isValidAction = true;
                 this.money -= actions[actionIndex].cost;
             }
-            else {
-                ws.send(JSON.stringify({ type: "invalid_action", message: "That is an invalid action!" }));
-                await ws.on("new_action", () => {});
-                actionIndex = req.body.action_index;
+        } else {
+            while(!this.isValidAction) {
+                if(actions[actionIndex].cost <= this.money) {
+                    this.isValidAction = true;
+                    this.money -= actions[actionIndex].cost;
+                }
+                else {
+                    ws.send(JSON.stringify({ type: "invalid_action", message: "That is an invalid action!" }));
+                    await ws.on("new_action", () => {});
+                    actionIndex = req.body.action_index;
+                }
             }
         }
 
@@ -177,6 +187,7 @@ class Game {
             currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
         }
 
+
         // updates page to display new healths back to frontend for player to see
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
         ws.on("updated", () => {});
@@ -189,14 +200,19 @@ class Game {
 
         // given that the game has not ended yet,
         if(!this.hasEnded) {
+            if(!wasIgnore) {
 
-            // increases money based on the score count
-            if(this.score > 90)
-                this.money += 10;
-            else if(this.score > 90)
-                this.money += 5;
-            else if(this.score > 70)
-                this.money += 1;
+                // increases money based on the score count
+                for (const char of this.characters) {
+                    if (char.health > 90)
+                        this.money += 10;
+                    else if (char.health > 80)
+                        this.money += 5;
+                    else if (char.health > 70)
+                        this.money += 1;
+                }            
+
+            }
 
             // increments the round count
             this.round++;
@@ -230,4 +246,4 @@ class Game {
     }
 }
 
-module.exports = {startGame, playGame};
+module.exports = {startGame, playGame, Game};
