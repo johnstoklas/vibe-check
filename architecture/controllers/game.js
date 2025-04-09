@@ -4,7 +4,6 @@ const express = require('express');
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
 const gamesModel = require('../models/Games').Games;
 const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
-const e = require('express');
 
 // miscellaneous
 var game;
