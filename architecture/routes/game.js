@@ -1,21 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
+// TODO: I'm not sure if these two are necessary.
+const expressWs = require('express-ws');
+expressWs(router);
+
 // controllers
 const gameController = require('../controllers/game.js');
 
-// other fields
-const Game = gameController.Game
-var game;
+// GET requests through HTTP
+router.get('/', gameController.startGame);
 
-// GET requests
-router.get('/', async (req, res) => {
-
-    if(!req.session.isGameRunning)
-        game = await Game.init(req, res);
-
-    res.render('pages/game', {game: game});
-});
+// WebSocket request
+router.ws('/', gameController.playGame);
 
 // exports
 module.exports = router;

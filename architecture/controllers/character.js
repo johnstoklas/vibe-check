@@ -1,5 +1,6 @@
 const express = require('express');
 
+// models
 const charactersModel = require('../models/Characters').Characters;
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
 const traitsModel = require('../models/Traits').Traits;

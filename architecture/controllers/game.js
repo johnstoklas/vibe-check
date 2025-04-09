@@ -1,9 +1,44 @@
 const express = require('express');
 
+// models and utility
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
-const {alertRedirect, noAlertRedirect} = require('../utility');
+const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
 
-// a class that bundles all of our game objects together under a single Game object
+// middleware
+/* Checks for player authentication and renders the game page. */
+async function startGame(req, res) {
+
+    // checks if the user's current session is authenticated
+    if(!req.session.isAuth)
+        return alertRedirect(req, res, "Authentication is required to play game.", '/');
+
+    // renders the game page
+    res.render('pages/game');
+};
+
+/* Starts and plays the game and dynamically displays gameplay to the user, using the WebSocket API with Express. */
+async function playGame(ws, req) {
+
+    // logs a connection message with the client
+    console.log("New client connected");
+
+    // initializes the game and sends an "init" message to the client
+    const game = Game.init(ws, req);
+    ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
+    ws.on("updated", () => {});
+
+    // basic game loop, iterating over the rounds of the game
+    while(!game.hasEnded)
+        await game.runRound(ws, req);
+
+    // closes the connection to the client
+    ws.on("close", () => {
+        console.log("Client disconnected");
+    });
+}
+
+// class definitions
+/* Bundles all of our game objects together under a single Game object. */
 class Game {
 
     // a private key, which makes our constructor private to anything outside the class
@@ -11,15 +46,15 @@ class Game {
 
     // a private hardcoded list of all available actions
     static #allActions = [
-        'Food',
-        'Small Gift',
-        'Compliments',
-        'Invite Out',
-        'Help at Work',
-        'Large Gift',
-        'Getting Drive',
-        'Help with Groceries',
-        'Surprise'];
+        {name: 'Food', cost: 15}, 
+        {name: 'Small Gift', cost: 10},
+        {name: 'Compliments', cost: 0},
+        {name: 'Invite Out', cost: 0},
+        {name: 'Help at Work', cost: 0},
+        {name: 'Large Gift', cost: 50},
+        {name: 'Getting Drive', cost: 5},
+        {name: 'Help with Groceries', cost: 0},
+        {name: 'Surprise', cost: 5}];
 
     /* Constructs a Game from game objects. */
     constructor(characters, score, money, round, key) {
@@ -33,14 +68,11 @@ class Game {
         this.round = round;
 
         this.hasEnded = false;
+        this.isValidAction = false;
     }
 
     /* Initializes the Game by generating starting game objects (like characters, score, etc.). Uses the factory-method template to replace the use of a constructor. */
-    static async init(req, res) {
-
-        // checks if the user's current session is authenticated
-        if(!req.session.isAuth)
-            return alertRedirect(req, res, "Authentication is required to play game.", '/');
+    static async init(ws, req) {
 
         // declares that the game is running and stores it in the session
         req.session.isGameRunning = true;
@@ -75,8 +107,11 @@ class Game {
         return new Game(characters, 100, 50, 1, Game.#privateKey);
     };
 
-    /* Plays a round of our game. */
-    async playRound(req, res) {
+    /* Runs a single round of our game. */
+    async runRound(ws, req) {
+
+        // make sure the game has not ended yet before the round can play out
+        if(this.hasEnded) return;
     
         // finds which character the player chose
         const charIndex = req.body.char_index;
@@ -84,10 +119,31 @@ class Game {
         // randomly selects three actions from the list of actions
         const actions = this.uniqueRandomItems(Game.#allActions, 3);
 
-        // TODO: send actions back to HTML and CSS for player to choose from
+        // updates page to display actions to frontend for player to choose from
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("updated", () => {});
+        console.log("Page has been updated!")
 
-        // finds which action the player chose
-        const actionIndex = req.body.action_index;
+        // finds which action the player chose and decrements the cost of that action
+        let actionIndex = req.body.action_index;
+        this.isValidAction = false;
+
+        while(!this.isValidAction) {
+            if(actions[actionIndex].cost <= this.money) {
+                this.isValidAction = true;
+                this.money -= actions[actionIndex].cost;
+            }
+            else {
+                ws.send(JSON.stringify({ type: "invalid_action", message: "That is an invalid action!" }));
+                await ws.on("new_action", () => {});
+                actionIndex = req.body.action_index;
+            }
+        }
+
+        // updates page to display the player's new amount of money back to frontend for player to see
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("updated", () => {});
+        console.log("Page has been updated again!")
 
         // checks to see if a character was ignored or else if the action chosen corresponds negatively or positively to any of that character's traits
         if(actionIndex >= actions.length)
@@ -95,7 +151,7 @@ class Game {
 
         for(const trait of this.characters[charIndex].character.traits) {
 
-            if(trait.trait_name !== actions[actionIndex])
+            if(trait.trait_name !== actions[actionIndex].name)
                 continue;
             
             if(trait.is_positive === 1) {
@@ -121,7 +177,10 @@ class Game {
             currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
         }
 
-        // TODO: send healths back to HTML for player to see
+        // updates page to display new healths back to frontend for player to see
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("updated", () => {});
+        console.log("Page has been updated once more!")
 
         // checks whether any characters' health is equal to zero
         for(const char of this.characters)
@@ -142,6 +201,11 @@ class Game {
             // increments the round count
             this.round++;
         }
+
+        // updates page once more for final changes to the game state
+        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
+        ws.on("updated", () => {});
+        console.log("Page has been updated on final time for this round!")
 
         // ends game round successful
         console.log("Game round ended successful.");
@@ -166,4 +230,4 @@ class Game {
     }
 }
 
-module.exports = {Game};
+module.exports = {startGame, playGame};
