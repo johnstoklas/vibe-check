@@ -29,8 +29,9 @@ async function playGame(ws, req) {
 
     // initializes the game
     if (game == null || game.hasEnded) {
+
         game = await Game.init(ws, req);
-    
+
         // fake body to trigger first round
         req.body = {
             char_index: 0,         // can be dummy value
@@ -45,6 +46,7 @@ async function playGame(ws, req) {
         action_index: null
     }
 
+    // runs subsequent rounds of the game
     ws.on("message", async (msg) => {
         const data = JSON.parse(msg);
 
