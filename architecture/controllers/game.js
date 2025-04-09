@@ -117,7 +117,7 @@ class Game {
         const charIndex = req.body.char_index;
 
         // randomly selects three actions from the list of actions
-        const actions = uniqueRandomItems(Game.#allActions, 3);
+        const actions = this.uniqueRandomItems(Game.#allActions, 3);
 
         // updates page to display actions to frontend for player to choose from
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
