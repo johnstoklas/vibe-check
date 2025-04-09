@@ -30,8 +30,43 @@ async function playGame(ws, req) {
     if(game == null || game.hasEnded) {
         game = await Game.init(ws, req);
         ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
-        ws.on("updated", () => {});
     }
+
+    const state = {
+        char_index: null,
+        action_index: null
+    }
+
+    ws.on("message", async (msg) => {
+        const data = JSON.parse(msg);
+
+        if (data.type === "character_selection") {
+            state.char_index = data.char_index;
+        }
+
+        if (data.type === "action_selection") {
+            state.action_index = data.action_index;
+
+            // Put the selections into fake req.body
+            req.body = {
+                char_index: state.char_index,
+                action_index: state.action_index
+            };
+
+            // Run a round of the game
+            await game.runRound(ws, req);
+
+            // Save to DB if game ends
+            if (game.hasEnded) {
+                await gamesModel.addGame(req.session.accountID, game.score, game.money);
+                ws.send(JSON.stringify({ type: "end", message: "Game over!", gameState: game }));
+            }
+        }
+    });
+
+    ws.on("close", () => {
+        console.log("Client disconnected");
+    });
 
     // basic game loop, iterating over the rounds of the game
     while(!game.hasEnded)
