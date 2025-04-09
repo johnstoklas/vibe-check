@@ -29,6 +29,7 @@ async function waitForValue(variableGetter, targetValue, timeout = 10000, interv
     throw new Error(`Timeout waiting for value to become ${targetValue}`);
 };
 
+/* Waits for a different value to be reached from the original. */
 async function waitForDifference(variableGetter, originalValue, timeout = 10000, interval = 100) {
    
     const startTime = Date.now();

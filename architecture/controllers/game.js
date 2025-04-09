@@ -27,7 +27,9 @@ async function playGame(ws, req) {
     ws.send(JSON.stringify({ type: "update", message: "Game initialized and started!", gameState: game }));
     ws.on("updated", () => {});
 
-    
+    // basic game loop, iterating over the rounds of the game
+    while(!this.hasEnded)
+        await game.runRound(ws, req);
 
     // closes the connection to the client
     ws.on("close", () => {
@@ -117,9 +119,9 @@ class Game {
         // randomly selects three actions from the list of actions
         const actions = uniqueRandomItems(Game.#allActions, 3);
 
-        // reloads page to display actions to frontend for player to choose from
+        // updates page to display actions to frontend for player to choose from
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("Page updated!", () => {});
+        ws.on("updated", () => {});
         console.log("Page has been updated!")
 
         // finds which action the player chose and decrements the cost of that action
@@ -132,14 +134,15 @@ class Game {
                 this.money -= actions[actionIndex].cost;
             }
             else {
-                await waitForDifference(() => req.body.action_index, actionIndex);
+                ws.send(JSON.stringify({ type: "invalid_action", message: "That is an invalid action!" }));
+                await ws.on("new_action", () => {});
                 actionIndex = req.body.action_index;
             }
         }
 
-        // reloads page to display the player's new amount of money back to frontend for player to see
+        // updates page to display the player's new amount of money back to frontend for player to see
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("Page updated!", () => {});
+        ws.on("updated", () => {});
         console.log("Page has been updated again!")
 
         // checks to see if a character was ignored or else if the action chosen corresponds negatively or positively to any of that character's traits
@@ -174,9 +177,9 @@ class Game {
             currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
         }
 
-        // reloads page to display new healths back to frontend for player to see
+        // updates page to display new healths back to frontend for player to see
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("Page updated!", () => {});
+        ws.on("updated", () => {});
         console.log("Page has been updated once more!")
 
         // checks whether any characters' health is equal to zero
@@ -199,9 +202,9 @@ class Game {
             this.round++;
         }
 
-        // updates page once last time for final changes to the game state
+        // updates page once more for final changes to the game state
         ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("Page updated!", () => {});
+        ws.on("updated", () => {});
         console.log("Page has been updated on final time for this round!")
 
         // ends game round successful
