@@ -21,7 +21,6 @@
       document.getElementById("score").textContent = `Score: ${data.gameState.score}`;
       document.getElementById("money").textContent = `Money: $${data.gameState.money}`;
 
-      // 👇 NEW: Update the character-choice buttons
       if (data.actions) {
         const buttons = document.querySelectorAll("#character-button-container button");
 
@@ -29,7 +28,7 @@
           if (data.actions[i]) {
             btn.textContent = data.actions[i].name;
             btn.style.display = 'block';
-            btn.onclick = () => chooseAction(i); // 👈 this sets the click behavior
+            btn.onclick = () => chooseAction(i); 
           } else {
             btn.style.display = 'none';
             btn.onclick = null;
@@ -56,10 +55,23 @@
       }
     }   
 
-  function chooseAction(index) {
-    selectedActionIndex = index;
-    socket.send(JSON.stringify({ type: "action_selection", action_index: index }));
-  }
+    function chooseAction(index) {
+      selectedActionIndex = index;
+      console.log("char index: ", selectedCharIndex);
+      socket.send(JSON.stringify({ 
+        type: "action_selection", 
+        action_index: index,
+      }));
+}
+
+
+  function showLogSign() {
+      const partial = document.getElementById('log-sign-container');
+      if (partial) {
+        partial.style.display = 'flex';
+      }
+    }
+
   </script>
   <body>
     <%-include('../partials/character_choice.ejs')%>
