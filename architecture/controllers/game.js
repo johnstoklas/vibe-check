@@ -51,10 +51,19 @@ async function playGame(ws, req) {
 
         if (data.type === "character_selection") {
             state.char_index = data.char_index;
+
+             // send char_index with null action to trigger action options
+        req.body = {
+            char_index: state.char_index,
+            action_index: null
+        };
+
+        await game.runRound(ws, req); // 👈 triggers update with actions
         }
 
         if (data.type === "action_selection") {
             state.action_index = data.action_index;
+
 
             // puts the selections into fake req.body
             req.body = {
@@ -121,6 +130,8 @@ class Game {
 
         // preliminary information needed to create the game objects
         let randomChars = await unlockedCharactersModel.selectRandomWithTraits(req.session.accountID, 5);
+
+        console.log(randomChars);
         const startingHealth = 50;
 
         // initializes our characters
@@ -213,6 +224,8 @@ class Game {
         // checks to see if a character was ignored or else if the action chosen corresponds negatively or positively to any of that character's traits
         if(actionIndex >= actions.length)
             this.characters[charIndex].decrementHealth(5);
+
+        console.log("traits: ", this.characters[charIndex].character.traits);
 
         for(const trait of this.characters[charIndex].character.traits) {
 
