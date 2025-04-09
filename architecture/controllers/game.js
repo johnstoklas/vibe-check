@@ -28,7 +28,7 @@ async function playGame(ws, req) {
     ws.on("updated", () => {});
 
     // basic game loop, iterating over the rounds of the game
-    while(!this.hasEnded)
+    while(!game.hasEnded)
         await game.runRound(ws, req);
 
     // closes the connection to the client
