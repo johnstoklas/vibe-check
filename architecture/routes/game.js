@@ -1,10 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// TODO: I'm not sure if these two are necessary.
-const expressWs = require('express-ws');
-expressWs(router);
-
 // controllers
 const gameController = require('../controllers/game.js');
 
