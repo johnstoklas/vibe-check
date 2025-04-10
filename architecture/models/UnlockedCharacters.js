@@ -22,7 +22,7 @@ class UnlockedCharacters {
         const [characters] = await connection.query(`
             SELECT
                 c.*,
-                GROUP_CONCAT(t.trait_name) as traits
+                GROUP_CONCAT(CONCAT('(', t.trait_name, ', ', t.goodtrait, ')')) AS traits
             FROM characters c
             INNER JOIN unlocked_characters uc ON c.characterid=uc.characterid
             LEFT JOIN character_traits ct ON c.characterid=ct.characterid

@@ -71,7 +71,7 @@ async function addNewUser(req, res) {
         req.session.username = req.body.username;
         req.session.isAdmin = false;
         
-        return noAlert(req, res, "And successful log in!", '/');
+        return noAlertRedirect(req, res, "And successful log in!", '/');
 
     } catch (error) {
         console.error("Registration error: ", error);
