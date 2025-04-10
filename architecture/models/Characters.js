@@ -8,12 +8,15 @@ class Characters {
     static async selectAllWithTraits() {
         const [characters] = await connection.query(`
             SELECT 
-                c.*,
-                GROUP_CONCAT(t.trait_name) as traits
-            FROM characters c
+                c.characterid, 
+                name, 
+                difficulty, 
+                characterimage, 
+                GROUP_CONCAT(CONCAT('(', t.trait_name, ', ', t.goodtrait, ')')) AS traits
+                FROM characters c
             LEFT JOIN character_traits ct ON c.characterid=ct.characterid
             LEFT JOIN traits t ON ct.trait_id=t.id
-            GROUP BY c.characterid, c.name, c.difficulty
+            GROUP BY c.characterid
             ORDER BY c.difficulty ASC
         `);
         return characters;

@@ -4,39 +4,76 @@
 
     const socket = new WebSocket("ws://localhost:8080/game");
 
-    socket.addEventListener("open", () => {
-      console.log("Connection established");
-    });
-
     let selectedCharIndex = null;
     let selectedActionIndex = null;
+    let characters;
+    let currentScore;
+    let currentMoney;
 
-    socket.addEventListener("message", (event) => {
-    const data = JSON.parse(event.data);
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("data: ", data);
+      if (data.type === "initGame") {
+        console.log("game: ", data.game);
+        characters = data.game.characters;
 
-    console.log("Received actions:", data);
+        const nameDivs = document.getElementsByClassName('character-name');
+        const nameDivsArray = Array.from(nameDivs);
+        let index = 0;
 
-    if (data.type === "update") {
-
-      document.getElementById("score").textContent = `Score: ${data.gameState.score}`;
-      document.getElementById("money").textContent = `Money: $${data.gameState.money}`;
-
-      if (data.actions) {
-        const buttons = document.querySelectorAll("#character-button-container button");
-
-        buttons.forEach((btn, i) => {
-          if (data.actions[i]) {
-            btn.textContent = data.actions[i].name;
-            btn.style.display = 'block';
-            btn.onclick = () => chooseAction(i); 
-          } else {
-            btn.style.display = 'none';
-            btn.onclick = null;
-          }
+        nameDivsArray.forEach((div) => {
+          div.textContent = characters[index].character.name;
+          index++;
         });
+
+        currentScore = data.game.score;
+        currentMoney = data.game.money;
+
+        document.getElementById("score").textContent = `Score: ${currentScore}`;
+        document.getElementById("money").textContent = `Money: $${currentMoney}`;
+
+        for(let i = 0; i < 5; i++) {
+          updateProgressBar(i, 50);
+        }
+
+
       }
-    }
-});
+      else if(data.type === 'update') {
+
+        console.log("update: ", data);
+        const game = data.gameState;
+        console.log(data.actions);
+
+        game.characters.forEach((character, i) => {
+          updateProgressBar(i, character.health); 
+        });
+
+
+        if (data.actions) {
+          const buttons = document.getElementsByClassName("character-action-button");
+          const buttonsArray = Array.from(buttons);
+
+          console.log(buttons);
+
+          buttonsArray.forEach((btn, i) => {
+            btn.textContent = `${data.actions[i].name} ($${data.actions[i].cost})`;
+            btn.onclick = () => chooseAction(i); 
+          });
+        }
+
+        currentScore = game.score;
+        currentMoney = game.money;
+
+        console.log("currentScore: ", currentScore);
+        console.log("currentMoney: ", currentMoney);
+
+
+        document.getElementById("score").textContent = `Score: ${currentScore}`;
+        document.getElementById("money").textContent = `Money: $${currentMoney}`;
+
+      }
+    };
+
 
 
   function selectCharacter(index) {
@@ -58,17 +95,31 @@
     function chooseAction(index) {
       selectedActionIndex = index;
       console.log("char index: ", selectedCharIndex);
+      console.log("action_index: ", index);
       socket.send(JSON.stringify({ 
         type: "action_selection", 
         action_index: index,
       }));
-}
 
+      const partial = document.getElementById('character-choice-container');
+      if(partial) {
+          partial.style.display = 'none';
+      }
 
-  function showLogSign() {
-      const partial = document.getElementById('log-sign-container');
-      if (partial) {
-        partial.style.display = 'flex';
+    }
+
+    function updateProgressBar(characterIndex, happinessScore) {
+      const progressBar = document.getElementById(`character-score-${characterIndex}`);
+      if (!progressBar) return;
+      
+      progressBar.style.width = `${happinessScore}%`;
+      
+      if (happinessScore <= 33) {
+        progressBar.classList.add("progress-low");
+      } else if (happinessScore <= 66) {
+        progressBar.classList.add("progress-medium");
+      } else {
+        progressBar.classList.add("progress-high");
       }
     }
 
@@ -76,90 +127,226 @@
   <body>
     <%-include('../partials/character_choice.ejs')%>
     <div id="header-container"> 
-      <button>Home</button>
+      <div id="home-button" class="ui-box">HOME</div>
       <div id="score-container">
-        <div id="score">Score: 0</div> 
-        <div id="money">Money: $0</div>
+        <div class="ui-box">
+          <span class="stat-label">SCORE</span>
+          <span id="score">0</span>
+        </div>
+        <div class="ui-box">
+          <span class="stat-label">MONEY</span>
+          <span id="money">0</span>
+        </div>
       </div>
     </div>
     <div id="all-characters-container"> 
       <div class="character-container">
+        <div class="character-name"> </div>
         <div class="character-image-container" onclick="selectCharacter(0)"></div>
-        <div class="character-score-container"></div>
+        <div class="character-score-container">
+          <div id="character-score-0" class="progress-bar"> </div>
+        </div>
       </div>
       <div class="character-container">
+        <div class="character-name"> </div>
         <div class="character-image-container" onclick="selectCharacter(1)"></div>
-        <div class="character-score-container"></div>
+        <div class="character-score-container">
+          <div id="character-score-1" class="progress-bar"> </div>
+        </div>
       </div>
       <div class="character-container">
+        <div class="character-name"> </div>
         <div class="character-image-container" onclick="selectCharacter(2)"></div>
-        <div class="character-score-container"></div>
+        <div class="character-score-container">
+          <div id="character-score-2" class="progress-bar"> </div>
+        </div>
       </div>
       <div class="character-container">
+        <div class="character-name"> </div>
         <div class="character-image-container" onclick="selectCharacter(3)"></div>
-        <div class="character-score-container"></div>
+        <div class="character-score-container">
+          <div id="character-score-3" class="progress-bar"> </div>
+        </div>
       </div>
       <div class="character-container">
+        <div class="character-name"> </div>
         <div class="character-image-container" onclick="selectCharacter(4)"></div>
-        <div class="character-score-container"></div>
+        <div class="character-score-container">
+          <div id="character-score-4" class="progress-bar"> </div>
+        </div>
       </div>
     </div>
   </body>  
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Press Start 2P';
+      /*background-image: url('images/pixel_art_part.jpg'); /* REPLACE WITH YOUR IMAGE PATH */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      color: white;
+      image-rendering: pixelated;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: -1;
+    }
+
     #header-container {
       display: flex;
-      flex-direction: row;
-      gap: 50px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.6);
     }
+
+    .ui-box {
+      background: white;
+      border: 3px solid black;
+      padding: 8px 12px;
+      text-align: center;
+      min-width: 100px;
+      color: black;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
     #score-container {
       display: flex;
-      flex-direction: row;
-      gap: 20px;
+      gap: 15px;
     }
+
+    .stat-label {
+      font-size: 8px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
     #all-characters-container {
       display: flex;
-      flex-direction: row;
-      gap: 10px;
+      gap: 20px;
       justify-content: center;
-      margin-top: 140px;         
+      margin-top: 50px;
+      padding: 20px;
+      flex-wrap: wrap;
     }
+
     .character-container {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+
     .character-image-container {
       height: 200px;
       width: 200px;
-      border: 1px solid black;
+      border: 3px solid white;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      transition: all 0.2s;
     }
+
+    .character-image-container:hover {
+      transform: scale(1.05);
+      border-color: yellow;
+    }
+
     .character-score-container {
       width: 200px;
-      height: 40px;
-      border: 1px solid black;
+      height: 20px;
+      border: 2px solid white;
+      position: relative;
+      overflow: hidden;
     }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .progress-low {
+      background-color: #ff3b3b; 
+    }
+
+    .progress-medium {
+      background-color: #ffcc00; 
+    }
+
+    .progress-high {
+      background-color: #4caf50; 
+    }
+
     #character-choice-container {
-      flex-direction: column;
       display: none;
-      height: 400px;
-      width: 200px;
-      border: 1px solid black;
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
-      margin-left: -100px;
-      margin-top: -200px;
-      background-color: lightblue;
-      align-items: center;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 4px solid white;
+      z-index: 100;
+      text-align: center;
     }
-    #character-choice-container h4 {
-      margin-bottom: 40px;
+
+    #character-name {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: yellow;
+      text-shadow: 2px 2px 0 black;
     }
+
     #character-button-container {
       display: flex;
       flex-direction: column;
-      margin-bottom: 40px;
       gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .character-action-button {
+      font-family: 'Press Start 2P', cursive;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid black;
+      cursor: pointer;
+      font-size: 12px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .character-action-button:hover {
+      background: white;
+      transform: scale(1.02);
+    }
+
+    #ignore-button {
+      font-family: 'Press Start 2P', cursive;
+      padding: 10px;
+      background: white;
+      border: 3px solid black;
+      cursor: pointer;
+      font-size: 12px;
+      width: 100%;
+      transition: all 0.2s;
+      color: black;
+    }
+
+    #ignore-button:hover {
+      background: #f0f0f0;
+      transform: scale(1.02);
     }
   </style>
 </html>

@@ -31,17 +31,15 @@ async function playGame(ws, req) {
 
         game = await Game.init(ws, req);
 
-        // fake body to trigger first round
-        req.body = {
-            char_index: 0,         // can be dummy value
-            action_index: null     // waits for real action from frontend
-        };
-    
-        await game.runRound(ws, req); // ✅ triggers the first update with actions
+        ws.send(JSON.stringify({
+            game: game,
+            type: 'initGame',
+        }));
     }
 
     const state = {
         char_index: null,
+        previous_char_index: null,
         action_index: null
     }
 
@@ -51,28 +49,14 @@ async function playGame(ws, req) {
 
         if (data.type === "character_selection") {
             state.char_index = data.char_index;
-
-             // send char_index with null action to trigger action options
-        req.body = {
-            char_index: state.char_index,
-            action_index: null
-        };
-
-        await game.runRound(ws, req); // 👈 triggers update with actions
+            await game.runRound(ws, state); 
         }
 
         if (data.type === "action_selection") {
             state.action_index = data.action_index;
 
-
-            // puts the selections into fake req.body
-            req.body = {
-                char_index: state.char_index,
-                action_index: state.action_index
-            };
-
             // runs a round of the game
-            await game.runRound(ws, req);
+            await game.runRound(ws, state);
 
             // stores the game in the database, including the score and money, once the game ends
             if (game.hasEnded) {
@@ -143,13 +127,15 @@ class Game {
                 health: startingHealth,
                 interactionlessRounds: 0,
                 // function properties
-                incrementHealth: (increment) => {
+                incrementHealth: function (increment) {
                     let incrementedHealth = this.health + increment;
                     this.health = (incrementedHealth > 100) ? 100 : incrementedHealth;
+                    console.log(this.health);
                 },
-                decrementHealth: (decrement) => {
+                decrementHealth: function (decrement) {
                     let decrementedHealth = this.health - decrement;
                     this.health = (decrementedHealth < 0) ? 0 : decrementedHealth;
+                    console.log(this.health);
                 }
             });
 
@@ -161,78 +147,56 @@ class Game {
     };
 
     /* Runs a single round of our game. */
-    async runRound(ws, req) {
+    async runRound(ws, state) {
 
         // make sure the game has not ended yet before the round can play out
         if(this.hasEnded) return;
     
-        // finds which character the player chose
-        const charIndex = req.body.char_index;
+        // finds which character and action the player chose
+        const charIndex = state.char_index;
+        const actionIndex = state.action_index;
 
-        // randomly selects three actions from the list of actions
-        const actions = this.uniqueRandomItems(Game.#allActions, 3);
-
-        // updates page to display actions to frontend for player to choose from
-        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("updated", () => {});
-        console.log("Page has been updated!")
-
-        // finds which action the player chose and decrements the cost of that action
-        let actionIndex = req.body.action_index;
-        this.isValidAction = false;
-
-        if (req.body.action_index == null) {
-            // only send actions
-            const actions = this.uniqueRandomItems(Game.#allActions, 3);
-            this.currentActions = actions; // store them to use later
-          
+        // checks if we should rerandomize the actions
+        if (actionIndex == null || state.previous_char_index != state.char_index) {
+            this.currentActions = this.uniqueRandomItems(Game.#allActions, 3);
             ws.send(JSON.stringify({
                 type: "update",
                 message: "Choose an action",
                 gameState: this,
-                actions: actions
+                actions: this.currentActions
             }));
+            state.previous_char_index = state.char_index;
             return;
         }
 
-        const wasIgnore = actionIndex >= actions.length || !actions[actionIndex];
 
-        if (process.env.NODE_ENV === 'test') {
-            if (!wasIgnore && actions[actionIndex].cost <= this.money) {
-                this.isValidAction = true;
-                this.money -= actions[actionIndex].cost;
-            }
-        } else {
-            while(!this.isValidAction) {
-                if(actions[actionIndex].cost <= this.money) {
-                    this.isValidAction = true;
-                    this.money -= actions[actionIndex].cost;
-                }
-                else {
-                    ws.send(JSON.stringify({ type: "invalid_action", message: "That is an invalid action!" }));
-                    await ws.on("new_action", () => {});
-                    actionIndex = req.body.action_index;
-                }
-            }
+        const wasIgnored = actionIndex >= this.currentActions.length || !this.currentActions[actionIndex];
+
+        // checks if the players action should affect anything
+        if (!wasIgnored && this.currentActions[actionIndex].cost <= this.money) {
+            console.log("actions: ", this.currentActions);
+            console.log("money: ", this.money, this.currentActions[actionIndex])
+            this.money -= this.currentActions[actionIndex].cost;
         }
 
-        // updates page to display the player's new amount of money back to frontend for player to see
-        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("updated", () => {});
-        console.log("Page has been updated again!")
-
         // checks to see if a character was ignored or else if the action chosen corresponds negatively or positively to any of that character's traits
-        if(actionIndex >= actions.length)
+        if(wasIgnored)
             this.characters[charIndex].decrementHealth(5);
 
-        console.log("traits: ", this.characters[charIndex].character.traits);
+        const traits = this.characters[charIndex].character.traits
+            .split(/\),\s*\(/)                    
+            .map(s => s.replace(/[()]/g, ""))     
+            .map(s => {
+                const [name, good] = s.split(", ");
+                return { name, goodtrait: parseInt(good) };
+            });
 
-        for(const trait of this.characters[charIndex].character.traits) {
-
-            if(trait.trait_name !== actions[actionIndex].name)
+        // checks if the action should postively or negatively affect player score and character health
+        for(const trait of traits) {
+            if(trait.name !== this.currentActions[actionIndex].name)
                 continue;
             
-            if(trait.is_positive === 1) {
+            if(trait.goodtrait === 1) {
                 this.characters[charIndex].incrementHealth(5);
                 this.score += 5 * this.characters[charIndex].character.difficulty;
             }
@@ -242,7 +206,7 @@ class Game {
             }
             break;
         }
-
+        
         // decrements health for characters who have had no interaction that round or previous rounds
         for(let i = 0; i < this.characters.length; i++) {
             
@@ -255,21 +219,16 @@ class Game {
             currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
         }
 
-        // updates page to display new healths back to frontend for player to see
-        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("updated", () => {});
-        console.log("Page has been updated once more!")
-
         // checks whether any characters' health is equal to zero
         for(const char of this.characters)
             if(char.health === 0)
                 this.hasEnded = true;
 
-        // given that the game has not ended yet,
+        // given that the game has not ended yet, the user should be rewarded money for happy characters
         if(!this.hasEnded) {
-            if(!wasIgnore) {
+            if(!wasIgnored) {
 
-                // increases money based on the score count
+                // increases money based on the character's health
                 for (const char of this.characters) {
                     if (char.health > 90)
                         this.money += 10;
@@ -283,11 +242,13 @@ class Game {
             // increments the round count
             this.round++;
         }
+        console.log("has Ended: ", this.hasEnded);
+
+        // sets the current character state to the previous state to ensure we don't rerandomzie on accident
+        state.previous_char_index = state.char_index;
 
         // updates page once more for final changes to the game state
-        ws.send(JSON.stringify({ type: "update", message: "Game update!", gameState: this }));
-        ws.on("updated", () => {});
-        console.log("Page has been updated on final time for this round!")
+        ws.send(JSON.stringify({ type: "update", message: "new update!", gameState: this }));
 
         // ends game round successful
         console.log("Game round ended successful.");
