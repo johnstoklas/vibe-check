@@ -37,10 +37,12 @@ async function playGame(ws, req) {
         }));
     }
 
+    // initializes game states
     const state = {
         char_index: null,
         previous_char_index: null,
-        action_index: null
+        action_index: null,
+        was_ignored: false,
     }
 
     // runs subsequent rounds of the game
@@ -49,11 +51,27 @@ async function playGame(ws, req) {
 
         if (data.type === "character_selection") {
             state.char_index = data.char_index;
+            state.was_ignored = false;
+            state.action_index = -1;
             await game.runRound(ws, state); 
         }
 
         if (data.type === "action_selection") {
             state.action_index = data.action_index;
+            state.was_ignored = false;
+
+            // runs a round of the game
+            await game.runRound(ws, state);
+
+            // stores the game in the database, including the score and money, once the game ends
+            if (game.hasEnded) {
+                await gamesModel.addGame(req.session.accountID, game.score, game.money);
+                ws.send(JSON.stringify({ type: "end", message: "Game over!", gameState: game }));
+            }
+        }
+
+        if(data.type === "ignore_character") {
+            state.was_ignored = true;
 
             // runs a round of the game
             await game.runRound(ws, state);
@@ -115,7 +133,6 @@ class Game {
         // preliminary information needed to create the game objects
         let randomChars = await unlockedCharactersModel.selectRandomWithTraits(req.session.accountID, 5);
 
-        console.log(randomChars);
         const startingHealth = 50;
 
         // initializes our characters
@@ -130,12 +147,10 @@ class Game {
                 incrementHealth: function (increment) {
                     let incrementedHealth = this.health + increment;
                     this.health = (incrementedHealth > 100) ? 100 : incrementedHealth;
-                    console.log(this.health);
                 },
                 decrementHealth: function (decrement) {
                     let decrementedHealth = this.health - decrement;
                     this.health = (decrementedHealth < 0) ? 0 : decrementedHealth;
-                    console.log(this.health);
                 }
             });
 
@@ -143,7 +158,7 @@ class Game {
         console.log("Game initialized successful.");
 
         // returns the Game object
-        return new Game(characters, 100, 50, 1, Game.#privateKey);
+        return new Game(characters, 0, 50, 1, Game.#privateKey);
     };
 
     /* Runs a single round of our game. */
@@ -156,8 +171,31 @@ class Game {
         const charIndex = state.char_index;
         const actionIndex = state.action_index;
 
+
+        // checks if user clicked on the same character twice
+        /*if(charIndex == state.previous_char_index) {
+            ws.send(JSON.stringify({type: "invalidPlay",}));
+            return;
+        }*/
+
+        //checks if a character has been ignored
+        if(state.was_ignored) {
+            this.characters[state.char_index].decrementHealth(5);
+
+            // checks whether any characters' health is equal to zero
+            for(const char of this.characters)
+                if(char.health === 0)
+                    this.hasEnded = true;
+
+            ws.send(JSON.stringify({
+                type: "update",
+                gameState: this,
+            }));
+            return;
+        }
+
         // checks if we should rerandomize the actions
-        if (actionIndex == null || state.previous_char_index != state.char_index) {
+        if (actionIndex === -1 || state.previous_char_index !== state.char_index) {
             this.currentActions = this.uniqueRandomItems(Game.#allActions, 3);
             ws.send(JSON.stringify({
                 type: "update",
@@ -170,18 +208,13 @@ class Game {
         }
 
 
-        const wasIgnored = actionIndex >= this.currentActions.length || !this.currentActions[actionIndex];
-
-        // checks if the players action should affect anything
-        if (!wasIgnored && this.currentActions[actionIndex].cost <= this.money) {
-            console.log("actions: ", this.currentActions);
-            console.log("money: ", this.money, this.currentActions[actionIndex])
+        // checks if the player has enough money to pay for the action
+        if (this.currentActions[actionIndex].cost <= this.money) {
             this.money -= this.currentActions[actionIndex].cost;
         }
-
-        // checks to see if a character was ignored or else if the action chosen corresponds negatively or positively to any of that character's traits
-        if(wasIgnored)
-            this.characters[charIndex].decrementHealth(5);
+        else {
+            return;
+        }
 
         const traits = this.characters[charIndex].character.traits
             .split(/\),\s*\(/)                    
@@ -216,7 +249,8 @@ class Game {
             if(i === charIndex)
                 currentChar.interactionlessRounds = 0;
 
-            currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
+            if(currentChar.interactionlessRounds > 0)
+                currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
         }
 
         // checks whether any characters' health is equal to zero
@@ -226,23 +260,20 @@ class Game {
 
         // given that the game has not ended yet, the user should be rewarded money for happy characters
         if(!this.hasEnded) {
-            if(!wasIgnored) {
 
-                // increases money based on the character's health
-                for (const char of this.characters) {
-                    if (char.health > 90)
-                        this.money += 10;
-                    else if (char.health > 80)
-                        this.money += 5;
-                    else if (char.health > 70)
-                        this.money += 1;
-                }            
-            }
+            // increases money based on the character's health
+            for (const char of this.characters) {
+                if (char.health > 90)
+                    this.money += 10;
+                else if (char.health > 80)
+                    this.money += 5;
+                else if (char.health > 70)
+                    this.money += 1;
+            }           
 
             // increments the round count
             this.round++;
         }
-        console.log("has Ended: ", this.hasEnded);
 
         // sets the current character state to the previous state to ensure we don't rerandomzie on accident
         state.previous_char_index = state.char_index;

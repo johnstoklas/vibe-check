@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <section id="character-choice-container">
-      <h4> Character Name </h4>
+    <section id="character-choice-container" class="popup-container">
+      <h4 id="popup-character-name"> </h4>
+      <div id="popup-character-description"> </div>
       <div id="character-button-container">
           <button class="character-action-button"> </button>
           <button class="character-action-button"> </button>
           <button class="character-action-button"> </button>
       </div>
-      <button onclick="ignoreCharacter()"> Ignore </button>
+      <button onclick="ignoreCharacter()" id="ignore-button"> Ignore </button>
     </section>
   </body>
 </html>

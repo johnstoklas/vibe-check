@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+  <%-include('../partials/common_head.ejs')%>
   <script>
 
     const socket = new WebSocket("ws://localhost:8080/game");
@@ -19,24 +20,34 @@
 
         const nameDivs = document.getElementsByClassName('character-name');
         const nameDivsArray = Array.from(nameDivs);
-        let index = 0;
 
-        nameDivsArray.forEach((div) => {
-          div.textContent = characters[index].character.name;
-          index++;
+        nameDivsArray.forEach((div, i) => {
+          var name = characters[i].character.name.split(' ');
+          var firstName = name[0][0];
+          var lastName = name[1];
+          console.log(name, firstName, lastName);
+          div.innerText = `${firstName}. ${lastName}`
+        });
+      
+        const images = document.getElementsByClassName('character-image');
+        const imageArray = Array.from(images);
+
+        imageArray.forEach((image, i) => {
+          const imagePath = characters[i].character.characterimage;
+          if(imagePath)
+            image.src = imagePath;
+            
         });
 
         currentScore = data.game.score;
         currentMoney = data.game.money;
 
-        document.getElementById("score").textContent = `Score: ${currentScore}`;
-        document.getElementById("money").textContent = `Money: $${currentMoney}`;
+        document.getElementById("score").textContent = currentScore
+        document.getElementById("money").textContent = `$${currentMoney}`;
 
         for(let i = 0; i < 5; i++) {
-          updateProgressBar(i, 50);
+          updateCharacterHealth(i, 50);
         }
-
-
       }
       else if(data.type === 'update') {
 
@@ -45,8 +56,15 @@
         console.log(data.actions);
 
         game.characters.forEach((character, i) => {
-          updateProgressBar(i, character.health); 
+          updateCharacterHealth(i, character.health); 
         });
+
+        
+        currentScore = game.score;
+        currentMoney = game.money;
+
+        document.getElementById("score").textContent = currentScore;
+        document.getElementById("money").textContent = `$${currentMoney}`;
 
 
         if (data.actions) {
@@ -60,37 +78,83 @@
             btn.onclick = () => chooseAction(i); 
           });
         }
-
-        currentScore = game.score;
-        currentMoney = game.money;
-
-        console.log("currentScore: ", currentScore);
-        console.log("currentMoney: ", currentMoney);
-
-
-        document.getElementById("score").textContent = `Score: ${currentScore}`;
-        document.getElementById("money").textContent = `Money: $${currentMoney}`;
-
+      }
+      else if(data.type === 'end') {
+        const partial = document.getElementById('game-over-container');
+        if(partial)
+          partial.style.display = 'flex';
       }
     };
 
-
-
   function selectCharacter(index) {
-    const partial = document.getElementById('character-choice-container');
-      if(partial)
-        partial.style.display = 'flex';
+    const choiceContainer = document.getElementById('character-choice-container');
+    const gameOverContainer = document.getElementById('game-over-container');
+    if(choiceContainer.style.display === 'flex' || gameOverContainer.style.display === 'flex')
+      return;
 
     selectedCharIndex = index;
+    
     socket.send(JSON.stringify({ type: "character_selection", char_index: index }));
+
+    const character = characters[index].character;
+
+    if(choiceContainer)
+      choiceContainer.style.display = 'flex';
+
+    const characterName = document.getElementById('popup-character-name');
+    if(characterName)
+      characterName.innerText = character.name;
+
+    const characterInfo = document.getElementById('popup-character-description');
+    if(characterInfo)
+      console.log(characters[index].character.traits);
+
+      const traits = createParagraph(character.traits, character.name);
+      console.log(traits);
+
+      characterInfo.innerText = traits;
+  }
+
+  function createParagraph(t, name) {
+    const traits = t
+      .split(/\),\s*\(/)
+      .map(s => s.replace(/[()]/g, ""))
+      .map(s => {
+        const [name, value] = s.split(",").map(part => part.trim());
+        return {
+          name,
+          goodtrait: value === "1"
+        };
+      });
+
+      const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
+      const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
+
+      let sentence = "";
+
+      sentence += name + ' likes '
+
+
+      if (goodTraits.length) {
+        sentence += `${goodTraits.join(" and ")}. `;
+      }
+
+      if (badTraits.length) {
+        sentence += 'They don\' like ';
+        sentence += `${badTraits.join(" and ")}.`;
+      }
+
+      return sentence;
   }
 
   function ignoreCharacter() {
-      const partial = document.getElementById('character-choice-container');
-      if(partial) {
-          partial.style.display = 'none';
-      }
-    }   
+    socket.send(JSON.stringify({ type: "ignore_character" }));
+
+    const partial = document.getElementById('character-choice-container');
+    if(partial) {
+        partial.style.display = 'none';
+    }
+  }   
 
     function chooseAction(index) {
       selectedActionIndex = index;
@@ -105,10 +169,9 @@
       if(partial) {
           partial.style.display = 'none';
       }
-
     }
 
-    function updateProgressBar(characterIndex, happinessScore) {
+    function updateCharacterHealth(characterIndex, happinessScore) {
       const progressBar = document.getElementById(`character-score-${characterIndex}`);
       if (!progressBar) return;
       
@@ -126,8 +189,12 @@
   </script>
   <body>
     <%-include('../partials/character_choice.ejs')%>
+    <%-include('../partials/game_over.ejs')%>
+
     <div id="header-container"> 
-      <div id="home-button" class="ui-box">HOME</div>
+      <a href="/">
+        <div id="home-button" class="ui-box">HOME</div>
+      </a>
       <div id="score-container">
         <div class="ui-box">
           <span class="stat-label">SCORE</span>
@@ -139,70 +206,24 @@
         </div>
       </div>
     </div>
-    <div id="all-characters-container"> 
-      <div class="character-container">
-        <div class="character-name"> </div>
-        <div class="character-image-container" onclick="selectCharacter(0)"></div>
-        <div class="character-score-container">
-          <div id="character-score-0" class="progress-bar"> </div>
+    <div id="all-characters-container">
+      <% for (let i = 0; i < 5; i++) { %>
+        <div class="character-container">
+          <div class="character-name"> </div>
+          <div class="character-image-container" onclick="selectCharacter(<%= i %>)">
+            <img class="character-image"></img>
+          </div>
+          <div class="character-score-container">
+            <div id="character-score-<%= i %>" class="progress-bar"> </div>
+          </div>
         </div>
-      </div>
-      <div class="character-container">
-        <div class="character-name"> </div>
-        <div class="character-image-container" onclick="selectCharacter(1)"></div>
-        <div class="character-score-container">
-          <div id="character-score-1" class="progress-bar"> </div>
-        </div>
-      </div>
-      <div class="character-container">
-        <div class="character-name"> </div>
-        <div class="character-image-container" onclick="selectCharacter(2)"></div>
-        <div class="character-score-container">
-          <div id="character-score-2" class="progress-bar"> </div>
-        </div>
-      </div>
-      <div class="character-container">
-        <div class="character-name"> </div>
-        <div class="character-image-container" onclick="selectCharacter(3)"></div>
-        <div class="character-score-container">
-          <div id="character-score-3" class="progress-bar"> </div>
-        </div>
-      </div>
-      <div class="character-container">
-        <div class="character-name"> </div>
-        <div class="character-image-container" onclick="selectCharacter(4)"></div>
-        <div class="character-score-container">
-          <div id="character-score-4" class="progress-bar"> </div>
-        </div>
-      </div>
-    </div>
+      <% } %>
+    </div>    
   </body>  
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Press Start 2P';
-      /*background-image: url('images/pixel_art_part.jpg'); /* REPLACE WITH YOUR IMAGE PATH */
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      min-height: 100vh;
-      color: white;
-      image-rendering: pixelated;
+      background-image: url('/images/pixel_art_park.jpg');
     }
-
-    body::after {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: -1;
-    }
-
     #header-container {
       display: flex;
       justify-content: space-between;
@@ -210,7 +231,6 @@
       padding: 15px;
       background: rgba(0, 0, 0, 0.6);
     }
-
     .ui-box {
       background: white;
       border: 3px solid black;
@@ -257,9 +277,17 @@
       transition: all 0.2s;
     }
 
+    .character-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
     .character-image-container:hover {
       transform: scale(1.05);
-      border-color: yellow;
+      border-color: rgb(229, 0, 229);
     }
 
     .character-score-container {
@@ -288,13 +316,13 @@
       background-color: #4caf50; 
     }
 
-    #character-choice-container {
+    .popup-container {
       display: none;
+      flex-direction: column;
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 300px;
       padding: 20px;
       background: rgba(0, 0, 0, 0.7);
       border: 4px solid white;
@@ -302,11 +330,23 @@
       text-align: center;
     }
 
-    #character-name {
-      font-size: 16px;
+    #character-choice-container {
+      width: 400px;
+    }
+
+    #popup-character-name {
+      color: white;
+    }
+
+    #popup-character-description {
       margin-bottom: 20px;
-      color: yellow;
-      text-shadow: 2px 2px 0 black;
+      font-size: 14px;
+      color: white;
+    }
+
+    .character-name {
+      font-size: 14px;
+      color: black;
     }
 
     #character-button-container {
@@ -317,7 +357,7 @@
     }
 
     .character-action-button {
-      font-family: 'Press Start 2P', cursive;
+      font-family: 'Pixels';
       padding: 12px;
       background: rgba(255, 255, 255, 0.9);
       border: 3px solid black;
@@ -333,9 +373,9 @@
     }
 
     #ignore-button {
-      font-family: 'Press Start 2P', cursive;
+      font-family: 'Pixels';
       padding: 10px;
-      background: white;
+      background: red;
       border: 3px solid black;
       cursor: pointer;
       font-size: 12px;
@@ -345,8 +385,21 @@
     }
 
     #ignore-button:hover {
-      background: #f0f0f0;
       transform: scale(1.02);
+    }
+
+    #game-over-container {
+      width: 300px;
+      color: white;
+      display: flex !important;
+    }
+
+    #game-over-button-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      color: white;
     }
   </style>
 </html>
