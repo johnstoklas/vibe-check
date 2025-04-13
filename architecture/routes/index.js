@@ -5,6 +5,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     res.render('pages/main');
 });
+
 /* TODO: router.get('/instructions', (req, res) => {
     res.render('pages/instructions');
 });*/

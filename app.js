@@ -8,7 +8,8 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const session = require('express-session');
-const store = require('./other/database').sessionStore;
+const store = require('./architecture/database').sessionStore;
+const expressWs = require('express-ws')(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,32 +32,38 @@ app.use(
     })
 );
 
+// Web Sockets port
+app.listen(8080);
+
 // routers and URL routes
 const profileRouter = require('./architecture/routes/profile');
 const characterRouter = require('./architecture/routes/character');
 const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
+const gameRouter = require('./architecture/routes/game');
 
 app.use('/', profileRouter);
 app.use('/api', characterRouter);
 app.use('/', scoresRouter);
 app.use('/', indexRouter);
+app.use('/game', gameRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-    next(createError(404));
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
 });
 
 // error handler
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
+    console.error(err.stack);
     
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+    const status = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+    
+    res.status(status).json({
+        error: message
+    });
 });
-
 module.exports = app;

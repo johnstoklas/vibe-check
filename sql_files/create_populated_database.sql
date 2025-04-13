@@ -124,31 +124,6 @@ INSERT INTO `games` VALUES (1,1,500,1000),(2,2,700,1500),(3,3,600,1200);
 UNLOCK TABLES;
 
 --
--- Table structure for table `sessions`
---
-
-DROP TABLE IF EXISTS `sessions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sessions` (
-  `session_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `expires` int unsigned NOT NULL,
-  `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `sessions`
---
-
-LOCK TABLES `sessions` WRITE;
-/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('XvK1s5rNmPZzzCjQ97eJBgELt2xuaKIo',1742637487,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":[[{\"userid\":3}],[{\"_buf\":{\"type\":\"Buffer\",\"data\":[1,0,0,1,1,59,0,0,2,3,100,101,102,9,118,105,98,101,99,104,101,99,107,8,97,99,99,111,117,110,116,115,8,97,99,99,111,117,110,116,115,6,117,115,101,114,105,100,6,117,115,101,114,105,100,12,63,0,11,0,0,0,3,3,66,0,0,0,5,0,0,3,254,0,0,34,0,2,0,0,4,1,51,5,0,0,5,254,0,0,34,0]},\"_clientEncoding\":\"utf8\",\"_catalogLength\":3,\"_catalogStart\":10,\"_schemaLength\":9,\"_schemaStart\":14,\"_tableLength\":8,\"_tableStart\":24,\"_orgTableLength\":8,\"_orgTableStart\":33,\"_orgNameLength\":6,\"_orgNameStart\":49,\"characterSet\":63,\"encoding\":\"binary\",\"name\":\"userid\",\"columnLength\":11,\"columnType\":3,\"type\":3,\"flags\":16899,\"decimals\":0}]]}');
-/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `traits`
 --
 

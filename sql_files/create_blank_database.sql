@@ -1,7 +1,6 @@
-CREATE schema IF NOT EXISTS `vibecheck`;
+CREATE DATABASE  IF NOT EXISTS `vibecheck` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `vibecheck`;
-
--- MySQL dump 10.13  Distrib 8.0.41, for macos15 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
 -- Host: localhost    Database: vibecheck
 -- ------------------------------------------------------
@@ -36,6 +35,23 @@ CREATE TABLE `accounts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `character_traits`
+--
+
+DROP TABLE IF EXISTS `character_traits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `character_traits` (
+  `characterid` int NOT NULL,
+  `trait_id` int NOT NULL,
+  PRIMARY KEY (`characterid`,`trait_id`),
+  KEY `trait_id` (`trait_id`),
+  CONSTRAINT `character_traits_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`characterid`),
+  CONSTRAINT `character_traits_ibfk_2` FOREIGN KEY (`trait_id`) REFERENCES `traits` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `characters`
 --
 
@@ -44,8 +60,6 @@ DROP TABLE IF EXISTS `characters`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `characters` (
   `characterid` int NOT NULL AUTO_INCREMENT,
-  `favgift` varchar(255) DEFAULT NULL,
-  `favcompliment` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `difficulty` int DEFAULT NULL,
   PRIMARY KEY (`characterid`)
@@ -68,6 +82,21 @@ CREATE TABLE `games` (
   KEY `userid` (`userid`),
   CONSTRAINT `games_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `accounts` (`userid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `traits`
+--
+
+DROP TABLE IF EXISTS `traits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `traits` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `trait_name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `trait_name` (`trait_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,4 +126,4 @@ CREATE TABLE `unlocked_characters` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-21  5:02:44
+-- Dump completed on 2025-03-27 14:20:52
