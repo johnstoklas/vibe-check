@@ -35,16 +35,6 @@ CREATE TABLE `accounts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `accounts`
---
-
-LOCK TABLES `accounts` WRITE;
-/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,0,'user1','$2b$10$Lfa5x5ts9iFiY5lpNSp45uqn61vL53xN7GK8We/yX73g0OQ4E8C7O','user1@example.com'),(2,1,'admin1','$2b$10$eT/LidqQOd88Sf0EtvtsieiexNjTaAonkmdO2Ei5f3h3P4PpLpxx.','admin1@example.com'),(3,0,'user2','$2b$10$c2mw.hSZS4MliquhUf5Hn.cepUIyFE89rQ44s./lrIwagFxxI/bja','user2@example.com');
-/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `character_traits`
 --
 
@@ -62,15 +52,6 @@ CREATE TABLE `character_traits` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `character_traits`
---
-
-LOCK TABLES `character_traits` WRITE;
-/*!40000 ALTER TABLE `character_traits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `character_traits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `characters`
 --
 
@@ -84,16 +65,6 @@ CREATE TABLE `characters` (
   PRIMARY KEY (`characterid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `characters`
---
-
-LOCK TABLES `characters` WRITE;
-/*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` VALUES (1,'Character1',1),(2,'Character2',2),(3,'Character3',3);
-/*!40000 ALTER TABLE `characters` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `games`
@@ -114,41 +85,6 @@ CREATE TABLE `games` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `games`
---
-
-LOCK TABLES `games` WRITE;
-/*!40000 ALTER TABLE `games` DISABLE KEYS */;
-INSERT INTO `games` VALUES (1,1,500,1000),(2,2,700,1500),(3,3,600,1200);
-/*!40000 ALTER TABLE `games` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `sessions`
---
-
-DROP TABLE IF EXISTS `sessions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sessions` (
-  `session_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `expires` int unsigned NOT NULL,
-  `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `sessions`
---
-
-LOCK TABLES `sessions` WRITE;
-/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('XvK1s5rNmPZzzCjQ97eJBgELt2xuaKIo',1742637487,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":[[{\"userid\":3}],[{\"_buf\":{\"type\":\"Buffer\",\"data\":[1,0,0,1,1,59,0,0,2,3,100,101,102,9,118,105,98,101,99,104,101,99,107,8,97,99,99,111,117,110,116,115,8,97,99,99,111,117,110,116,115,6,117,115,101,114,105,100,6,117,115,101,114,105,100,12,63,0,11,0,0,0,3,3,66,0,0,0,5,0,0,3,254,0,0,34,0,2,0,0,4,1,51,5,0,0,5,254,0,0,34,0]},\"_clientEncoding\":\"utf8\",\"_catalogLength\":3,\"_catalogStart\":10,\"_schemaLength\":9,\"_schemaStart\":14,\"_tableLength\":8,\"_tableStart\":24,\"_orgTableLength\":8,\"_orgTableStart\":33,\"_orgNameLength\":6,\"_orgNameStart\":49,\"characterSet\":63,\"encoding\":\"binary\",\"name\":\"userid\",\"columnLength\":11,\"columnType\":3,\"type\":3,\"flags\":16899,\"decimals\":0}]]}');
-/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `traits`
 --
 
@@ -162,15 +98,6 @@ CREATE TABLE `traits` (
   UNIQUE KEY `trait_name` (`trait_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `traits`
---
-
-LOCK TABLES `traits` WRITE;
-/*!40000 ALTER TABLE `traits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `traits` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `unlocked_characters`
@@ -189,15 +116,6 @@ CREATE TABLE `unlocked_characters` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `unlocked_characters`
---
-
-LOCK TABLES `unlocked_characters` WRITE;
-/*!40000 ALTER TABLE `unlocked_characters` DISABLE KEYS */;
-INSERT INTO `unlocked_characters` VALUES (1,1),(3,1),(1,2),(2,3);
-/*!40000 ALTER TABLE `unlocked_characters` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

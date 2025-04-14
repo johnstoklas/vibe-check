@@ -1,7 +1,7 @@
 const express = require('express');
 
 const mysql = require('mysql2/promise');
-const connection = require('../../other/database').databaseConnection;
+const connection = require('../database').databaseConnection;
 
 class Users {
 

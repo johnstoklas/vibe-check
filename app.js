@@ -8,7 +8,8 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const session = require('express-session');
-const store = require('./other/database').sessionStore;
+const store = require('./architecture/database').sessionStore;
+const expressWs = require('express-ws')(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,18 +32,21 @@ app.use(
     })
 );
 
+// Web Sockets port
+app.listen(8080);
+
 // routers and URL routes
 const profileRouter = require('./architecture/routes/profile');
 const characterRouter = require('./architecture/routes/character');
 const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
-
+const gameRouter = require('./architecture/routes/game');
 
 app.use('/auth', profileRouter);
 app.use('/api', characterRouter);
-app.use('/', scoresRouter);
+app.use('/leaderboard', scoresRouter);
 app.use('/', indexRouter);
-
+app.use('/game', gameRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

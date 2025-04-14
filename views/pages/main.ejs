@@ -2,12 +2,7 @@
 <html>
   <%-include('../partials/common_head.ejs')%>
   <script>
-    function showLogSign() {
-      const partial = document.getElementById('log-sign-container');
-      if (partial) {
-        partial.style.display = 'flex';
-      }
-    }
+
   </script>
   <body>
     <section id="main-header">
@@ -21,11 +16,183 @@
     <section id="main-screen-container"> 
       <h1>VIBE CHECK</h1>
       <div id="button-container"> 
-        <button>Play Game</button>
+        <a href="/game"> Play Game </a>
         <button>View Characters</button>
         <button>Instructions</button>
       </div>
     </section> 
     <%- include('../partials/auth_partial.ejs') %>
   </body>
+  <style>
+    body {
+      background-image: url('/images/pixel_art_bar.jpg');
+    }
+    #main-header {
+      padding: 10px 20px;
+    }
+
+    #main-header button {
+      width: 60px;
+      height: 60px;
+      border: 3px solid white;
+      background-color: black;
+      color: white;
+      font-family: 'Pixels';
+      border-radius: 5px;
+    }
+
+    #main-header button:hover {
+      cursor: pointer;
+      border: 3px solid rgb(229, 0, 229);
+    }
+
+    #main-screen-container {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      transform: translate(0, 20%);
+    }
+
+    #main-screen-container h1 {
+      font-size: 50px;
+      color: white;
+      animation: bounce 1s infinite ease;
+    }
+
+    @keyframes bounce {
+      0% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    #button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      align-items: center;
+    }
+
+    #button-container > a {
+      font-size: 15px;
+      padding: 20px 10px;
+      border: none;
+      width: 35%;
+      background-color: black;
+      color: white;
+      font-family: 'Pixels';
+      box-sizing: border-box;
+      border: 3px solid white;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    #button-container > button {
+      font-size: 15px;
+      padding: 20px 10px;
+      border: none;
+      width: 35%;
+      background-color: black;
+      color: white;
+      font-family: 'Pixels';
+      box-sizing: border-box;
+      border: 3px solid white;
+      border-radius: 10px;
+    }
+
+    #button-container > a:hover {
+      cursor: pointer;
+      border: 3px solid rgb(229, 0, 229);
+    }
+
+    #button-container > button:hover {
+      cursor: pointer;
+      border: 3px solid rgb(229, 0, 229);
+    }
+
+    .log-sign-container {
+      display: none;
+      background-color: #2e8df7;
+      width: fit-content;
+      height: fit-content;
+      padding: 50px 100px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      flex-direction: column;
+      text-align: center;
+      border-radius: 15px;
+      border: 3px solid white;
+    }
+
+    .log-sign-container > h1 {
+      color: white;
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 40px;
+    }
+
+    #log-sign-button-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    #log-sign-button-container > button {
+      background-color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Pixels';
+      padding: 15px 60px;
+      box-sizing: border-box;
+    }
+
+    #log-sign-button-container > button:hover {
+      cursor: pointer;
+      background-color: gray;
+    }
+
+    .form-component-container {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .form-component-container > label {
+      color: white;
+      font-size: 14px;
+      width: 300px;
+    }
+
+    .form-component-container > input {
+      height: 22px;
+      width: 200px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    form > input {
+      background-color: white;
+      color: black;
+      font-family: "Pixels";
+      font-size: 12px;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+
+    form > input:hover {
+      cursor: pointer;
+      background-color: gray;
+    }
+  </style>
 </html>
