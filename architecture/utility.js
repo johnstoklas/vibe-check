@@ -16,30 +16,4 @@ async function noAlertRedirect(req, res, message, redirectPath = '/') {
     res.redirect(redirectPath);
 };
 
-/* Waits for a specific value to be reached. */
-async function waitForValue(variableGetter, targetValue, timeout = 10000, interval = 100) {
-
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeout) {
-      if(variableGetter() === targetValue)
-        return;
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  
-    throw new Error(`Timeout waiting for value to become ${targetValue}`);
-};
-
-/* Waits for a different value to be reached from the original. */
-async function waitForDifference(variableGetter, originalValue, timeout = 10000, interval = 100) {
-   
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeout) {
-      if(variableGetter() !== originalValue)
-        return;
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  
-    throw new Error(`Timeout waiting for value to differ from ${originalValue}`);
-};
-
-module.exports = {alertRedirect, noAlertRedirect, waitForValue, waitForDifference}
+module.exports = {alertRedirect, noAlertRedirect}

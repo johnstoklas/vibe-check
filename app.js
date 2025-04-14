@@ -42,7 +42,7 @@ const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
 const gameRouter = require('./architecture/routes/game');
 
-app.use('/', profileRouter);
+app.use('/account', profileRouter);
 app.use('/api', characterRouter);
 app.use('/leaderboard', scoresRouter);
 app.use('/', indexRouter);

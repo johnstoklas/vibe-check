@@ -3,7 +3,7 @@ const express = require('express');
 // models and utility
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
 const gamesModel = require('../models/Games').Games;
-const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
+const {alertRedirect, noAlertRedirect} = require('../utility');
 
 // miscellaneous
 var game;
