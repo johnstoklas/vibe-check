@@ -8,7 +8,7 @@ const leaderboardController = require('../controllers/leaderboard.js');
 
 // GET requests
 // TODO: router.get('/play', characterController.getUnlockedCharacters);
-// TODO: router.get('/leaderboard', leaderboardController.getHighScores);
+router.get('/', leaderboardController.getHighScores);
 
 // POST requests
 // TODO: router.post('/onEndGame', gameController.sendScore);

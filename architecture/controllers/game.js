@@ -224,7 +224,7 @@ class Game {
                 return { name, goodtrait: parseInt(good) };
             });
 
-        // checks if the action should postively or negatively affect player score and character health
+        // checks if the action should positively or negatively affect player score and character health
         for(const trait of traits) {
             if(trait.name !== this.currentActions[actionIndex].name)
                 continue;
