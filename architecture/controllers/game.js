@@ -207,7 +207,6 @@ class Game {
             return;
         }
 
-
         // checks if the player has enough money to pay for the action
         if (this.currentActions[actionIndex].cost <= this.money) {
             this.money -= this.currentActions[actionIndex].cost;
@@ -224,18 +223,19 @@ class Game {
                 return { name, goodtrait: parseInt(good) };
             });
 
+
         // checks if the action should positively or negatively affect player score and character health
         for(const trait of traits) {
-            if(trait.name !== this.currentActions[actionIndex].name)
+            if(trait.name.trim().toLowerCase() !== this.currentActions[actionIndex].name.trim().toLowerCase())
                 continue;
             
             if(trait.goodtrait === 1) {
                 this.characters[charIndex].incrementHealth(5);
-                this.score += 5 * this.characters[charIndex].character.difficulty;
+                this.score += (5 * this.characters[charIndex].character.difficulty);
             }
             else {
                 this.characters[charIndex].decrementHealth(10);
-                this.score -= 5 * this.characters[charIndex].character.difficulty;
+                this.score -= (5 * this.characters[charIndex].character.difficulty);
             }
             break;
         }

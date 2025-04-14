@@ -3,6 +3,7 @@
   <%-include('../partials/common_head.ejs')%>
   <script>
 
+    // initalize our web socket connection
     const socket = new WebSocket("ws://localhost:8080/game");
 
     let selectedCharIndex = null;
@@ -11,9 +12,12 @@
     let currentScore;
     let currentMoney;
 
+    // handles sending data to the backend
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       console.log("data: ", data);
+
+      // if the data type is initGame, we create a new game, by randomizing characters and updating the gamepage UI
       if (data.type === "initGame") {
         console.log("game: ", data.game);
         characters = data.game.characters;
@@ -49,6 +53,8 @@
           updateCharacterHealth(i, 50);
         }
       }
+
+      // if the type is update we are handling score, character health, and money updates
       else if(data.type === 'update') {
 
         console.log("update: ", data);
@@ -79,6 +85,8 @@
           });
         }
       }
+
+      // if the type is end, the game is over and we display a game over page where the user can return home or play again
       else if(data.type === 'end') {
         const partial = document.getElementById('game-over-container');
         if(partial)
@@ -86,76 +94,80 @@
       }
     };
 
-  function selectCharacter(index) {
-    const choiceContainer = document.getElementById('character-choice-container');
-    const gameOverContainer = document.getElementById('game-over-container');
-    if(choiceContainer.style.display === 'flex' || gameOverContainer.style.display === 'flex')
-      return;
+    // when a character is chosen, we send that info to the backend, it randomizes three actions, and a popup is displayed
+    function selectCharacter(index) {
+      const choiceContainer = document.getElementById('character-choice-container');
+      const gameOverContainer = document.getElementById('game-over-container');
+      if(choiceContainer.style.display === 'flex' || gameOverContainer.style.display === 'flex')
+        return;
 
-    selectedCharIndex = index;
-    
-    socket.send(JSON.stringify({ type: "character_selection", char_index: index }));
+      selectedCharIndex = index;
+      
+      socket.send(JSON.stringify({ type: "character_selection", char_index: index }));
 
-    const character = characters[index].character;
+      const character = characters[index].character;
 
-    if(choiceContainer)
-      choiceContainer.style.display = 'flex';
+      if(choiceContainer)
+        choiceContainer.style.display = 'flex';
 
-    const characterName = document.getElementById('popup-character-name');
-    if(characterName)
-      characterName.innerText = character.name;
+      const characterName = document.getElementById('popup-character-name');
+      if(characterName)
+        characterName.innerText = character.name;
 
-    const characterInfo = document.getElementById('popup-character-description');
-    if(characterInfo)
-      console.log(characters[index].character.traits);
+      const characterInfo = document.getElementById('popup-character-description');
+      if(characterInfo)
+        console.log(characters[index].character.traits);
 
-      const traits = createParagraph(character.traits, character.name);
-      console.log(traits);
+        const traits = createParagraph(character.traits, character.name);
+        console.log(traits);
 
-      characterInfo.innerText = traits;
-  }
-
-  function createParagraph(t, name) {
-    const traits = t
-      .split(/\),\s*\(/)
-      .map(s => s.replace(/[()]/g, ""))
-      .map(s => {
-        const [name, value] = s.split(",").map(part => part.trim());
-        return {
-          name,
-          goodtrait: value === "1"
-        };
-      });
-
-      const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
-      const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
-
-      let sentence = "";
-
-      sentence += name + ' likes '
-
-
-      if (goodTraits.length) {
-        sentence += `${goodTraits.join(" and ")}. `;
-      }
-
-      if (badTraits.length) {
-        sentence += 'They don\' like ';
-        sentence += `${badTraits.join(" and ")}.`;
-      }
-
-      return sentence;
-  }
-
-  function ignoreCharacter() {
-    socket.send(JSON.stringify({ type: "ignore_character" }));
-
-    const partial = document.getElementById('character-choice-container');
-    if(partial) {
-        partial.style.display = 'none';
+        characterInfo.innerText = traits;
     }
-  }   
 
+    // creates a character description based on their traits
+    function createParagraph(t, name) {
+      const traits = t
+        .split(/\),\s*\(/)
+        .map(s => s.replace(/[()]/g, ""))
+        .map(s => {
+          const [name, value] = s.split(",").map(part => part.trim());
+          return {
+            name,
+            goodtrait: value === "1"
+          };
+        });
+
+        const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
+        const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
+
+        let sentence = "";
+
+        sentence += name + ' likes '
+
+
+        if (goodTraits.length) {
+          sentence += `${goodTraits.join(" and ")}. `;
+        }
+
+        if (badTraits.length) {
+          sentence += 'They don\' like ';
+          sentence += `${badTraits.join(" and ")}.`;
+        }
+
+        return sentence;
+    }
+
+    // when a character is ignored, we send that info to the backend and close the popup
+    function ignoreCharacter() {
+      socket.send(JSON.stringify({ type: "ignore_character" }));
+
+      const partial = document.getElementById('character-choice-container');
+      if(partial) {
+          partial.style.display = 'none';
+      }
+    }   
+
+    // when an action is chosen, we send that info to the backend and close the popup
     function chooseAction(index) {
       selectedActionIndex = index;
       console.log("char index: ", selectedCharIndex);
@@ -165,12 +177,14 @@
         action_index: index,
       }));
 
-      const partial = document.getElementById('character-choice-container');
-      if(partial) {
-          partial.style.display = 'none';
+      
+      const choiceContainer = document.getElementById('character-choice-container');
+      if(choiceContainer) {
+          choiceContainer.style.display = 'none';
       }
     }
 
+    // visually updates character health bar
     function updateCharacterHealth(characterIndex, happinessScore) {
       const progressBar = document.getElementById(`character-score-${characterIndex}`);
       if (!progressBar) return;
@@ -178,10 +192,13 @@
       progressBar.style.width = `${happinessScore}%`;
       
       if (happinessScore <= 33) {
+        progressBar.classList.remove("progress-medium", "progress-high");
         progressBar.classList.add("progress-low");
       } else if (happinessScore <= 66) {
+        progressBar.classList.remove("progress-low", "progress-high");
         progressBar.classList.add("progress-medium");
       } else {
+        progressBar.classList.remove("progress-low", "progress-medium");
         progressBar.classList.add("progress-high");
       }
     }
@@ -391,7 +408,7 @@
     #game-over-container {
       width: 300px;
       color: white;
-      display: flex !important;
+      display: none;
     }
 
     #game-over-button-container {

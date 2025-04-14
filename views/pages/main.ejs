@@ -2,7 +2,11 @@
 <html>
   <%-include('../partials/common_head.ejs')%>
   <script>
-
+    function showLogSign() {
+      const partial = document.getElementById('log-sign-container');
+      if(partial)
+        partial.style.display = 'flex';
+    }
   </script>
   <body>
     <section id="main-header">
