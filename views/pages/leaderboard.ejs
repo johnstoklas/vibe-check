@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        Leaderboard
+        <% gamesArr.forEach((game) => {%>
+            <%= [JSON.stringify(game[0]), JSON.stringify(game[1])] %>
+        <% }); %>
+    </body>
+</html>

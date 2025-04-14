@@ -44,7 +44,7 @@ const gameRouter = require('./architecture/routes/game');
 
 app.use('/', profileRouter);
 app.use('/api', characterRouter);
-app.use('/', scoresRouter);
+app.use('/leaderboard', scoresRouter);
 app.use('/', indexRouter);
 app.use('/game', gameRouter);
 
