@@ -59,12 +59,17 @@ async function testCharacterRoutes() {
         console.log('Login Response Headers:', loginResponse.headers);
         console.log('================\n');
 
+        // Test 3: Get all Traits (public route)
+        console.log('Test 3: getTraits');
+        const getTraitsResponse = await api.get('/api/traits');
+        console.log('✓ Success! Traits found:', getTraitsResponse.data.data.length);
+        console.log('Sample trait:', getTraitsResponse.data.data[0]);
+        console.log('================\n');
+
 --
         console.log('All tests completed successfully! 🎉');
-
-        // Close the database connection
-        await connection.end();
-
+        console.log('================\n');
+        
     } catch (error) {
         console.error('❌ Test failed!');
         console.error('Error:', error.response?.data || error.message);

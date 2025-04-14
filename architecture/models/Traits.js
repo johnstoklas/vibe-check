@@ -6,7 +6,7 @@ const connection = require('../../other/database').databaseConnection;
 class Traits {
     
     static async selectAllOrdered() {
-        const [traits] = await connection.query('SELECT * FROM traits ORDER BY trait_name');
+        const [traits] = await connection.query('SELECT * FROM traits WHERE goodtrait = 1 ORDER BY id ASC');
         return traits;
     }
 }
