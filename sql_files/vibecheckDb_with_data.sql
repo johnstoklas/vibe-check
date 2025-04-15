@@ -40,7 +40,7 @@ CREATE TABLE `accounts` (
 
 LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,1,'Pr0fessionalBum','$2b$10$ZcZvVo0X1WBncSMwtVrjXOF1cTO4d5BS1uSvwLxWQOQd/WmNafGze','testuser@example.com');
+INSERT INTO `accounts` VALUES (1,0,'ChrisChan','$2b$10$JXuFJVoWpUEd4uLd59y/EOusODfJR3Ho2usCFPQZiJENGUNNz3m.a','sonichu4life@limewire.com');
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,6 +82,7 @@ CREATE TABLE `characters` (
   `characterid` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `difficulty` int DEFAULT NULL,
+  `characterimage` longblob,
   PRIMARY KEY (`characterid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -92,7 +93,7 @@ CREATE TABLE `characters` (
 
 LOCK TABLES `characters` WRITE;
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` VALUES (1,'Athenodoros Mattathias',1),(2,'Ulysses Rubio',1),(3,'Louella Jarvis',1),(4,'Anita Wiggins',1),(5,'Amelia Mclean',1),(6,'Patrica Riley',1),(7,'Aline Herrera',1),(8,'Garth Harris',2),(9,'Royal Henderson',2),(10,'Randi Rosales',2),(11,'Darrell Powers',2),(12,'Elwood Fuller',2),(13,'Connie Banks',2),(14,'Melody Copeland',3),(15,'Julie Roberson',3),(16,'Andy Russell',3),(17,'Augustine Hubbard',3),(18,'Herbert Nelson',3),(19,'Jacinto Ramos',3),(20,'Dr. Horn',3);
+INSERT INTO `characters` VALUES (1,'Athenodoros Mattathias',1,NULL),(2,'Ulysses Rubio',1,NULL),(3,'Louella Jarvis',1,NULL),(4,'Anita Wiggins',1,NULL),(5,'Amelia Mclean',1,NULL),(6,'Patrica Riley',1,NULL),(7,'Aline Herrera',1,NULL),(8,'Garth Harris',2,NULL),(9,'Royal Henderson',2,NULL),(10,'Randi Rosales',2,NULL),(11,'Darrell Powers',2,NULL),(12,'Elwood Fuller',2,NULL),(13,'Connie Banks',2,NULL),(14,'Melody Copeland',3,NULL),(15,'Julie Roberson',3,NULL),(16,'Andy Russell',3,NULL),(17,'Augustine Hubbard',3,NULL),(18,'Herbert Nelson',3,NULL),(19,'Jacinto Ramos',3,NULL),(20,'Dr. Horn',3,NULL);
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,7 +113,7 @@ CREATE TABLE `games` (
   PRIMARY KEY (`gameid`),
   KEY `userid` (`userid`),
   CONSTRAINT `games_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `accounts` (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +122,7 @@ CREATE TABLE `games` (
 
 LOCK TABLES `games` WRITE;
 /*!40000 ALTER TABLE `games` DISABLE KEYS */;
-INSERT INTO `games` VALUES (1,1,0,0,NULL),(2,1,0,0,NULL),(3,1,0,0,NULL);
+INSERT INTO `games` VALUES (1,1,0,0,NULL),(2,1,0,0,NULL),(3,1,0,0,NULL),(4,2,0,0,NULL),(5,3,0,0,NULL),(6,1,0,0,NULL);
 /*!40000 ALTER TABLE `games` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,6 +147,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+INSERT INTO `sessions` VALUES ('1IBXro8v50IOzMV6CeiAQATFxSMU8Fbt',1744760304,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('1uX7_KoAy8JKX1gNAAj38Zrt8x1xR5ji',1744762739,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('2R6DjovHvxLzFFLmoeNfdJK0eYwTYqd9',1744760677,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":2,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('2SxAoKOKkWnFKcCnIksp-QHZQ_Gc7xYn',1744764219,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('2hO-o7AKhR7Rr1YN-ZbtacnbvV2P5ial',1744757103,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true,\"showAlert\":false,\"alertMessage\":\"No alert required!\"}'),('4k-5QOvdMUwS_GT2lbP0FIcbidILyyrH',1744759750,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('58lsNG3TepvX9L8CHewwLaKxWqbp84OQ',1744762449,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('5lgfooGypvgmEntJYIaLe_YcftaaivMg',1744762170,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('92lklf_MT2HZZB0C-vOMAO-4PqpMIev7',1744759918,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('D5cSfNOSZASqqUgCsIT6Z0q3l6yUKNzB',1744763216,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('D9DJlb47S8cJkAuKcwNFQqyfEsvIdqOX',1744762752,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('DeiE_Lir_UkSsLHKV7CIzxU9AvRi42k-',1744759852,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('DxeKDDyc3fNsB934VTsJJLoYfYcth1js',1744762593,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('E6KMZK4jGTqMNNphoUbQ9n1z9KwQ9GCV',1744764757,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":1,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('FEJUnSMpJt6Qv4I4G2reBYo9wDpw5sJP',1744760719,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":2,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('FgyDKGS3-NmttpxMWwC-hLbkSVPnYvqs',1744761139,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('I808fAVt0AnqDgn6CIGI8ysPXAbqmJzg',1744763148,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('KCGwDeF1ZLQduVF80GV5KCGGJ9bcMVzZ',1744764451,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('Ru2cnMs_W1yV7vJg5WnDzqjaW1NHk-JV',1744760919,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":2,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('SCA1AbH0S5QpRrEExEmJdxjPB9K4pKmK',1744757103,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"Account with that email already exists.\"}'),('SjMIx-lXKXuPXe0_HmuhKsEdZmJ8uRat',1744761497,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('_ElOqMiVoe3dBTZbtTWXwCcqqbyFT2C1',1744760678,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":2,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('bOeCPtU73CWTQaecY6GxRhHij5NYu_RK',1744761291,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('cLUDIdJNZ3YLoQfAFfMn4GYCX6v29oAA',1744762593,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('etlYYoQ_nWCYOHN1wzIJufWJXMUpmAhU',1744760146,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('gzi60n511s4fGSGS0Q4sjQbQsc65d4Dp',1744762102,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('hdVPyxCGKlMseBiidbPP6Kt4-zib81Wf',1744759930,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('m42Dybhm_Zkyh0uNFx9ph9wO2hW2oFS4',1744760332,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":true,\"alertMessage\":\"User not found.\"}'),('mWSxFO2gp-wJW-QHAaZRlYFHegpM4hNj',1744763299,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('n3ySrJgmEs_oViZvQIecrPRyS7bHgxiC',1744760966,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":2,\"username\":\"ChrisChan\",\"isAdmin\":false,\"showAlert\":false,\"alertMessage\":\"No alert required!\"}'),('nVy23g9sU8r6M2zs4B43oLNAqQMISr8w',1744762586,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('oHmbb0dlw1Qt7UICaUWmfLcXiVhJrYbD',1744761245,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('qcKUlriTt70TEIo-sF6yWTnpGPnnts7q',1744764696,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"ChrisChan\",\"isAdmin\":false,\"showAlert\":false,\"alertMessage\":\"No alert required!\"}'),('s0b-Zz6HeC2FkFKkCgoLHGdjmMZZfr5t',1744760469,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":2,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('w9gYRH2b5rw8r3-ClU0QCX-vGVfnwZFd',1744762924,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('xM2NR7fw32qrnT4rI8TBs6529dd2ntin',1744762694,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('yr1psbq0RqKtUDvXi5Tz_ovgY6reWWmj',1744761140,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}'),('zTMUtJPTLUtQfoRnIIawbS-WwZRVuHnb',1744761477,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"showAlert\":false,\"alertMessage\":\"No alert required!\",\"isAuth\":true,\"accountID\":3,\"username\":\"ChrisChan\",\"isAdmin\":false}');
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -182,13 +184,15 @@ DROP TABLE IF EXISTS `unlocked_characters`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `unlocked_characters` (
+  `unlock_id` int NOT NULL AUTO_INCREMENT,
   `userid` int NOT NULL,
   `characterid` int NOT NULL,
-  PRIMARY KEY (`userid`,`characterid`),
+  PRIMARY KEY (`unlock_id`),
+  KEY `userid` (`userid`),
   KEY `characterid` (`characterid`),
-  CONSTRAINT `unlocked_characters_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `accounts` (`userid`),
-  CONSTRAINT `unlocked_characters_ibfk_2` FOREIGN KEY (`characterid`) REFERENCES `characters` (`characterid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_unlocked_character` FOREIGN KEY (`characterid`) REFERENCES `characters` (`characterid`),
+  CONSTRAINT `fk_unlocked_user` FOREIGN KEY (`userid`) REFERENCES `accounts` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +201,7 @@ CREATE TABLE `unlocked_characters` (
 
 LOCK TABLES `unlocked_characters` WRITE;
 /*!40000 ALTER TABLE `unlocked_characters` DISABLE KEYS */;
-INSERT INTO `unlocked_characters` VALUES (1,1);
+INSERT INTO `unlocked_characters` VALUES (1,1,1),(2,1,1),(3,1,2),(4,1,3),(5,1,4),(6,1,5),(7,1,6),(8,1,7),(9,1,8);
 /*!40000 ALTER TABLE `unlocked_characters` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -210,4 +214,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-14 17:25:55
+-- Dump completed on 2025-04-14 19:55:59

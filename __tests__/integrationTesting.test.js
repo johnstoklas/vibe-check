@@ -99,4 +99,16 @@ describe('Character Routes Integration Tests', () => {
         expect(response.body.data).toBeDefined();
         expect(Array.isArray(response.body.data)).toBe(true);
     });
+
+    test('should get user unlocked characters', async () => {
+        const response = await agent
+            .get('/api/unlocked-characters')
+            .expect('Content-Type', /json/);
+
+        console.log('Unlocked Characters Response:', response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.data).toBeDefined();
+        expect(Array.isArray(response.body.data)).toBe(true);
+        expect(response.body.data.length).toBe(8); // Expect 8 unlocked characters
+    });
 });

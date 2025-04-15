@@ -60,9 +60,15 @@ async function addNewUser(req, res) {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
 
-        // Then unlock the first 8 characters for the new user
-        for (let i = 1; i <= 8; i++) {
-            await unlockModel.unlock(insertInfo.insertId, i);
+        // Unlock the first 8 characters for the new user
+        try {
+            for (let characterId = 1; characterId <= 8; characterId++) {
+                await unlockModel.unlock(insertInfo.insertId, characterId);
+            }
+            console.log(`Unlocked first 8 characters for user ${req.body.username}`);
+        } catch (unlockError) {
+            console.error("Error unlocking characters:", unlockError);
+            // Continue with login even if character unlock fails
         }
 
         console.log("Successful sign up!");
