@@ -9,6 +9,7 @@ const authController = require('../controllers/auth');
 // public routes
 router.get('/characters', characterController.getAllCharacters);
 router.get('/traits', characterController.getAllTraits);
+router.get('/goodtraits', characterController.getOnlyGoodTraits);
 router.get('/characters/bytrait/:traitId', characterController.getCharactersByTrait);
 
 // protected routes - require authentication

@@ -30,6 +30,16 @@ async function getAllTraits(req, res) {
     }
 };
 
+// Gets only good traits
+async function getOnlyGoodTraits(req, res) {
+    try {
+        const traits = await traitsModel.getgoodTrait(req.params.traitID);
+        res.json({ data: traits });
+    } catch (error) {
+        throw new Error('Failed to fetch good trait');
+    }
+}
+
 // Gets characters by trait
 async function getCharactersByTrait(req, res) {
     try {
@@ -68,6 +78,7 @@ async function getUnlockedCharacters(req, res) {
 module.exports = {
     getAllCharacters,
     getAllTraits,
+    getOnlyGoodTraits,
     getCharactersByTrait,
     getUnlockedCharacters, 
 };

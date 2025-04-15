@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 // models and utility
 const usersModel = require('../models/Users.js').Users;
 const {alertRedirect, noAlertRedirect} = require('../utility.js');
+const unlockModel = require('../models/UnlockedCharacters.js').UnlockedCharacters;
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
@@ -40,7 +41,6 @@ async function checkCredentials(req, res) {
 };
 /* Registers a new user to the database, given that they provide the correct information. */
 async function addNewUser(req, res) {
-
     try {
         // checks that passwords match
         if(req.body.password !== req.body.password_repeat)
@@ -55,10 +55,15 @@ async function addNewUser(req, res) {
         if(usernameUsers.length > 0)
             return alertRedirect(req, res, "Username already taken.", '/');
 
-        // inserts new user with a new game record and the first unlockable character, assuming it starts at 1.
+        // Create the user first
         const saltRounds = 10;
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
+
+        // Then unlock the first 8 characters for the new user
+        for (let i = 1; i <= 8; i++) {
+            await unlockModel.unlock(insertInfo.insertId, i);
+        }
 
         console.log("Successful sign up!");
 

@@ -67,7 +67,7 @@ CREATE TABLE `character_traits` (
 
 LOCK TABLES `character_traits` WRITE;
 /*!40000 ALTER TABLE `character_traits` DISABLE KEYS */;
-INSERT INTO `character_traits` VALUES (7,1),(14,1),(1,2),(4,2),(10,2),(13,2),(16,2),(2,3),(16,3),(6,4),(8,4),(9,4),(11,4),(12,4),(17,4),(18,4),(1,5),(16,5),(19,5),(2,6),(3,6),(7,6),(9,6),(12,6),(18,6),(8,7),(10,7),(14,7),(3,8),(6,8),(19,8),(1,10),(3,10),(5,10),(7,10),(11,10),(12,10),(15,10),(20,10),(17,11),(18,12),(19,12),(20,12),(8,13),(11,13),(13,13),(17,13),(4,14),(15,14),(5,16),(6,16),(10,16),(13,16),(15,16),(20,16),(2,18),(4,18),(5,18),(9,18),(14,18);
+INSERT INTO `character_traits` VALUES (7,1),(14,1),(1,2),(4,2),(10,2),(13,2),(16,2),(2,3),(6,3),(9,3),(12,3),(16,3),(18,3),(8,4),(11,4),(17,4),(1,5),(16,5),(18,5),(19,5),(3,6),(7,6),(9,6),(12,6),(8,7),(10,7),(14,7),(19,7),(3,8),(6,8),(3,9),(5,9),(15,9),(20,9),(1,10),(7,10),(11,10),(12,10),(2,11),(17,11),(18,12),(19,12),(20,12),(8,13),(11,13),(13,13),(17,13),(4,14),(13,14),(15,14),(15,15),(20,15),(2,16),(5,16),(6,16),(10,16),(4,17),(2,18),(5,18),(9,18),(14,18);
 /*!40000 ALTER TABLE `character_traits` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +146,6 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('7mmFpZpqQqqUhob-fA0DXFStwS4rdzGV',1743797749,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":false}'),('ADCdU8jkz0Vqg1LK40KXAW8FoFY4WIIg',1743819254,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('JiUoWvgFIymlt3NADaUafg8uBh7q_Kim',1743819458,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('SyrbXQ2sMs3A8zYKMwgIOxna1R5PlsVx',1743819911,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('V4_DWn9dY3yRnbfxK_k1MYP7gOZsS5jm',1743823615,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('VkQTsJ0Wp_5k70JSaCyaDl_Y3bVyuyo7',1743796672,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":false}'),('c3NQDYFSf0Fc2v0ThruHMwn8inJmgblb',1743819993,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('fz8Zi4J5Zsh5K2DM7AOIqAhaAObNPjca',1743797464,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":false}'),('iypW7wSSXTZC-hEaG8gPuqCWmeXtFews',1743823776,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}'),('lMWcDGO0DPFSB7DjSVdey57tN9vl8dRJ',1743797987,'{\"cookie\":{\"originalMaxAge\":null,\"expires\":null,\"httpOnly\":true,\"path\":\"/\"},\"isAuth\":true,\"accountID\":1,\"username\":\"Pr0fessionalBum\",\"isAdmin\":true}');
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,4 +210,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-03 22:35:29
+-- Dump completed on 2025-04-14 17:25:55
