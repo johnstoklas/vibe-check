@@ -2,22 +2,6 @@
 <html>
   <%-include('./common_head.ejs')%>
   <script>
-    /*function logInShow() {
-      const partial = document.getElementById('log-in-container');
-      const logSign = document.getElementById('log-sign-container');
-      if (partial) {
-        partial.style.display = 'block';
-        logSign.style.display = 'none';
-      }
-    }
-    function signUpShow() {
-      const partial = document.getElementById('sign-up-container');
-      const logSign = document.getElementById('log-sign-container');
-      if (partial) {
-        partial.style.display = 'block';
-        logSign.style.display = 'none';
-      }
-    }*/
     function logSignShow(elemID) {
       const partial = document.getElementById(elemID);
       const logSign = document.getElementById('log-sign-container');
@@ -29,13 +13,17 @@
   </script>
   <body>
     <section id="log-sign-container" class="log-sign-container">
-        <h1> Welcome! </h1>
+        <h1>Welcome!</h1>
         <div id="log-sign-button-container">
           <button onclick="logSignShow('log-in-container')">Log In</button>
           <button onclick="logSignShow('sign-up-container')">Sign Up</button>
         </div>
+        <button class="exit-button" onclick="location.href='/'">X</button>
     </section>
     <%- include('../partials/log_in.ejs') %>
     <%- include('../partials/sign_up.ejs') %>
   </body>
+  <style>
+    
+  </style>
 </html>
