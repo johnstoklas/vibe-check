@@ -6,11 +6,17 @@
     // initalize our web socket connection
     const socket = new WebSocket("ws://localhost:8080/game");
 
+    // if the game is refreshed or we are sent to the page by button, a new game is started
+    socket.onopen = () => {
+      socket.send(JSON.stringify({ type: "start_game" }));
+    };
+
     let selectedCharIndex = null;
     let selectedActionIndex = null;
     let characters;
     let currentScore;
     let currentMoney;
+    let hasEnded = false;
 
     // handles sending data to the backend
     socket.onmessage = (event) => {
@@ -86,8 +92,20 @@
         }
       }
 
+      // if the player does not have enough money for an action, they will be notified
+      else if (data.type === "invalid_action") {
+        alert(data.message); 
+      }
+
+      else if (data.type === "valid_action") {
+        const choiceContainer = document.getElementById('character-choice-container');
+        if(choiceContainer) {
+            choiceContainer.style.display = 'none';
+        }
+      }
       // if the type is end, the game is over and we display a game over page where the user can return home or play again
       else if(data.type === 'end') {
+        hasEnded = true;
         const partial = document.getElementById('game-over-container');
         if(partial)
           partial.style.display = 'flex';
@@ -99,6 +117,9 @@
       const choiceContainer = document.getElementById('character-choice-container');
       const gameOverContainer = document.getElementById('game-over-container');
       if(choiceContainer.style.display === 'flex' || gameOverContainer.style.display === 'flex')
+        return;
+
+      if(hasEnded) 
         return;
 
       selectedCharIndex = index;
@@ -176,12 +197,6 @@
         type: "action_selection", 
         action_index: index,
       }));
-
-      
-      const choiceContainer = document.getElementById('character-choice-container');
-      if(choiceContainer) {
-          choiceContainer.style.display = 'none';
-      }
     }
 
     // visually updates character health bar
@@ -417,6 +432,20 @@
       justify-content: center;
       gap: 10px;
       color: white;
+    }
+
+    .game-over-button {
+      text-decoration: none;
+      background-color: white;
+      border: 3px solid black;
+      color: black;
+      padding: 10px;
+      transition: all 0.2s;
+      font-size: 12px;
+    }
+
+    .game-over-button:hover {
+      transform: scale(1.02);
     }
   </style>
 </html>

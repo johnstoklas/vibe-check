@@ -5,9 +5,6 @@ const unlockedCharactersModel = require('../models/UnlockedCharacters').Unlocked
 const gamesModel = require('../models/Games').Games;
 const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
 
-// miscellaneous
-var game;
-
 // middleware
 /* Checks for player authentication and renders the game page. */
 async function startGame(req, res) {
@@ -25,6 +22,9 @@ async function playGame(ws, req) {
 
     // logs a connection message with the client
     console.log("New client connected");
+
+    // initializes the game
+    let game;
 
     // initializes the game
     if (game == null || game.hasEnded) {
@@ -48,6 +48,14 @@ async function playGame(ws, req) {
     // runs subsequent rounds of the game
     ws.on("message", async (msg) => {
         const data = JSON.parse(msg);
+
+        if (data.type === "start_game") {
+            game = await Game.init(ws, req);
+            ws.send(JSON.stringify({
+                game: game,
+                type: 'initGame',
+            }));
+        }
 
         if (data.type === "character_selection") {
             state.char_index = data.char_index;
@@ -164,6 +172,11 @@ class Game {
     /* Runs a single round of our game. */
     async runRound(ws, state) {
 
+        if (!game) {
+            ws.send(JSON.stringify({ type: "error", message: "Game not initialized yet" }));
+            return;
+        }
+          
         // make sure the game has not ended yet before the round can play out
         if(this.hasEnded) return;
     
@@ -210,8 +223,16 @@ class Game {
         // checks if the player has enough money to pay for the action
         if (this.currentActions[actionIndex].cost <= this.money) {
             this.money -= this.currentActions[actionIndex].cost;
+            ws.send(JSON.stringify({
+                type: "valid_action",
+                message: "You don't have enough money for that action!"
+            }));
         }
         else {
+            ws.send(JSON.stringify({
+                type: "invalid_action",
+                message: "You don't have enough money for that action!"
+            }));
             return;
         }
 
@@ -250,7 +271,7 @@ class Game {
                 currentChar.interactionlessRounds = 0;
 
             if(currentChar.interactionlessRounds > 0)
-                currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
+                currentChar.decrementHealth(1 * currentChar.interactionlessRounds);
         }
 
         // checks whether any characters' health is equal to zero
