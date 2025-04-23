@@ -15,6 +15,10 @@ class Users {
 
         return info;
     }
+
+    static async deleteUser(userID) {
+        return await connection.query('DELETE FROM accounts WHERE userid=?', [userID]);
+    }
     
     static async selectAll() {
         const [accounts] = await connection.query("SELECT * FROM accounts");
@@ -27,9 +31,27 @@ class Users {
     }
 
     static async selectByEmail(email) {
-        const [accounts] = await connection.query("SELECT * FROM accounts WHERE email = ?", [email]);
+        const [accounts] = await connection.query("SELECT * FROM accounts WHERE email=?", [email]);
         return accounts;
     }
+
+    static async selectByID(userID) {
+        const [accounts] = await connection.query("SELECT * FROM accounts WHERE userid=?", [userID]);
+        return accounts;
+    }
+
+    static async updateUsername(userID, username) {
+        return await connection.query('UPDATE accounts SET username=? WHERE userid=?', [username, userID]);
+    }
+
+    static async updateEmail(userID, email) {
+        return await connection.query('UPDATE accounts SET email=? WHERE userid=?', [email, userID]);
+    }
+
+    static async updatePassword(userID, hash) {
+        return await connection.query('UPDATE accounts SET password=? WHERE userid=?', [hash, userID]);
+    }
+    
 }
 
 exports.Users = Users;

@@ -1,9 +1,58 @@
 <!DOCTYPE html>
 <html>
+    <script>
+        function deleteConfirm() {
+            const isYes = confirm("Are you sure you want to delete your account?");
+            if(isYes)
+                alert("Account has been deleted.");
+            else
+                alert("Account has been spared!");
+            return isYes;
+        }
+    </script>
     <body>
         <h1>Account</h1>
+
+        <h2>Username: <%=username%></h2>
+        <form name="change-username-form" action="/account/username-change" method="post">
+
+            <label for="username"><h3>Change Username:</h3></label>
+            <input type="text" id="username" name="username" required>
+
+            <input class="submit_button" type="submit" value="Change Username">
+        </form>
+
+        <h2>Email: <%=email%></h2>
+        <form name="change-email-form" action="/account/email-change" method="post">
+
+            <label for="email"><h3>Change Email:</h3></label>
+            <input type="text" id="email" name="email" required>
+
+            <input class="submit_button" type="submit" value="Change Email">
+        </form>
+
+        <h2>Password: </h2>
+        <form name="change-password-form" action="/account/password-change" method="post">
+
+            <label for="password_old"><h3>Enter Old Password:</h3></label>
+            <input type="password" id="password_old" name="password_old" required>
+    
+            <label for="password_new"><h3>Enter New Password:</h3></label>
+            <input type="password" id="password_new" name="password_new" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 or more characters" required>
+
+            <label for="password_new_repeat"><h3>Repeat Password:</h3></label>
+            <input type="password" id="password_new_repeat" name="password_new_repeat" required>
+
+            <input class="submit_button" type="submit" value="Change Password">
+        </form>
+
+        <h2>Account Actions: </h2>
         <form name="log-out-form" action="/account/logout" method="post">
             <input class="submit_button" type="submit" value="Log Out">
+        </form>
+
+        <form name="delete-account-form" action="/account/delete" method="post">
+            <input class="submit_button" type="submit" value="Delete Account" onclick="return deleteConfirm()">
         </form>
     </body>
 </html>
