@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @module routes/score
+ */
+
 // controllers
 const characterController = require('../controllers/auth.js');
 const gameController = require('../controllers/game.js');
@@ -8,7 +12,16 @@ const leaderboardController = require('../controllers/leaderboard.js');
 
 // GET requests
 // TODO: router.get('/play', characterController.getUnlockedCharacters);
-router.get('/', leaderboardController.getHighScores);
+/**
+ * GET
+ * 
+ * On load of leaderboard page, we call getHighScores in the leaderboard controller.
+ *
+ * @name leaderboardPageRoute
+ * @function
+ * @memberof module:routes/score
+ */
+router.get('/leaderboard', leaderboardController.getHighScores);
 
 // POST requests
 // TODO: router.post('/onEndGame', gameController.sendScore);
