@@ -4,14 +4,14 @@ const bcrypt = require('bcrypt');
 
 // models and utility
 const usersModel = require('../models/Users').Users;
-const {alertRedirect, noAlertRedirect} = require('../utility');
+const {fetchAlert, fetchRedirect, fetchAlertRedirect, fetchReload} = require('../utility');
 
 /* Gathers account data. */
 async function gatherAccountData(req, res) {
 
     try {
         if(!req.session.isAuth)
-            return alertRedirect(req, res, "Authentication is required to access the account page.");
+            return fetchAlert(req, res, "Authentication is required to access the account page.");
 
         users = await usersModel.selectByID(req.session.accountID);
         if(users.length > 1) {
@@ -23,7 +23,7 @@ async function gatherAccountData(req, res) {
 
     } catch (error) {
         console.error("Account error: ", error);
-        return alertRedirect(req, res, "An error occurred while trying to gather account data.");
+        return fetchAlertRedirect(req, res, "An error occurred while trying to gather account data.");
     }
 };
 
@@ -31,21 +31,20 @@ async function gatherAccountData(req, res) {
 async function changeUsername(req, res) {
 
     try {
-
         // checks for existing username
         const usernameUsers = await usersModel.selectByUsername(req.body.username);
         if(usernameUsers.length > 0)
-            return alertRedirect(req, res, "Username already taken.");
+            return fetchAlert(req, res, "Username already taken.");
 
         // changes the username to the new username
         const newUsername = req.body.username;
         await usersModel.updateUsername(users[0].userid, newUsername);
 
-        noAlertRedirect(req, res, 'Successful change username.', '/account');
+        fetchReload(req, res, 'Successful change username.', '/account');
 
     } catch (error) {
         console.error("Change username error: ", error);
-        return alertRedirect(req, res, "An error occurred while trying to change the username.");
+        return fetchAlert(req, res, "An error occurred while trying to change the username.");
     }
 }
 
@@ -53,21 +52,20 @@ async function changeUsername(req, res) {
 async function changeEmail(req, res) {
 
     try {
-
         // checks for existing email
         const emailUsers = await usersModel.selectByEmail(req.body.email);
         if(emailUsers.length > 0)
-            return alertRedirect(req, res, "Account with that email already exists.");
+            return fetchAlert(req, res, "Account with that email already exists.");
 
         // changes the username to the new username
         const newEmail = req.body.email;
         await usersModel.updateEmail(users[0].userid, newEmail);
 
-        noAlertRedirect(req, res, 'Successful change email.', '/account');
+        fetchReload(req, res, 'Successful change email.');
 
     } catch (error) {
         console.error("Change email error: ", error);
-        return alertRedirect(req, res, "An error occurred while trying to change the email.");
+        return fetchAlertRedirect(req, res, "An error occurred while trying to change the email.");
     }
 }
 
@@ -78,7 +76,7 @@ async function changePassword(req, res) {
 
         // checks that new passwords match
         if(req.body.password_new !== req.body.password_new_repeat)
-            return alertRedirect(req, res, "New passwords do not match.");
+            return fetchAlert(req, res, "New passwords do not match.");
 
         // grabs the user information and checks that the old password matches the password in the database
         users = await usersModel.selectByID(req.session.accountID);
@@ -88,7 +86,7 @@ async function changePassword(req, res) {
 
         isEqual = await bcrypt.compare(oldPassword, storedHash);
         if(!isEqual)
-            return alertRedirect(req, res, "Old password does not match.");
+            return fetchAlert(req, res, "Old password does not match.");
 
         // hashes and salts the new password and updates it
         const newPassword = req.body.password_new;
@@ -97,11 +95,11 @@ async function changePassword(req, res) {
         const hash = await bcrypt.hash(newPassword, saltRounds);
 
         await usersModel.updatePassword(users[0].userid, hash);
-        noAlertRedirect(req, res, 'Successful change password.', '/account');
+        fetchReload(req, res, 'Successful change password.');
 
     } catch (error) {
         console.error("Change password error: ", error);
-        return alertRedirect(req, res, "An error occurred while trying to change the password.");
+        return fetchAlertRedirect(req, res, "An error occurred while trying to change the password.");
     }
 }
 
@@ -117,11 +115,11 @@ async function logOut(req, res) {
         req.session.username = undefined;
         req.session.isAdmin = undefined;
 
-        noAlertRedirect(req, res, 'Successful log out.');
+        fetchRedirect(req, res, 'Successful log out.');
 
     } catch (error) {
         console.error("Logout error: ", error);
-        return alertRedirect(req, res, "An error occurred while trying to log out.");
+        return fetchAlertRedirect(req, res, "An error occurred while trying to log out.");
     }
 }
 
@@ -136,15 +134,15 @@ async function deleteAccount(req, res) {
         req.session.username = undefined;
         req.session.isAdmin = undefined;
 
-        // deletes user and finished resetting session data
+        // deletes user and finishes resetting session data
         usersModel.deleteUser(req.session.accountID);
         req.session.accountID = undefined;
 
-        noAlertRedirect(req, res, 'Successful deleting of account.');
+        fetchRedirect(req, res, 'Successful deleting of account.');
 
     } catch (error) {
         console.error("Delete account error: ", error);
-        return alertRedirect(req, res, "An error occurred while trying to delete account.");
+        return fetchAlertRedirect(req, res, "An error occurred while trying to delete account.");
     }
 }
 

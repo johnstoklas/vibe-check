@@ -1,24 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <%-include('./common_head.ejs')%>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+  </head>
+  <%-include('../partials/fetch_script.ejs')%>
   <body>
     <section id="log-in-container" class="log-sign-container">
-        <h1>Log In</h1>
-        <form name="login-form" action="/login" method="post">
+      <h1>Log In</h1>
+      <form name="login-form" id="login-form">
 
         <div class="form-component-container">
-            <label for="username"><h3>Enter Username:</h3></label>
-            <input type="text" id="username" name="username" required>
+          <label for="username"><h3>Enter Username:</h3></label>
+          <input type="text" id="username" name="username" required>
         </div>
 
         <div class="form-component-container">
-            <label for="password"><h3>Enter Password:</h3></label>
-            <input type="password" id="password" name="password" required>
+          <label for="password"><h3>Enter Password:</h3></label>
+          <input type="password" id="password" name="password" required>
         </div>
 
         <br><br><input class="submit_button" type="submit" value="Submit">
         <button class="cancel-button" onclick="location.href='/'">Cancel</button>
-        </form>
+      </form>
     </section>
   </body>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+
+      e.preventDefault();
+      const formData = {
+        username: e.target.username.value,
+        password: e.target.password.value,
+      };
+
+      return commonFetch(formData, "/login");
+    });
+  </script>
 </html>

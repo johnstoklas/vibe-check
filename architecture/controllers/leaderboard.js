@@ -1,8 +1,7 @@
 const express = require('express');
 
-// models and utility
+// models
 const gamesModel = require('../models/Games').Games;
-const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
 
 /* Get high scores of users. */
 async function getHighScores(req, res) {

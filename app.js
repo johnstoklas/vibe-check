@@ -36,6 +36,8 @@ app.use(
 app.listen(8080);
 
 // routers and URL routes
+app.use(express.json());
+
 const profileRouter = require('./architecture/routes/profile');
 const characterRouter = require('./architecture/routes/character');
 const scoresRouter = require('./architecture/routes/scores');

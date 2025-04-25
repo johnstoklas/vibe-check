@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
-  <%-include('./common_head.ejs')%>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+  </head>
   <script>
     function logSignShow(elemID) {
       const partial = document.getElementById(elemID);
@@ -23,7 +28,4 @@
     <%- include('../partials/log_in.ejs') %>
     <%- include('../partials/sign_up.ejs') %>
   </body>
-  <style>
-    
-  </style>
 </html>

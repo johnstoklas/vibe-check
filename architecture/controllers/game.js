@@ -1,9 +1,8 @@
 const express = require('express');
 
-// models and utility
+// models
 const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
 const gamesModel = require('../models/Games').Games;
-const {alertRedirect, noAlertRedirect} = require('../utility');
 
 // miscellaneous
 var game;
@@ -13,8 +12,10 @@ var game;
 async function startGame(req, res) {
 
     // checks if the user's current session is authenticated
-    if(!req.session.isAuth)
-        return alertRedirect(req, res, "Authentication is required to play game.", '/');
+    if(!req.session.isAuth) {
+        console.log("Authentication is required to play game.");
+        return res.redirect("/");
+    }
 
     // renders the game page
     res.render('pages/game');
