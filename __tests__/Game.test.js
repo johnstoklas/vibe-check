@@ -10,7 +10,7 @@ jest.mock('../architecture/utility', () => ({
     noAlertRedirect: jest.fn()
 }));
 
-describe('Game class', () => {
+describe('Game Controller', () => {
 
     let req;
     let randomActions;

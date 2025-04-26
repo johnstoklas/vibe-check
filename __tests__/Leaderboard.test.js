@@ -7,7 +7,7 @@ jest.mock('express-mysql-session', () => {
 });
 jest.mock('../architecture/models/Games');
 
-describe('Leaderboard', () => {
+describe('Leaderboard Controller', () => {
 
     let req;
     let res;
@@ -18,7 +18,6 @@ describe('Leaderboard', () => {
             session: {
                 isAuth: true,
                 accountID: 1,
-                isGameRunning: false
             },
             body: {}
         };

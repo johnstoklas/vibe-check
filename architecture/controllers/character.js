@@ -86,7 +86,7 @@ async function getCharactersByTrait(req, res) {
  */
 async function getUnlockedCharacters(req, res) {
     try {
-        if (!req.session.accountID)
+        if (!req.session.isAuth)
             throw new Error('User not authenticated');
         const characters = await unlockedCharactersModel.selectAllWithTraits(req.session.accountID);
 
@@ -97,6 +97,9 @@ async function getUnlockedCharacters(req, res) {
             }))
         });
     } catch (error) {
+        if (error.message === 'User not authenticated') {
+            throw error; 
+        }
         throw new Error('Failed to fetch unlocked characters');
     }
 };
