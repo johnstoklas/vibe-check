@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/profile.js</title>
+    <title>JSDoc: Source: models/Games.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/profile.js</h1>
+    <h1 class="page-title">Source: models/Games.js</h1>
 
     
 
@@ -27,43 +27,58 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const express = require('express');
-const router = express.Router();
+
+const mysql = require('mysql2/promise');
+const connection = require('../database').databaseConnection;
 
 /**
- * @module routes/profile
+ * @module models/Games
  */
 
-// controllers
-const authController = require('../controllers/auth.js');
-const accountController = require('../controllers/account.js');
-
-// GET requests
-// TODO: router.get('/account', accountController.gatherAccountData);
-
-// POST requests
 /**
- * POST
- * 
- * On succesful login, we create a session using express sessions for a user.
- *
- * @name login
- * @function
- * @memberof module:routes/profile
+ * @typedef {Object} Game
+ * @property {int} gameid
+ * @property {int} userid
+ * @property {int} topscore
+ * @property {int} topmoney
+ * @property {string} dateachieved
  */
-router.post('/login', authController.checkCredentials);
-/**
- * POST
- * 
- * On succesful signup, we create an account, log the user in, and we create a session using express sessions for a user.
- *
- * @name signup
- * @function
- * @memberof module:routes/profile
- */
-router.post('/signup', authController.addNewUser);
 
-// exports
-module.exports = router;
+class Games {
+    /**
+     * Adds a game to the database once the game is over.
+     * 
+     * @async
+     * @function addGame
+     * @memberof models/Games
+     * @param {int} userID 
+     * @param {int} score
+     * @param {int} money
+     * @returns {Promise&lt;Void>} 
+    */
+    static async addGame(userID, score, money) {
+        const insertSQL = 'INSERT INTO games (userid, topscore, topmoney) VALUES (?, ?, ?)';
+        return await connection.query(insertSQL, [userID, score, money]);
+    }
+
+     /**
+     * Fetches all the scores in order from the database.
+     * 
+     * @async
+     * @function selectTopScores
+     * @memberof models/Games
+     * @returns {Promise&lt;Array&lt;Games>>} 
+    */
+    static async selectTopScores() {
+        const [games] = await connection.query(`
+            SELECT g.gameid, g.userid, g.topscore, g.topmoney FROM games g
+            INNER JOIN accounts a WHERE g.userid = a.userid
+            ORDER BY g.topscore DESC`);
+        return games;
+    }
+}
+
+exports.Games = Games;
 </code></pre>
         </article>
     </section>

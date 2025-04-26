@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/profile.js</title>
+    <title>JSDoc: Source: models/Traits.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/profile.js</h1>
+    <h1 class="page-title">Source: models/Traits.js</h1>
 
     
 
@@ -27,44 +27,37 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const express = require('express');
-const router = express.Router();
+
+const mysql = require('mysql2/promise');
+const connection = require('../database').databaseConnection;
 
 /**
- * @module routes/profile
+ * @module models/Traits
  */
 
-// controllers
-const authController = require('../controllers/auth.js');
-const accountController = require('../controllers/account.js');
-
-// GET requests
-// TODO: router.get('/account', accountController.gatherAccountData);
-
-// POST requests
 /**
- * POST
- * 
- * On succesful login, we create a session using express sessions for a user.
- *
- * @name login
- * @function
- * @memberof module:routes/profile
+ * @typedef {Object} Trait
+ * @property {int} id
+ * @property {string} trait_name
+ * @property {int} goodtrait
  */
-router.post('/login', authController.checkCredentials);
-/**
- * POST
- * 
- * On succesful signup, we create an account, log the user in, and we create a session using express sessions for a user.
- *
- * @name signup
- * @function
- * @memberof module:routes/profile
- */
-router.post('/signup', authController.addNewUser);
 
-// exports
-module.exports = router;
-</code></pre>
+class Traits {
+    /**
+     * Selects all possible traits from the database in order.
+     * 
+     * @async
+     * @function selectAllOrdered
+     * @memberof models/Traits
+     * @returns {Promise&lt;Array&lt;Traits>>} 
+    */
+    static async selectAllOrdered() {
+        const [traits] = await connection.query('SELECT * FROM traits ORDER BY trait_name');
+        return traits;
+    }
+}
+
+exports.Traits = Traits;</code></pre>
         </article>
     </section>
 
