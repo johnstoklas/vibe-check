@@ -32,9 +32,10 @@ class Characters {
                 difficulty, 
                 characterimage, 
                 GROUP_CONCAT(CONCAT('(', t.trait_name, ', ', t.goodtrait, ')')) AS traits
-                FROM characters c
+            FROM characters c
             INNER JOIN character_traits ct ON c.characterid=ct.characterid
             INNER JOIN traits t ON ct.trait_id=t.id
+
             GROUP BY c.characterid
             ORDER BY c.difficulty ASC
         `);
@@ -52,7 +53,9 @@ class Characters {
     static async selectByTrait(traitID) {
         const [characters] = await connection.query(`
             SELECT DISTINCT 
-                c.*,
+                c.characterid,
+                c.name,
+                c.difficulty,
                 GROUP_CONCAT(t.trait_name) as traits
             FROM characters c
             INNER JOIN character_traits ct ON c.characterid=ct.characterid

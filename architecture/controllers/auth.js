@@ -21,7 +21,6 @@ const {fetchAlert, fetchRedirect} = require('../utility.js');
  * @returns {Promise<Void>}
  */
 async function checkCredentials(req, res) {
-
     try {
         const users = await usersModel.selectByUsername(req.body.username);
 
@@ -32,14 +31,15 @@ async function checkCredentials(req, res) {
             console.assert(false, "Problem with MySQL database: duplicate entries found");
             return res.redirect('/');
         }
-            
         const loginPassword = req.body.password;
         const storedHash = users[0].password;
         isEqual = await bcrypt.compare(loginPassword, storedHash);
 
         if(!isEqual)
             return fetchAlert(req, res, "Password is not correct.");
+        console.log("Successful sign up!");
 
+        
         // stores all necessary user information in session
         req.session.isAuth = true;
         req.session.accountID = users[0].userid;
@@ -64,7 +64,6 @@ async function checkCredentials(req, res) {
  * @returns {Promise<Void>}
  */
 async function addNewUser(req, res) {
-
     try {
 
         // checks that passwords match
@@ -80,19 +79,17 @@ async function addNewUser(req, res) {
         if(usernameUsers.length > 0)
             return fetchAlert(req, res, "Username already taken.");
 
-        // inserts new user with a new game record and the first unlockable character, assuming it starts at 1.
+        // Create the user first
         const saltRounds = 10;
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
 
-        console.log("Successful sign up!");
-
-        // sets session data
+        // Set up session
         req.session.isAuth = true;
         req.session.accountID = insertInfo.insertId;
         req.session.username = req.body.username;
         req.session.isAdmin = false;
-        
+      
         return fetchRedirect(req, res, "And successful log in!");
 
     } catch (error) {
