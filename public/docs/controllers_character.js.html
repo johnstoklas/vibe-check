@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/character.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/character.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const express = require('express');
+
+// models
+const charactersModel = require('../models/Characters').Characters;
+const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
+const traitsModel = require('../models/Traits').Traits;
+
+/**
+ * @module controllers/character
+ */
+
+/**
+ * @async
+ * @function getAllCharacters
+ * @memberof module:controllers/character
+ * @description Gets all characters even if they are not unlocked (SQL query is in Characters model).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {void}
+ */
+async function getAllCharacters(req, res) {
+    try {
+        const characters = await charactersModel.selectAllWithTraits();
+        res.json({
+            data: characters.map(char => ({
+                ...char,
+                traits: char.traits ? char.traits.split(',') : []
+            }))
+        });
+    } catch (error) {
+        throw new Error('Failed to fetch characters');
+    }
+};
+
+/**
+ * @async
+ * @function getAllTraits
+ * @memberof module:controllers/character
+ * @description Gets all possible traits a character can have in order (SQL query is in Characters model).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {void}
+ */
+async function getAllTraits(req, res) {
+    try {
+        const traits = await traitsModel.selectAllOrdered();
+        res.json({ data: traits });
+    } catch (error) {
+        throw new Error('Failed to fetch traits');
+    }
+};
+
+/**
+ * @async
+ * @function getCharactersByTrait
+ * @memberof module:controllers/character
+ * @description Gets all the character with a specific trait using traitID (SQL query is in the Characters model).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {void}
+ */
+async function getCharactersByTrait(req, res) {
+    try {
+        const { traitID } = req.params;
+        const characters = await charactersModel.selectByTrait(traitID);
+
+        res.json({
+            data: characters.map(char => ({
+                ...char,
+                traits: char.traits ? char.traits.split(',') : []
+            }))
+        });
+    } catch (error) {
+        throw new Error('Failed to fetch characters by trait');
+    }
+};
+
+/**
+ * @async
+ * @function getUnlockedCharacters
+ * @memberof module:controllers/character
+ * @description Gets all the unlocked characters for a specific user based on the session's user id.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {void}
+ */
+async function getUnlockedCharacters(req, res) {
+    try {
+        if (!req.session.accountID)
+            throw new Error('User not authenticated');
+        const characters = await unlockedCharactersModel.selectAllWithTraits(req.session.accountID);
+
+        res.json({
+            data: characters.map(char => ({
+                ...char,
+                traits: char.traits ? char.traits.split(',') : []
+            }))
+        });
+    } catch (error) {
+        throw new Error('Failed to fetch unlocked characters');
+    }
+};
+
+module.exports = {
+    getAllCharacters,
+    getAllTraits,
+    getCharactersByTrait,
+    getUnlockedCharacters, 
+};
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-controllers_character.html">controllers/character</a></li><li><a href="module-controllers_game.html">controllers/game</a></li><li><a href="module-models_Characters.html">models/Characters</a></li><li><a href="module-models_Games.html">models/Games</a></li><li><a href="module-models_Traits.html">models/Traits</a></li><li><a href="module-models_UnlockedCharacters.html">models/UnlockedCharacters</a></li><li><a href="module-routes_character.html">routes/character</a></li><li><a href="module-routes_game.html">routes/game</a></li><li><a href="module-routes_index.html">routes/index</a></li><li><a href="module-routes_profile.html">routes/profile</a></li><li><a href="module-routes_score.html">routes/score</a></li></ul><h3>Classes</h3><ul><li><a href="module-controllers_game.Game.html">Game</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Apr 26 2025 16:46:06 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
