@@ -51,6 +51,5 @@ class Characters {
 
 }
 
-module.exports = { Characters };
+module.exports = { charactersModel };
 
-module.exports = { UnlockConditions };

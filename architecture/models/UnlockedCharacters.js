@@ -68,4 +68,4 @@ class UnlockedCharacters {
     }
 }
 
-exports.UnlockedCharacters = UnlockedCharacters;
+module.exports ={ charactersModel };
