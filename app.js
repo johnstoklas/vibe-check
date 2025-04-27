@@ -33,7 +33,10 @@ app.use(
 );
 
 // Web Sockets port
-app.listen(8080);
+const port = process.env.PORT || 8080;
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port);
+}
 
 // routers and URL routes
 const profileRouter = require('./architecture/routes/profile');
@@ -42,7 +45,7 @@ const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
 const gameRouter = require('./architecture/routes/game');
 
-app.use('/', profileRouter);
+app.use('/auth', profileRouter);
 app.use('/api', characterRouter);
 app.use('/leaderboard', scoresRouter);
 app.use('/', indexRouter);

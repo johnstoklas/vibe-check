@@ -5,10 +5,11 @@ const bcrypt = require('bcrypt');
 // models and utility
 const usersModel = require('../models/Users.js').Users;
 const {alertRedirect, noAlertRedirect} = require('../utility.js');
+const unlockModel = require('../models/UnlockedCharacters.js').UnlockedCharacters;
+const charactersModel = require('../models/Characters').Characters;
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
-
     try {
         const users = await usersModel.selectByUsername(req.body.username);
 
@@ -19,7 +20,6 @@ async function checkCredentials(req, res) {
             console.assert(false, "Problem with MySQL database: duplicate entries found");
             return res.redirect('/');
         }
-            
         const loginPassword = req.body.password;
         const storedHash = users[0].password;
         isEqual = await bcrypt.compare(loginPassword, storedHash);
@@ -40,10 +40,8 @@ async function checkCredentials(req, res) {
         return alertRedirect(req, res, "An error occurred during login.", '/');
     }
 };
-
 /* Registers a new user to the database, given that they provide the correct information. */
 async function addNewUser(req, res) {
-
     try {
         // checks that passwords match
         if(req.body.password !== req.body.password_repeat)
@@ -58,24 +56,24 @@ async function addNewUser(req, res) {
         if(usernameUsers.length > 0)
             return alertRedirect(req, res, "Username already taken.", '/');
 
-        // inserts new user with a new game record and the first unlockable character, assuming it starts at 1.
+        // Create the user first
         const saltRounds = 10;
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
 
-        console.log("Successful sign up!");
-
-        // sets session data
+        // Set up session
         req.session.isAuth = true;
         req.session.accountID = insertInfo.insertId;
         req.session.username = req.body.username;
         req.session.isAdmin = false;
-        
-        return noAlertRedirect(req, res, "And successful log in!", '/');
+
+        // Moved initial character unlock to the unlockConditions controller logic
+
+        return noAlertRedirect(req, res, "Successfully registered and logged in!", '/' );
 
     } catch (error) {
         console.error("Registration error: ", error);
-        return alertRedirect(req, res, "An error occurred during registration.",  '/');
+        return alertRedirect(req, res, "An error occurred during registration.", '/');
     }
 };
 
