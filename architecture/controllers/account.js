@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 // models and utility
 const usersModel = require('../models/Users').Users;
-const {fetchAlert, fetchRedirect, fetchAlertRedirect, fetchReload} = require('../utility');
+const {fetchAlert, fetchRedirect, fetchAlertRedirect } = require('../utility');
 
 /**
  * @module controllers/account
@@ -24,7 +24,7 @@ async function gatherAccountData(req, res) {
 
     try {
         if(!req.session.isAuth)
-            return fetchAlert(req, res, "Authentication is required to access the account page.");
+            return fetchAlertRedirect(req, res, "Authentication is required to access the account page.");
 
         users = await usersModel.selectByID(req.session.accountID);
         if(users.length > 1) {
@@ -55,17 +55,17 @@ async function changeUsername(req, res) {
         // checks for existing username
         const usernameUsers = await usersModel.selectByUsername(req.body.username);
         if(usernameUsers.length > 0)
-            return fetchAlert(req, res, "Username already taken.");
+            return fetchAlertRedirect(req, res, "Username already taken.");
 
         // changes the username to the new username
         const newUsername = req.body.username;
         await usersModel.updateUsername(users[0].userid, newUsername);
 
-        fetchReload(req, res, 'Successful change username.', '/account');
+        fetchRedirect(req, res, 'Successful change username.', '/account');
 
     } catch (error) {
         console.error("Change username error: ", error);
-        return fetchAlert(req, res, "An error occurred while trying to change the username.");
+        return fetchAlertRedirect(req, res, "An error occurred while trying to change the username.");
     }
 }
 
@@ -84,13 +84,13 @@ async function changeEmail(req, res) {
         // checks for existing email
         const emailUsers = await usersModel.selectByEmail(req.body.email);
         if(emailUsers.length > 0)
-            return fetchAlert(req, res, "Account with that email already exists.");
+            return fetchAlertRedirect(req, res, "Account with that email already exists.");
 
         // changes the username to the new username
         const newEmail = req.body.email;
         await usersModel.updateEmail(users[0].userid, newEmail);
 
-        fetchReload(req, res, 'Successful change email.');
+        fetchRedirect(req, res, 'Successful change email.');
 
     } catch (error) {
         console.error("Change email error: ", error);
@@ -113,7 +113,7 @@ async function changePassword(req, res) {
 
         // checks that new passwords match
         if(req.body.password_new !== req.body.password_new_repeat)
-            return fetchAlert(req, res, "New passwords do not match.");
+            return fetchAlertRedirect(req, res, "New passwords do not match.");
 
         // grabs the user information and checks that the old password matches the password in the database
         users = await usersModel.selectByID(req.session.accountID);
@@ -123,7 +123,7 @@ async function changePassword(req, res) {
 
         isEqual = await bcrypt.compare(oldPassword, storedHash);
         if(!isEqual)
-            return fetchAlert(req, res, "Old password does not match.");
+            return fetchAlertRedirect(req, res, "Old password does not match.");
 
         // hashes and salts the new password and updates it
         const newPassword = req.body.password_new;
@@ -132,7 +132,7 @@ async function changePassword(req, res) {
         const hash = await bcrypt.hash(newPassword, saltRounds);
 
         await usersModel.updatePassword(users[0].userid, hash);
-        fetchReload(req, res, 'Successful change password.');
+        fetchRedirect(req, res, 'Successful change password.');
 
     } catch (error) {
         console.error("Change password error: ", error);

@@ -48,7 +48,6 @@ describe('Auth Controller', () => {
                 admin: 0,
                 username: 'account1',
                 password: 'password',
-                password_repeat: 'password',
                 email: 'account@account.com'
             }
         ]
@@ -129,7 +128,6 @@ describe('Auth Controller', () => {
             userid: 2,
             admin: 0,
             username: 'account2',
-            password: 'password',
             email: 'account2@account.com'
         }
 
