@@ -1,7 +1,7 @@
 const express = require('express');
 
 // models
-const gamesModel = require('../models/Games').Games;
+const { Games: gamesModel } = require('../models/Games');
 
 /**
  * @module controllers/leaderboard
