@@ -20,7 +20,6 @@ class Traits {
      * 
      * @async
      * @function selectAllOrdered
-     * @memberof models/Traits
      * @returns {Promise<Array<Traits>>} 
     */
     static async selectAllOrdered() {
@@ -29,4 +28,4 @@ class Traits {
     }
 }
 
-exports.Traits = Traits;
+module.exports = Traits;

@@ -22,7 +22,6 @@ class Games {
      * 
      * @async
      * @function addGame
-     * @memberof models/Games
      * @param {int} userID 
      * @param {int} score
      * @param {int} money
@@ -38,7 +37,6 @@ class Games {
      * 
      * @async
      * @function selectTopScores
-     * @memberof models/Games
      * @returns {Promise<Array<Games>>} 
     */
     static async selectTopScores() {
@@ -50,4 +48,4 @@ class Games {
     }
 }
 
-exports.Games = Games;
+module.exports = Games;

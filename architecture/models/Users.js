@@ -22,7 +22,6 @@ class Users {
      * 
      * @async
      * @function addUser
-     * @memberof models/Users
      * @param {string} email
      * @param {string} username
      * @param {string} hash
@@ -48,7 +47,6 @@ class Users {
      * 
      * @async
      * @function selectAll
-     * @memberof models/Users
      * @returns {Promise<Array<Account>>} 
     */
     static async selectAll() {
@@ -61,7 +59,6 @@ class Users {
      * 
      * @async
      * @function selectByUsername
-     * @memberof models/Users
      * @param {string} username
      * @returns {Promise<Account>} 
     */
@@ -75,7 +72,6 @@ class Users {
      * 
      * @async
      * @function selectByEmail
-     * @memberof models/Users
      * @param {string} email
      * @returns {Promise<Account>} 
     */
@@ -103,4 +99,4 @@ class Users {
     
 }
 
-exports.Users = Users;
+module.exports = Users;

@@ -21,7 +21,6 @@ class Characters {
      * 
      * @async
      * @function selectAllWithTraits
-     * @memberof models/Characters
      * @returns {Promise<Array<Character>>} 
     */
     static async selectAllWithTraits() {
@@ -46,7 +45,6 @@ class Characters {
      * 
      * @async
      * @function selectByTrait
-     * @memberof models/Characters
      * @param {int} traitID
      * @returns {Promise<Array<Character>>} 
     */
@@ -70,7 +68,6 @@ class Characters {
      * 
      * @async
      * @function selectAll
-     * @memberof models/Characters
      * @returns {Promise<Array<Character>>} 
     */
     static async selectAll() {
@@ -83,7 +80,6 @@ class Characters {
      * 
      * @async
      * @function selectById
-     * @memberof models/Characters
      * @param {int} characterID
      * @returns {Promise<Array<Character>>} 
     */
@@ -94,4 +90,4 @@ class Characters {
 
 }
 
-exports.Characters = Characters;
+module.exports = Characters;

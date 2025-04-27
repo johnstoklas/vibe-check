@@ -23,7 +23,6 @@ class UnlockedCharacters {
      * @static
      * @async
      * @function unlock
-     * @memberof models/unlockedCharacters
      * @param {int} userID 
      * @param {int} characterID
      * @returns {Promise<Void>} 
@@ -39,7 +38,6 @@ class UnlockedCharacters {
      * @static
      * @async
      * @function isUnlocked
-     * @memberof models/unlockedCharacters
      * @param {int} userID 
      * @param {int} characterID
      * @returns {Promise<Void>} 
@@ -59,7 +57,6 @@ class UnlockedCharacters {
      * @static
      * @async
      * @function selectRandomWithTraits
-     * @memberof models/unlockedCharacters
      * @param {int} userID 
      * @param {int} characterID
      * @returns {Promise<Array<Character>>} 
@@ -85,7 +82,6 @@ class UnlockedCharacters {
      * @static
      * @async
      * @function selectAllWithTraits
-     * @memberof models/unlockedCharacters
      * @param {int} userID
      * @returns {Promise<Array<Character>>} 
     */
@@ -110,7 +106,6 @@ class UnlockedCharacters {
      * @static
      * @async
      * @function selectByUserId
-     * @memberof models/unlockedCharacters
      * @param {int} userID
      * @returns {Promise<Array<Character>>} 
     */
@@ -125,4 +120,4 @@ class UnlockedCharacters {
     }
 }
 
-exports.UnlockedCharacters = UnlockedCharacters;
+module.exports = UnlockedCharacters;
