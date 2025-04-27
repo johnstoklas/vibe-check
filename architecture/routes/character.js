@@ -14,8 +14,6 @@ const authController = require('../controllers/auth');
 // GET requests
 // public routes
 router.get('/characters', characterController.getAllCharacters);
-router.get('/traits', characterController.getAllTraits);
-router.get('/goodtraits', characterController.getOnlyGoodTraits);
 router.get('/characters/bytrait/:traitId', characterController.getCharactersByTrait);
 router.get('/unlock/:characterId', character.checkCharacterUnlock);
 
