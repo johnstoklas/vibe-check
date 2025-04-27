@@ -5,8 +5,6 @@ const bcrypt = require('bcrypt');
 // models and utility
 const usersModel = require('../models/Users.js').Users;
 const {alertRedirect, noAlertRedirect} = require('../utility.js');
-const unlockModel = require('../models/UnlockedCharacters.js').UnlockedCharacters;
-const charactersModel = require('../models/Characters').Characters;
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
@@ -26,7 +24,10 @@ async function checkCredentials(req, res) {
 
         if(!isEqual)
             return alertRedirect(req, res, "Password is not correct.", '/');
+        
+        console.log("Successful sign up!");
 
+        
         // stores all necessary user information in session
         req.session.isAuth = true;
         req.session.accountID = users[0].userid;
