@@ -3,13 +3,46 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const connection = require('../database').databaseConnection;
 
+/**
+ * @module models/UnlockedCharacters
+ * @description Handles SQL queries for unlocking characters and fetching unlocked characters
+ */
+
+/**
+ * @typedef {Object} Character
+ * @property {int} characterid 
+ * @property {string} name
+ * @property {int} difficulty
+ * @property {string} characterimage
+ */
+
 class UnlockedCharacters {
 
+    /**
+     * Adds a character to a user's possible pool of characters that can be played with.
+     * 
+     * @static
+     * @async
+     * @function unlock
+     * @param {int} userID 
+     * @param {int} characterID
+     * @returns {Promise<Void>} 
+    */
     static async unlock(userID, characterID) {
         const insertSQL = 'INSERT INTO unlocked_characters (userid, characterid) VALUES (?, ?)';
         return await connection.query(insertSQL, [userID, characterID]);
     }
 
+    /**
+     * Checks if a character is already unlocked for a user.
+     * 
+     * @static
+     * @async
+     * @function isUnlocked
+     * @param {int} userID 
+     * @param {int} characterID
+     * @returns {Promise<Void>} 
+    */
     static async isUnlocked(userID, characterID) {
 
         const selectSQL = 'SELECT * FROM unlocked_characters WHERE userid=? AND characterid=?';
@@ -18,6 +51,17 @@ class UnlockedCharacters {
         return results.length > 0;
     }
 
+    /**
+     * Selects a random amount of characters of size 'num' from a user's unlocked characters. 
+     * Traits are in the format: (Compliments, 1),(Invite Out, 1),(Help at Work, 1).
+     * 
+     * @static
+     * @async
+     * @function selectRandomWithTraits
+     * @param {int} userID 
+     * @param {int} characterID
+     * @returns {Promise<Array<Character>>} 
+    */
     static async selectRandomWithTraits(userID, num) {
         const [characters] = await connection.query(`
             SELECT
@@ -25,38 +69,47 @@ class UnlockedCharacters {
                 GROUP_CONCAT(CONCAT('(', t.trait_name, ', ', t.goodtrait, ')')) AS traits
             FROM characters c
             INNER JOIN unlocked_characters uc ON c.characterid=uc.characterid
-            LEFT JOIN character_traits ct ON c.characterid=ct.characterid
-            LEFT JOIN traits t ON ct.trait_id=t.id
+            INNER JOIN character_traits ct ON c.characterid=ct.characterid
+            INNER JOIN traits t ON ct.trait_id=t.id
             WHERE uc.userid=?
             GROUP BY c.characterid, c.name, c.difficulty
             ORDER BY RAND() LIMIT ?`, [userID, num]);
         return characters;
     }
 
-    static async selectFromNames(userID, names) {
-        const [characters] = await connection.query(`
-            SELECT c.*
-            FROM characters c
-            INNER JOIN unlocked_characters u ON c.characterid=u.characterid
-            WHERE u.userid=? AND c.name IN (?)`, [userID, names.toString()]);
-        return characters;
-    }
-
-    static async selectAllWithTraits(accountID) {
+    /**
+     * Selects all characters regardless of unlocked with traits.
+     * Traits are in the format: (Compliments, 1),(Invite Out, 1),(Help at Work, 1).
+     * @static
+     * @async
+     * @function selectAllWithTraits
+     * @param {int} userID
+     * @returns {Promise<Array<Character>>} 
+    */
+    static async selectAllWithTraits(userID) {
         const [characters] = await connection.query(`
             SELECT
                 c.*,
-                GROUP_CONCAT(t.trait_name) as traits
+                GROUP_CONCAT(CONCAT('(', t.trait_name, ', ', t.goodtrait, ')')) AS traits
             FROM characters c
             INNER JOIN unlocked_characters uc ON c.characterid=uc.characterid
-            LEFT JOIN character_traits ct ON c.characterid=ct.characterid
-            LEFT JOIN traits t ON ct.trait_id=t.id
+            INNER JOIN character_traits ct ON c.characterid=ct.characterid
+            INNER JOIN traits t ON ct.trait_id=t.id
             WHERE uc.userid=?
             GROUP BY c.characterid, c.name, c.difficulty
-            ORDER BY c.difficulty ASC`, [accountID]);
+            ORDER BY c.difficulty ASC`, [userID]);
         return characters;
     }
 
+    /**
+     * Selects all characters that are unlocked.
+     * 
+     * @static
+     * @async
+     * @function selectByUserId
+     * @param {int} userID
+     * @returns {Promise<Array<Character>>} 
+    */
     static async selectByUserId(userID) {
         const [charactersByID] = await connection.query(`
             SELECT c.* 
@@ -68,4 +121,8 @@ class UnlockedCharacters {
     }
 }
 
+<<<<<<< HEAD
 module.exports ={ charactersModel };
+=======
+module.exports = UnlockedCharacters;
+>>>>>>> main

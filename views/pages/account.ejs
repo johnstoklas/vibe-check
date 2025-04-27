@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+  </head>
+  <%-include('../partials/fetch_script.ejs')%>
+  <body>
+    <h1>Account</h1>
+
+    <h2>Username: <%=username%></h2>
+    <form name="change-username-form" id="change-username-form">
+
+      <label for="username"><h3>Change Username:</h3></label>
+      <input type="text" id="username" name="username" required>
+
+      <input class="submit_button" type="submit" value="Change Username">
+    </form>
+
+    <h2>Email: <%=email%></h2>
+    <form name="change-email-form" id="change-email-form">
+
+      <label for="email"><h3>Change Email:</h3></label>
+      <input type="text" id="email" name="email" required>
+
+      <input class="submit_button" type="submit" value="Change Email">
+    </form>
+
+      <h2>Password: </h2>
+      <form name="change-password-form" id="change-password-form">
+
+        <label for="password_old"><h3>Enter Old Password:</h3></label>
+        <input type="password" id="password_old" name="password_old" required>
+
+        <label for="password_new"><h3>Enter New Password:</h3></label>
+        <input type="password" id="password_new" name="password_new" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 or more characters" required>
+
+        <label for="password_new_repeat"><h3>Repeat Password:</h3></label>
+        <input type="password" id="password_new_repeat" name="password_new_repeat" required>
+
+        <input class="submit_button" type="submit" value="Change Password">
+      </form>
+
+      <h2>Account Actions: </h2>
+      <form name="logout-form" id="logout-form">
+        <input class="submit_button" type="submit" value="Log Out">
+      </form>
+
+      <form name="delete-account-form" action="/account/delete" method="post">
+        <input class="submit_button" type="submit" value="Delete Account" onclick="return deleteConfirm()">
+      </form>
+    </body>
+    <script>
+      // confirms whether a user wants to delete their account or not
+      function deleteConfirm() {
+        const isYes = confirm("Are you sure you want to delete your account?");
+        if(isYes)
+          alert("Account has been deleted.");
+        else
+          alert("Account has been spared!");
+        return isYes;
+      }
+
+      // gets alert for username form
+      document.getElementById("change-username-form").addEventListener("submit", async (e) => {
+  
+        e.preventDefault();
+        const formData = {username: e.target.username.value};
+  
+        return commonFetch(formData, "/account/username-change");
+      });
+
+      // gets alert for email form
+      document.getElementById("change-email-form").addEventListener("submit", async (e) => {
+        
+        e.preventDefault();
+        const formData = {email: e.target.email.value};
+
+        return commonFetch(formData, "/account/email-change");
+      });
+
+      // gets alert for password form
+      document.getElementById("change-password-form").addEventListener("submit", async (e) => {
+        
+        e.preventDefault();
+        const formData = {
+          password_old: e.target.password_old.value,
+          password_new: e.target.password_new.value,
+          password_new_repeat: e.target.password_new_repeat.value
+        };
+
+        return commonFetch(formData, "/account/password-change");
+      });
+
+      // deals with logout
+      document.getElementById("logout-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        return commonFetch({}, "/account/logout");
+      });
+    </script>
+</html>

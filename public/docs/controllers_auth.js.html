@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/auth.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/auth.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const express = require('express');
+
+const bcrypt = require('bcrypt');
+
+// models and utility
+const usersModel = require('../models/Users.js').Users;
+const {fetchAlert, fetchRedirect} = require('../utility.js');
+
+/**
+ * @module controllers/auth
+ * @description Handles authentication logic including adding a new user, checking valid credentials, checking if they are authenticated, or if they are an admin.
+ */
+
+/**
+ * @async
+ * @function checkCredentials
+ * @memberof module:controllers/auth
+ * @description Checks to make sure that the credentials that a user is logging in with are correct.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise&lt;Void>}
+ */
+async function checkCredentials(req, res) {
+
+    try {
+        const users = await usersModel.selectByUsername(req.body.username);
+
+        if(users.length == 0)
+            return fetchAlert(req, res, "User not found.");
+
+        else if(users.length > 1) {
+            console.assert(false, "Problem with MySQL database: duplicate entries found");
+            return res.redirect('/');
+        }
+            
+        const loginPassword = req.body.password;
+        const storedHash = users[0].password;
+        isEqual = await bcrypt.compare(loginPassword, storedHash);
+
+        if(!isEqual)
+            return fetchAlert(req, res, "Password is not correct.");
+
+        // stores all necessary user information in session
+        req.session.isAuth = true;
+        req.session.accountID = users[0].userid;
+        req.session.username = users[0].username;
+        req.session.isAdmin = users[0].admin === 1;
+
+        return fetchRedirect(req, res, "Successful log in!");
+
+    } catch (error) {
+        console.error("Login error: ", error);
+        return fetchAlert(req, res, "An error occurred during login.");
+    }
+};
+
+/**
+ * @async
+ * @function addNewUser
+ * @memberof module:controllers/auth
+ * @description Registers a new user to the database, given that they provide the correct information.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise&lt;Void>}
+ */
+async function addNewUser(req, res) {
+
+    try {
+
+        // checks that passwords match
+        if(req.body.password !== req.body.password_repeat)
+            return fetchAlert(req, res, "Passwords do not match.");
+
+        // checks for existing email and username
+        const emailUsers = await usersModel.selectByEmail(req.body.email);
+        if(emailUsers.length > 0)
+            return fetchAlert(req, res, "Account with that email already exists.");
+
+        const usernameUsers = await usersModel.selectByUsername(req.body.username);
+        if(usernameUsers.length > 0)
+            return fetchAlert(req, res, "Username already taken.");
+
+        // inserts new user with a new game record and the first unlockable character, assuming it starts at 1.
+        const saltRounds = 10;
+        const hash = await bcrypt.hash(req.body.password, saltRounds);
+        const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
+
+        console.log("Successful sign up!");
+
+        // sets session data
+        req.session.isAuth = true;
+        req.session.accountID = insertInfo.insertId;
+        req.session.username = req.body.username;
+        req.session.isAdmin = false;
+        
+        return fetchRedirect(req, res, "And successful log in!");
+
+    } catch (error) {
+        console.error("Registration error: ", error);
+        return fetchAlert(req, res, "An error occurred during registration.");
+    }
+};
+
+/**
+ * @async
+ * @function isAuthenticated
+ * @memberof module:controllers/auth
+ * @description Checks if the user is authenticated.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @param {function} next - The next middleware function in the Express stack.
+ * @returns {Promise&lt;Void>}
+ */
+function isAuthenticated(req, res, next) {
+    if (req.session &amp;&amp; req.session.isAuth &amp;&amp; req.session.accountID)
+        return next();
+    res.status(401).json({ message: 'Authentication required' });
+}
+
+/**
+ * @async
+ * @function isAdmin
+ * @memberof module:controllers/auth
+ * @description Checks if the user is an admin.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @param {function} next - The next middleware function in the Express stack.
+ * @returns {Promise&lt;Void>}
+*/
+function isAdmin(req, res, next) {
+    if (req.session &amp;&amp; req.session.isAuth &amp;&amp; req.session.isAdmin)
+        return next();
+    res.status(403).json({ message: 'Admin access required' });
+}
+
+module.exports = {
+    checkCredentials,
+    addNewUser,
+    isAuthenticated,
+    isAdmin
+};
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-config_database.html">config/database</a></li><li><a href="module-controllers_account.html">controllers/account</a></li><li><a href="module-controllers_auth.html">controllers/auth</a></li><li><a href="module-controllers_character.html">controllers/character</a></li><li><a href="module-controllers_game.html">controllers/game</a></li><li><a href="module-controllers_leaderboard.html">controllers/leaderboard</a></li><li><a href="module-models_Characters.html">models/Characters</a></li><li><a href="module-models_Games.html">models/Games</a></li><li><a href="module-models_Traits.html">models/Traits</a></li><li><a href="module-models_UnlockedCharacters.html">models/UnlockedCharacters</a></li><li><a href="module-models_Users.html">models/Users</a></li><li><a href="module-routes_character.html">routes/character</a></li><li><a href="module-routes_game.html">routes/game</a></li><li><a href="module-routes_index.html">routes/index</a></li><li><a href="module-routes_profile.html">routes/profile</a></li><li><a href="module-routes_score.html">routes/score</a></li><li><a href="module-utility_fetchHelpers.html">utility/fetchHelpers</a></li></ul><h3>Classes</h3><ul><li><a href="module-controllers_game.Game.html">Game</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Apr 26 2025 19:36:16 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

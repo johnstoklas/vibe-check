@@ -1,45 +1,66 @@
+/**
+ * @module utility/fetchHelpers
+ * @description Utility functions for client-side alerts, redirects, and reloads via fetch responses
+ */
+
 const express = require('express');
 
-/* Alerts the client with a status code and message usually when an error condition is met, logs that message, and redirects the user to a different part of the website. TODO: has not been coordinated with the client yet. */
-async function alertRedirect(req, res, message, redirectPath = '/') {
+/**
+ * Sends an alert message back to the client and logs the message
+ * @async
+ * @function fetchAlert
+ * @param {express.Request} req - The Express request object.
+ * @param {express.Response} res - The Express response object.
+ * @param {string} message - The message to display in the alert.
+ * @returns {Promise<void>}
+ */
+async function fetchAlert(req, res, message) {
     console.log(message);
-    req.session.showAlert = true;
-    req.session.alertMessage = message;
-    res.redirect(redirectPath);
-};
+    res.json({alert: true, message});
+}
 
-/* Indicates that no alert is required and logs a success message, redirecting the user to a different part of the website afterwards. TODO: has not been coordinated with the client yet. */
-async function noAlertRedirect(req, res, message, redirectPath = '/') {
+/**
+ * Sends a redirect instruction back to the client and logs the message
+ * @async
+ * @function fetchRedirect
+ * @param {express.Request} req - The Express request object.
+ * @param {express.Response} res - The Express response object.
+ * @param {string} message - The message to log.
+ * @param {string} [redirectPath='/'] - The path to redirect the client to.
+ * @returns {Promise<void>}
+ */
+async function fetchRedirect(req, res, message, redirectPath = '/') {
     console.log(message);
-    req.session.showAlert = false;
-    req.session.alertMessage = "No alert required!";
-    res.redirect(redirectPath);
-};
+    res.json({redirect: true, redirectPath});
+}
 
-/* Waits for a specific value to be reached. */
-async function waitForValue(variableGetter, targetValue, timeout = 10000, interval = 100) {
+/**
+ * Sends both an alert and a redirect instruction back to the client and logs the message
+ * @async
+ * @function fetchAlertRedirect
+ * @param {express.Request} req - The Express request object.
+ * @param {express.Response} res - The Express response object.
+ * @param {string} message - The message to display in the alert.
+ * @param {string} [redirectPath='/'] - The path to redirect the client to.
+ * @returns {Promise<void>}
+ */
+async function fetchAlertRedirect(req, res, message, redirectPath = '/') {
+    console.log(message);
+    res.json({alert: true, redirect: true, message, redirectPath});
+}
 
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeout) {
-      if(variableGetter() === targetValue)
-        return;
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  
-    throw new Error(`Timeout waiting for value to become ${targetValue}`);
-};
+/**
+ * Sends a reload instruction back to the client and logs the message
+ * @async
+ * @function fetchReload
+ * @param {express.Request} req - The Express request object.
+ * @param {express.Response} res - The Express response object.
+ * @param {string} message - The message to log.
+ * @returns {Promise<void>}
+ */
+async function fetchReload(req, res, message) {
+    console.log(message);
+    res.json({reload: true});
+}
 
-/* Waits for a different value to be reached from the original. */
-async function waitForDifference(variableGetter, originalValue, timeout = 10000, interval = 100) {
-   
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeout) {
-      if(variableGetter() !== originalValue)
-        return;
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  
-    throw new Error(`Timeout waiting for value to differ from ${originalValue}`);
-};
-
-module.exports = {alertRedirect, noAlertRedirect, waitForValue, waitForDifference}
+module.exports = {fetchAlert, fetchRedirect, fetchAlertRedirect, fetchReload};

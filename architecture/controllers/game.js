@@ -1,30 +1,55 @@
 const express = require('express');
 
-// models and utility
+// models
 const { unlockedCharactersModel }= require('../models/UnlockedCharacters');
 const gamesModel = require('../models/Games').Games;
-const {alertRedirect, noAlertRedirect, waitForValue, waitForDifference} = require('../utility');
 
-// miscellaneous
-var game;
+/**
+ * @module controllers/game
+ * @description Handles all of the game functionality. This file is large and very important. 
+ * This handles user inputs being sent to the backend via Web Sockets. We are initalizing a game session here
+ * and also keep tracking of player health, player money, and character's health.
+ */
 
 // middleware
-/* Checks for player authentication and renders the game page. */
+/**
+ * @async
+ * @function startGame
+ * @memberof module:controllers/game
+ * @description Checks for player authentication and renders the game page.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise<void>}
+ */
 async function startGame(req, res) {
 
     // checks if the user's current session is authenticated
-    if(!req.session.isAuth)
-        return alertRedirect(req, res, "Authentication is required to play game.", '/');
+    if(!req.session.isAuth) {
+        console.log("Authentication is required to play game.");
+        return res.redirect("/");
+    }
 
     // renders the game page
     res.render('pages/game');
 };
 
-/* Starts and plays the game and dynamically displays gameplay to the user, using the WebSocket API with Express. */
+/**
+ * @async
+ * @function playGame
+ * @memberof module:controllers/game
+ * @description Starts and plays the game and dynamically displays gameplay to the user, handling messages such as 
+ * start game, character selction, action seleciton, and ignore character.
+ * @param {express.Request} ws - The WebSocket connection.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise<void>}
+ */
 async function playGame(ws, req) {
 
     // logs a connection message with the client
     console.log("New client connected");
+
+    // initializes the game
+    let game;
 
     // initializes the game
     if (game == null || game.hasEnded) {
@@ -48,6 +73,14 @@ async function playGame(ws, req) {
     // runs subsequent rounds of the game
     ws.on("message", async (msg) => {
         const data = JSON.parse(msg);
+
+        if (data.type === "start_game") {
+            game = await Game.init(ws, req);
+            ws.send(JSON.stringify({
+                game: game,
+                type: 'initGame',
+            }));
+        }
 
         if (data.type === "character_selection") {
             state.char_index = data.char_index;
@@ -90,8 +123,12 @@ async function playGame(ws, req) {
     });
 }
 
-// class definitions
-/* Bundles all of our game objects together under a single Game object. */
+/**
+ * Bundles all of our game objects together under a single Game object.
+ * 
+ * @class
+ * @memberof module:controllers/game
+ */
 class Game {
 
     // a private key, which makes our constructor private to anything outside the class
@@ -109,7 +146,14 @@ class Game {
         {name: 'Help with Groceries', cost: 0},
         {name: 'Surprise', cost: 5}];
 
-    /* Constructs a Game from game objects. */
+    /**
+     * @constructor
+     * @param {Array<Character>} characters - The characters involved in the game, each with custom behavior
+     * @param {number} score - Initial score for the game
+     * @param {number} money - Starting money for the player
+     * @param {number} round - The starting round number
+     * @param {*} key - Private instantiation key
+     */
     constructor(characters, score, money, round, key) {
 
         if(key !== Game.#privateKey)
@@ -124,7 +168,13 @@ class Game {
         this.isValidAction = false;
     }
 
-    /* Initializes the Game by generating starting game objects (like characters, score, etc.). Uses the factory-method template to replace the use of a constructor. */
+    /**
+     * @async
+     * @description Initializes the Game by generating starting game objects (like characters, score, etc.). Uses the factory-method template to replace the use of a constructor. 
+     * @param {WebSocket} ws - The WebSocket connection.
+     * @param {express.Response} req - The Express request object used to render the page or redirect.
+     * @returns {Promise<Game>}
+     */
     static async init(ws, req) {
 
         // declares that the game is running and stores it in the session
@@ -161,22 +211,26 @@ class Game {
         return new Game(characters, 0, 50, 1, Game.#privateKey);
     };
 
-    /* Runs a single round of our game. */
+    /**
+     * @async
+     * @description Runs a single round of our game by updating score, money, and character health.
+     * @param {WebSocket} ws - The WebSocket connection.
+     * @param {Object} state - The game state.
+     * @returns {Promise<void>}
+     */
     async runRound(ws, state) {
 
+        if (!game) {
+            ws.send(JSON.stringify({ type: "error", message: "Game not initialized yet" }));
+            return;
+        }
+          
         // make sure the game has not ended yet before the round can play out
         if(this.hasEnded) return;
     
         // finds which character and action the player chose
         const charIndex = state.char_index;
         const actionIndex = state.action_index;
-
-
-        // checks if user clicked on the same character twice
-        /*if(charIndex == state.previous_char_index) {
-            ws.send(JSON.stringify({type: "invalidPlay",}));
-            return;
-        }*/
 
         //checks if a character has been ignored
         if(state.was_ignored) {
@@ -207,12 +261,19 @@ class Game {
             return;
         }
 
-
         // checks if the player has enough money to pay for the action
         if (this.currentActions[actionIndex].cost <= this.money) {
             this.money -= this.currentActions[actionIndex].cost;
+            ws.send(JSON.stringify({
+                type: "valid_action",
+                message: "You don't have enough money for that action!"
+            }));
         }
         else {
+            ws.send(JSON.stringify({
+                type: "invalid_action",
+                message: "You don't have enough money for that action!"
+            }));
             return;
         }
 
@@ -224,18 +285,19 @@ class Game {
                 return { name, goodtrait: parseInt(good) };
             });
 
+
         // checks if the action should positively or negatively affect player score and character health
         for(const trait of traits) {
-            if(trait.name !== this.currentActions[actionIndex].name)
+            if(trait.name.trim().toLowerCase() !== this.currentActions[actionIndex].name.trim().toLowerCase())
                 continue;
             
             if(trait.goodtrait === 1) {
                 this.characters[charIndex].incrementHealth(5);
-                this.score += 5 * this.characters[charIndex].character.difficulty;
+                this.score += (5 * this.characters[charIndex].character.difficulty);
             }
             else {
                 this.characters[charIndex].decrementHealth(10);
-                this.score -= 5 * this.characters[charIndex].character.difficulty;
+                this.score -= (5 * this.characters[charIndex].character.difficulty);
             }
             break;
         }
@@ -250,7 +312,7 @@ class Game {
                 currentChar.interactionlessRounds = 0;
 
             if(currentChar.interactionlessRounds > 0)
-                currentChar.decrementHealth(2 * currentChar.interactionlessRounds);
+                currentChar.decrementHealth(1 * currentChar.interactionlessRounds);
         }
 
         // checks whether any characters' health is equal to zero
@@ -285,7 +347,12 @@ class Game {
         console.log("Game round ended successful.");
     }
 
-    /* Grabs random unique items from an array without changing the original array. */
+    /**
+     * @description Grabs random unique items from an array without changing the original array (used for randomizing actions).
+     * @param {Array<Object>} array - Array of items to be randomized.
+     * @param {Integer} num - The size of the array that is being returned.
+     * @returns {Array<Object>}
+     */
     uniqueRandomItems(array, num) {
             
         let arr = array.slice(0);
