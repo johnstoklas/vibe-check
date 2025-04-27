@@ -25,11 +25,9 @@
     "www": "^0.0.0"
   },
   "devDependencies": {
-    "jsdoc": "^4.0.4"
+    "jsdoc": "^4.0.4",
     "ws": "^8.18.1",
-    "www": "^0.0.0"
-  },
-  "devDependencies": {
+    "www": "^0.0.0",
     "jest": "^29.7.0",
     "supertest": "^7.1.0"
   }
