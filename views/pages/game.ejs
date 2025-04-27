@@ -6,10 +6,9 @@
     <title>Vibe Check</title>
     <link rel='stylesheet' href='/stylesheets/styles.css'/>
   </head>
-  <%-include('../partials/common_head.ejs')%>
   <script>
 
-    // initalize our web socket connection
+    // initialize our web socket connection
     const socket = new WebSocket("ws://localhost:8080/game");
 
     // if the game is refreshed or we are sent to the page by button, a new game is started
