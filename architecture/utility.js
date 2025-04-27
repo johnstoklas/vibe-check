@@ -1,45 +1,27 @@
 const express = require('express');
 
-/* Alerts the client with a status code and message usually when an error condition is met, logs that message, and redirects the user to a different part of the website. TODO: has not been coordinated with the client yet. */
-async function alertRedirect(req, res, message, redirectPath = '/') {
+/* Alerts the client with a message usually when an error condition is met with a fetch and then logs the message. */
+async function fetchAlert(req, res, message) {
     console.log(message);
-    req.session.showAlert = true;
-    req.session.alertMessage = message;
-    res.redirect(redirectPath);
+    res.json({alert: true, message});
 };
 
-/* Indicates that no alert is required and logs a success message, redirecting the user to a different part of the website afterwards. TODO: has not been coordinated with the client yet. */
-async function noAlertRedirect(req, res, message, redirectPath = '/') {
+/* Logs a message (usually a successful one) and then redirects the user to a different part of the website afterwards with a fetch. */
+async function fetchRedirect(req, res, message, redirectPath = '/') {
     console.log(message);
-    req.session.showAlert = false;
-    req.session.alertMessage = "No alert required!";
-    res.redirect(redirectPath);
+    res.json({redirect: true, redirectPath});
 };
 
-/* Waits for a specific value to be reached. */
-async function waitForValue(variableGetter, targetValue, timeout = 10000, interval = 100) {
-
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeout) {
-      if(variableGetter() === targetValue)
-        return;
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  
-    throw new Error(`Timeout waiting for value to become ${targetValue}`);
+/* Combines the two prior functions and allows both an alert to be called and a redirect to occur afterwards. */
+async function fetchAlertRedirect(req, res, message, redirectPath = '/') {
+    console.log(message);
+    res.json({alert: true, redirect: true, message, redirectPath});
 };
 
-/* Waits for a different value to be reached from the original. */
-async function waitForDifference(variableGetter, originalValue, timeout = 10000, interval = 100) {
-   
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeout) {
-      if(variableGetter() !== originalValue)
-        return;
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  
-    throw new Error(`Timeout waiting for value to differ from ${originalValue}`);
+/* Logs a message and then reloads the current page. */
+async function fetchReload(req, res, message) {
+    console.log(message);
+    res.json({reload: true});
 };
 
-module.exports = {alertRedirect, noAlertRedirect, waitForValue, waitForDifference}
+module.exports = {fetchAlert, fetchRedirect, fetchAlertRedirect, fetchReload};

@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html>
-    <body>
-        Leaderboard
-        <% gamesArr.forEach((game) => {%>
-            <%= [JSON.stringify(game[0]), JSON.stringify(game[1])] %>
-        <% }); %>
-    </body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+  </head>
+  <body>
+    Leaderboard
+    <% gamesArr.forEach((game) => {%>
+      <%= [JSON.stringify(game[0]), JSON.stringify(game[1])] %>
+    <% }); %>
+  </body>
 </html>

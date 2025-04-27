@@ -1,0 +1,27 @@
+<script>
+	async function commonFetch(formData, endpoint) {
+		try {
+			const res = await fetch(endpoint, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(formData)
+		});
+
+		const result = await res.json();
+		if(result.alert && result.redirect) {
+			alert(result.message);
+			window.location.href = result.redirectPath;
+		} else if(result.alert)
+			alert(result.message);
+		else if(result.redirect)
+			window.location.href = result.redirectPath;
+		else if(result.reload)
+			window.location.reload();
+
+		} catch (err) {
+			alert("Fetch error: " + err.message);
+		}
+	}
+</script>

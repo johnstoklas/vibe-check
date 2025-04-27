@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
-  <%-include('../partials/common_head.ejs')%>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+  </head>
   <script>
     function showLogSign() {
       const partial = document.getElementById('log-sign-container');
@@ -11,10 +16,14 @@
   <body>
     <section id="main-header">
       <div style="float: right;">
-        <button onclick="showLogSign()">P</button>
+        <% if(!isAuth) { %>
+          <button onclick="showLogSign()">P</button>
+        <% } else { %>
+          <button onclick="location.href='/account'">P</button>
+        <% } %>
       </div>
       <div>
-        <button>L</button>
+        <button onclick="location.href='/leaderboard'">L</button>
       </div>
     </section>
     <section id="main-screen-container"> 
@@ -184,7 +193,7 @@
       border-radius: 5px;
     }
 
-    form > input {
+    form > input, .cancel-button {
       background-color: white;
       color: black;
       font-family: "Pixels";
@@ -194,9 +203,27 @@
       border-radius: 5px;
     }
 
-    form > input:hover {
+    form > input:hover, .cancel-button:hover {
       cursor: pointer;
       background-color: gray;
+    }
+
+    .exit-button {
+      position: absolute;
+      top: 10px;
+	    right: 15px;
+      background-color: #2e8df7;
+      border: none;
+      color: white;
+      padding: 5px 5px;
+      text-align: center;
+      display: inline-block;
+      font-size: 20px;
+    }
+    
+    .exit-button:hover {
+      cursor: pointer;
+      color: rgb(160, 160, 160);
     }
   </style>
 </html>

@@ -5,6 +5,9 @@ const router = express.Router();
  * @module routes/index
  */
 
+// controllers
+const authController = require('../controllers/auth.js');
+
 // GET requests
 /**
  * GET
@@ -18,12 +21,15 @@ const router = express.Router();
  * @param {express.Response} res - Express response object
  */
 router.get('/', (req, res) => {
-    res.render('pages/main');
+    res.render('pages/main', {isAuth: req.session.isAuth});
 });
-
 /* TODO: router.get('/instructions', (req, res) => {
     res.render('pages/instructions');
 });*/
+
+// POST requests
+router.post('/login', authController.checkCredentials);
+router.post('/signup', authController.addNewUser);
 
 // exports
 module.exports = router;
