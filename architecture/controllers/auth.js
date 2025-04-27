@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const usersModel = require('../models/Users.js').Users;
 const {alertRedirect, noAlertRedirect} = require('../utility.js');
 const unlockModel = require('../models/UnlockedCharacters.js').UnlockedCharacters;
+const charactersModel = require('../models/Characters').Characters;
 
 /* Checks to make sure that the credentials that a user is logging in with are correct. */
 async function checkCredentials(req, res) {
@@ -60,30 +61,19 @@ async function addNewUser(req, res) {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
 
-        // Unlock the first 8 characters for the new user
-        try {
-            for (let characterId = 1; characterId <= 8; characterId++) {
-                await unlockModel.unlock(insertInfo.insertId, characterId);
-            }
-            console.log(`Unlocked first 8 characters for user ${req.body.username}`);
-        } catch (unlockError) {
-            console.error("Error unlocking characters:", unlockError);
-            // Continue with login even if character unlock fails
-        }
-
-        console.log("Successful sign up!");
-
-        // sets session data
+        // Set up session
         req.session.isAuth = true;
         req.session.accountID = insertInfo.insertId;
         req.session.username = req.body.username;
         req.session.isAdmin = false;
-        
-        return noAlertRedirect(req, res, "And successful log in!", '/');
+
+        // Moved initial character unlock to the unlockConditions controller logic
+
+        return noAlertRedirect(req, res, "Successfully registered and logged in!", '/' );
 
     } catch (error) {
         console.error("Registration error: ", error);
-        return alertRedirect(req, res, "An error occurred during registration.",  '/');
+        return alertRedirect(req, res, "An error occurred during registration.", '/');
     }
 };
 
