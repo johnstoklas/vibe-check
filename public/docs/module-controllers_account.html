@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: controllers/character</title>
+    <title>JSDoc: Module: controllers/account</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: controllers/character</h1>
+    <h1 class="page-title">Module: controllers/account</h1>
 
     
 
@@ -64,7 +64,7 @@
     
 
     
-    <h4 class="name" id=".getAllCharacters"><span class="type-signature">(async, static) </span>getAllCharacters<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".changeEmail"><span class="type-signature">(async, static) </span>changeEmail<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;Void>}</span></h4>
     
 
     
@@ -72,7 +72,7 @@
 
 
 <div class="description">
-    <p>Gets all characters even if they are not unlocked (SQL query is in Characters model).</p>
+    <p>When a user tries to change their email, this functions calls the SQL query to update the username in the database.</p>
 </div>
 
 
@@ -188,7 +188,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line12">line 12</a>
+        <a href="controllers_account.js.html">controllers/account.js</a>, <a href="controllers_account.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -224,7 +224,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;Void></span>
 
 
     </dd>
@@ -242,7 +242,7 @@
     
 
     
-    <h4 class="name" id=".getAllTraits"><span class="type-signature">(async, static) </span>getAllTraits<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".changePassword"><span class="type-signature">(async, static) </span>changePassword<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;Void>}</span></h4>
     
 
     
@@ -250,7 +250,7 @@
 
 
 <div class="description">
-    <p>Gets all possible traits a character can have in order (SQL query is in Characters model).</p>
+    <p>When a user tries to change their password, this functions calls the SQL query to update the username in the database.</p>
 </div>
 
 
@@ -366,7 +366,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line35">line 35</a>
+        <a href="controllers_account.js.html">controllers/account.js</a>, <a href="controllers_account.js.html#line100">line 100</a>
     </li></ul></dd>
     
 
@@ -402,7 +402,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;Void></span>
 
 
     </dd>
@@ -420,7 +420,7 @@
     
 
     
-    <h4 class="name" id=".getCharactersByTrait"><span class="type-signature">(async, static) </span>getCharactersByTrait<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".changeUsername"><span class="type-signature">(async, static) </span>changeUsername<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;Void>}</span></h4>
     
 
     
@@ -428,7 +428,7 @@
 
 
 <div class="description">
-    <p>Gets all the character with a specific trait using traitID (SQL query is in the Characters model).</p>
+    <p>When a user tries to change their username, this functions calls the SQL query to update the username in the database.</p>
 </div>
 
 
@@ -544,7 +544,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line53">line 53</a>
+        <a href="controllers_account.js.html">controllers/account.js</a>, <a href="controllers_account.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -580,7 +580,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;Void></span>
 
 
     </dd>
@@ -598,7 +598,7 @@
     
 
     
-    <h4 class="name" id=".getHighScores"><span class="type-signature">(async, static) </span>getHighScores<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".deleteAccount"><span class="type-signature">(async, static) </span>deleteAccount<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;Void>}</span></h4>
     
 
     
@@ -606,7 +606,7 @@
 
 
 <div class="description">
-    <p>Gets the top 5 scores (regardless if they are all by the same user) and then the users top score.</p>
+    <p>If the user requests their account be deleted, we send a SQL query to update the database accordingly.</p>
 </div>
 
 
@@ -722,7 +722,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_leaderboard.js.html">controllers/leaderboard.js</a>, <a href="controllers_leaderboard.js.html#line10">line 10</a>
+        <a href="controllers_account.js.html">controllers/account.js</a>, <a href="controllers_account.js.html#line170">line 170</a>
     </li></ul></dd>
     
 
@@ -758,7 +758,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;Void></span>
 
 
     </dd>
@@ -776,7 +776,7 @@
     
 
     
-    <h4 class="name" id=".getUnlockedCharacters"><span class="type-signature">(async, static) </span>getUnlockedCharacters<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".gatherAccountData"><span class="type-signature">(async, static) </span>gatherAccountData<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;Void>}</span></h4>
     
 
     
@@ -784,7 +784,7 @@
 
 
 <div class="description">
-    <p>Gets all the unlocked characters for a specific user based on the session's user id.</p>
+    <p>Gathers the account data for a user.</p>
 </div>
 
 
@@ -900,7 +900,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line78">line 78</a>
+        <a href="controllers_account.js.html">controllers/account.js</a>, <a href="controllers_account.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -936,7 +936,185 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;Void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".logOut"><span class="type-signature">(async, static) </span>logOut<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;Void>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Logs the user out of their session and then redirects them to the home page.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">express.Request</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Express request object, expected to contain a session with <code>isAuth</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">express.Response</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Express response object used to render the page or redirect.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_account.js.html">controllers/account.js</a>, <a href="controllers_account.js.html#line142">line 142</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Void></span>
 
 
     </dd>

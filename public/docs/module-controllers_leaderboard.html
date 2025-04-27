@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: models/Traits.js</title>
+    <title>JSDoc: Module: controllers/leaderboard</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,49 +17,52 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: models/Traits.js</h1>
+    <h1 class="page-title">Module: controllers/leaderboard</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const express = require('express');
+        
+    
+</header>
 
-const mysql = require('mysql2/promise');
-const connection = require('../database').databaseConnection;
+<article>
+    <div class="container-overview">
+    
+        
 
-/**
- * @module models/Traits
- */
+        
+    
+    </div>
 
-/**
- * @typedef {Object} Trait
- * @property {int} id
- * @property {string} trait_name
- * @property {int} goodtrait
- */
+    
 
-class Traits {
-    /**
-     * Selects all possible traits from the database in order.
-     * 
-     * @async
-     * @function selectAllOrdered
-     * @memberof models/Traits
-     * @returns {Promise&lt;Array&lt;Traits>>} 
-    */
-    static async selectAllOrdered() {
-        const [traits] = await connection.query('SELECT * FROM traits ORDER BY trait_name');
-        return traits;
-    }
-}
+    
 
-exports.Traits = Traits;</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

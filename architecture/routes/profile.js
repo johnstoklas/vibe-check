@@ -7,6 +7,7 @@ const router = express.Router();
 
 // controllers
 const accountController = require('../controllers/account.js');
+const authController = require('../controllers/auth.js')
 
 // GET requests
 router.get('/', accountController.gatherAccountData);

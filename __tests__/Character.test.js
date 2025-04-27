@@ -23,8 +23,6 @@ jest.mock('../architecture/models/UnlockedCharacters', () => ({
     }
 }));
 
-
-
 describe('Character Controller', () => {
 
     let req;
