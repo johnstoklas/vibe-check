@@ -118,7 +118,7 @@ async function checkCharacterUnlock(req, res) {
                     
                     res.json({
                         characterId,
-                        isUnlocked: true,  // Changed from unlocked to isUnlocked
+                        isUnlocked: true,  
                         message: 'Character successfully unlocked!'
                     });
                 } catch (unlockError) {
@@ -131,14 +131,14 @@ async function checkCharacterUnlock(req, res) {
             } else {
                 res.json({
                     characterId,
-                    isUnlocked: false,  // Changed from unlocked to isUnlocked
+                    isUnlocked: false,  
                     message: 'Unlock conditions not met'
                 });
             }
         } else {
             res.json({
                 characterId,
-                isUnlocked: true,  // Changed from unlocked to isUnlocked
+                isUnlocked: true,  
                 message: 'Character is already unlocked'
             });
         }
