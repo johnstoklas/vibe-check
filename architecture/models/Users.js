@@ -100,4 +100,4 @@ class Users {
     
 }
 
-module.exports = Users;
+exports.Users = Users;

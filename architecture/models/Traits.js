@@ -34,4 +34,4 @@ class Traits {
     }
 }
 
-module.exports = Traits;
+exports.Traits = Traits;

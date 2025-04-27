@@ -49,4 +49,4 @@ class Games {
     }
 }
 
-module.exports = Games;
+exports.Games = Games;
