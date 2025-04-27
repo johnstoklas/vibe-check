@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 
 // models and utility
-const usersModel = require('../models/Users').Users;
+const { Users: usersModel } = require('../models/Users');
 const {fetchAlert, fetchRedirect, fetchAlertRedirect } = require('../utility');
 
 /**

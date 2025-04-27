@@ -94,4 +94,4 @@ class Characters {
 
 }
 
-exports.Characters = Characters;
+module.exports = { Characters };

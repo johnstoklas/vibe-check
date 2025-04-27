@@ -1,25 +1,11 @@
 const express = require('express');
 
 // models
-const charactersModel = require('../models/Characters').Characters;
-const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
-const traitsModel = require('../models/Traits').Traits;
+const { Characters: charactersModel } = require('../models/Characters');
 const { UnlockConditions } = require('../models/UnlockConditions');
+const { UnlockedCharacters: unlockedCharactersModel } = require('../models/UnlockedCharacters'); // <-- ADD THIS
 
-/**
- * @module controllers/character
- * @description Handles all of the logic for fetching character data that is then sent to various pages.
- */
-
-/**
- * @async
- * @function getAllCharacters
- * @memberof module:controllers/character
- * @description Gets all characters even if they are not unlocked (SQL query is in Characters model).
- * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
- * @param {express.Response} res - The Express response object used to render the page or redirect.
- * @returns {void}
- */
+// Gets all characters
 async function getAllCharacters(req, res) {
     try {
         const characters = await charactersModel.selectAllWithTraits();
@@ -34,42 +20,8 @@ async function getAllCharacters(req, res) {
     }
 };
 
-/**
- * @async
- * @function getAllTraits
- * @memberof module:controllers/character
- * @description Gets all possible traits a character can have in order (SQL query is in Characters model).
- * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
- * @param {express.Response} res - The Express response object used to render the page or redirect.
- * @returns {void}
- */
-async function getAllTraits(req, res) {
-    try {
-        const traits = await traitsModel.selectAllOrdered();
-        res.json({ data: traits });
-    } catch (error) {
-        throw new Error('Failed to fetch traits');
-    }
-};
 
-async function getOnlyGoodTraits(req, res) {
-    try {
-        const traits = await traitsModel.getgoodTrait(req.params.traitID);
-        res.json({ data: traits });
-    } catch (error) {
-        throw new Error('Failed to fetch good trait');
-    }
-}
-
-/**
- * @async
- * @function getCharactersByTrait
- * @memberof module:controllers/character
- * @description Gets all the character with a specific trait using traitID (SQL query is in the Characters model).
- * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
- * @param {express.Response} res - The Express response object used to render the page or redirect.
- * @returns {void}
- */
+// Gets characters by trait
 async function getCharactersByTrait(req, res) {
     try {
         const { traitID } = req.params;
@@ -86,18 +38,10 @@ async function getCharactersByTrait(req, res) {
     }
 };
 
-/**
- * @async
- * @function getUnlockedCharacters
- * @memberof module:controllers/character
- * @description Gets all the unlocked characters for a specific user based on the session's user id.
- * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
- * @param {express.Response} res - The Express response object used to render the page or redirect.
- * @returns {void}
- */
+// Gets unlocked characters for current user
 async function getUnlockedCharacters(req, res) {
     try {
-        if (!req.session.isAuth)
+        if (!req.session.accountID)
             throw new Error('User not authenticated');
 
         // Check for new unlocks
@@ -111,9 +55,6 @@ async function getUnlockedCharacters(req, res) {
             }))
         });
     } catch (error) {
-        if (error.message === 'User not authenticated') {
-            throw error; 
-        }
         throw new Error('Failed to fetch unlocked characters');
     }
 };
@@ -157,7 +98,7 @@ async function checkCharacterUnlock(req, res) {
                     
                     res.json({
                         characterId,
-                        isUnlocked: true,  // Changed from unlocked to isUnlocked
+                        isUnlocked: true,  
                         message: 'Character successfully unlocked!'
                     });
                 } catch (unlockError) {
@@ -170,14 +111,14 @@ async function checkCharacterUnlock(req, res) {
             } else {
                 res.json({
                     characterId,
-                    isUnlocked: false,  // Changed from unlocked to isUnlocked
+                    isUnlocked: false,  
                     message: 'Unlock conditions not met'
                 });
             }
         } else {
             res.json({
                 characterId,
-                isUnlocked: true,  // Changed from unlocked to isUnlocked
+                isUnlocked: true,  
                 message: 'Character is already unlocked'
             });
         }
@@ -192,8 +133,6 @@ async function checkCharacterUnlock(req, res) {
 
 module.exports = {
     getAllCharacters,
-    getAllTraits,
-    getOnlyGoodTraits,
     getCharactersByTrait,
     getUnlockedCharacters,
     checkCharacterUnlock

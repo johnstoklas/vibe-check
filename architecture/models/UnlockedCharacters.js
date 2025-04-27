@@ -121,4 +121,4 @@ class UnlockedCharacters {
     }
 }
 
-exports.UnlockedCharacters = UnlockedCharacters;
+module.exports = { UnlockedCharacters };
