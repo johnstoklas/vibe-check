@@ -94,4 +94,9 @@ class Characters {
 
 }
 
+<<<<<<< HEAD
+module.exports = { charactersModel };
+
+=======
 module.exports = Characters;
+>>>>>>> main

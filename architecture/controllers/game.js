@@ -1,7 +1,7 @@
 const express = require('express');
 
 // models
-const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
+const { unlockedCharactersModel }= require('../models/UnlockedCharacters');
 const gamesModel = require('../models/Games').Games;
 
 /**

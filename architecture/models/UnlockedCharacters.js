@@ -121,4 +121,8 @@ class UnlockedCharacters {
     }
 }
 
+<<<<<<< HEAD
+module.exports ={ charactersModel };
+=======
 module.exports = UnlockedCharacters;
+>>>>>>> main
