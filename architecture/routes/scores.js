@@ -3,6 +3,7 @@ const router = express.Router();
 
 /**
  * @module routes/score
+ * @description Handles routing for the leaderboard page.
  */
 
 // controllers

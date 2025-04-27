@@ -3,6 +3,7 @@ const router = express.Router();
 
 /**
  * @module routes/profile
+ * @description Handles routing for profile functionality.
  */
 
 // controllers

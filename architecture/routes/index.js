@@ -3,6 +3,7 @@ const router = express.Router();
 
 /**
  * @module routes/index
+ * @description Handles routing for the main page and instruction page.
  */
 
 // controllers

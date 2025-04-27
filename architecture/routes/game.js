@@ -3,6 +3,7 @@ const router = express.Router();
 
 /**
  * @module routes/game
+ * @description Handles routing for the game page, including web socket connection.
  */
 
 // controllers

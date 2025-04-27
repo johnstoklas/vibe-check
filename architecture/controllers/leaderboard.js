@@ -5,6 +5,7 @@ const gamesModel = require('../models/Games').Games;
 
 /**
  * @module controllers/leaderboard
+ * @description Handles logic for leaderboard and sending page right data for displaying scores.
  */
 
 /**

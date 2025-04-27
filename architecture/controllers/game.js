@@ -6,6 +6,9 @@ const gamesModel = require('../models/Games').Games;
 
 /**
  * @module controllers/game
+ * @description Handles all of the game functionality. This file is large and very important. 
+ * This handles user inputs being sent to the backend via Web Sockets. We are initalizing a game session here
+ * and also keep tracking of player health, player money, and character's health.
  */
 
 // middleware

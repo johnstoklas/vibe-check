@@ -7,6 +7,7 @@ const traitsModel = require('../models/Traits').Traits;
 
 /**
  * @module controllers/character
+ * @description Handles all of the logic for fetching character data that is then sent to various pages.
  */
 
 /**

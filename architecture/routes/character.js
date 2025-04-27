@@ -3,6 +3,7 @@ const router = express.Router();
 
 /**
  * @module routes/character
+ * @description Handles routing for character page.
  */
 
 // controllers

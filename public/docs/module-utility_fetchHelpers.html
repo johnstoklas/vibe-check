@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: controllers/character</title>
+    <title>JSDoc: Module: utility/fetchHelpers</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: controllers/character</h1>
+    <h1 class="page-title">Module: utility/fetchHelpers</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>Handles all of the logic for fetching character data that is then sent to various pages.</p></div>
+            <div class="description"><p>Utility functions for client-side alerts, redirects, and reloads via fetch responses</p></div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line8">line 8</a>
+        <a href="utility.js.html">utility.js</a>, <a href="utility.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -144,7 +144,7 @@
     
 
     
-    <h4 class="name" id=".getAllCharacters"><span class="type-signature">(async, static) </span>getAllCharacters<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id="~fetchAlert"><span class="type-signature">(async, inner) </span>fetchAlert<span class="signature">(req, res, message)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -152,7 +152,7 @@
 
 
 <div class="description">
-    <p>Gets all characters even if they are not unlocked (SQL query is in Characters model).</p>
+    <p>Sends an alert message back to the client and logs the message</p>
 </div>
 
 
@@ -204,7 +204,7 @@
 
             
 
-            <td class="description last"><p>The Express request object, expected to contain a session with <code>isAuth</code>.</p></td>
+            <td class="description last"><p>The Express request object.</p></td>
         </tr>
 
     
@@ -227,7 +227,30 @@
 
             
 
-            <td class="description last"><p>The Express response object used to render the page or redirect.</p></td>
+            <td class="description last"><p>The Express response object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The message to display in the alert.</p></td>
         </tr>
 
     
@@ -268,7 +291,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line13">line 13</a>
+        <a href="utility.js.html">utility.js</a>, <a href="utility.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -304,7 +327,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;void></span>
 
 
     </dd>
@@ -322,7 +345,7 @@
     
 
     
-    <h4 class="name" id=".getAllTraits"><span class="type-signature">(async, static) </span>getAllTraits<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id="~fetchAlertRedirect"><span class="type-signature">(async, inner) </span>fetchAlertRedirect<span class="signature">(req, res, message, redirectPath<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -330,7 +353,7 @@
 
 
 <div class="description">
-    <p>Gets all possible traits a character can have in order (SQL query is in Characters model).</p>
+    <p>Sends both an alert and a redirect instruction back to the client and logs the message</p>
 </div>
 
 
@@ -354,7 +377,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -379,10 +406,22 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>The Express request object, expected to contain a session with <code>isAuth</code>.</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The Express request object.</p></td>
         </tr>
 
     
@@ -402,10 +441,96 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>The Express response object used to render the page or redirect.</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The Express response object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The message to display in the alert.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redirectPath</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    '/'
+                
+                </td>
+            
+
+            <td class="description last"><p>The path to redirect the client to.</p></td>
         </tr>
 
     
@@ -446,7 +571,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line36">line 36</a>
+        <a href="utility.js.html">utility.js</a>, <a href="utility.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -482,7 +607,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;void></span>
 
 
     </dd>
@@ -500,7 +625,7 @@
     
 
     
-    <h4 class="name" id=".getCharactersByTrait"><span class="type-signature">(async, static) </span>getCharactersByTrait<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id="~fetchRedirect"><span class="type-signature">(async, inner) </span>fetchRedirect<span class="signature">(req, res, message, redirectPath<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -508,7 +633,7 @@
 
 
 <div class="description">
-    <p>Gets all the character with a specific trait using traitID (SQL query is in the Characters model).</p>
+    <p>Sends a redirect instruction back to the client and logs the message</p>
 </div>
 
 
@@ -532,7 +657,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -557,10 +686,22 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>The Express request object, expected to contain a session with <code>isAuth</code>.</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The Express request object.</p></td>
         </tr>
 
     
@@ -580,10 +721,96 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>The Express response object used to render the page or redirect.</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The Express response object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The message to log.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redirectPath</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    '/'
+                
+                </td>
+            
+
+            <td class="description last"><p>The path to redirect the client to.</p></td>
         </tr>
 
     
@@ -624,7 +851,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line54">line 54</a>
+        <a href="utility.js.html">utility.js</a>, <a href="utility.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -660,7 +887,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;void></span>
 
 
     </dd>
@@ -678,7 +905,7 @@
     
 
     
-    <h4 class="name" id=".getHighScores"><span class="type-signature">(async, static) </span>getHighScores<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id="~fetchReload"><span class="type-signature">(async, inner) </span>fetchReload<span class="signature">(req, res, message)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -686,7 +913,7 @@
 
 
 <div class="description">
-    <p>Gets the top 5 scores (regardless if they are all by the same user) and then the users top score.</p>
+    <p>Sends a reload instruction back to the client and logs the message</p>
 </div>
 
 
@@ -738,7 +965,7 @@
 
             
 
-            <td class="description last"><p>The Express request object, expected to contain a session with <code>isAuth</code>.</p></td>
+            <td class="description last"><p>The Express request object.</p></td>
         </tr>
 
     
@@ -761,7 +988,30 @@
 
             
 
-            <td class="description last"><p>The Express response object used to render the page or redirect.</p></td>
+            <td class="description last"><p>The Express response object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The message to log.</p></td>
         </tr>
 
     
@@ -802,7 +1052,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_leaderboard.js.html">controllers/leaderboard.js</a>, <a href="controllers_leaderboard.js.html#line11">line 11</a>
+        <a href="utility.js.html">utility.js</a>, <a href="utility.js.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -838,185 +1088,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".getUnlockedCharacters"><span class="type-signature">(async, static) </span>getUnlockedCharacters<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Gets all the unlocked characters for a specific user based on the session's user id.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">express.Request</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Express request object, expected to contain a session with <code>isAuth</code>.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">express.Response</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Express response object used to render the page or redirect.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_character.js.html">controllers/character.js</a>, <a href="controllers_character.js.html#line79">line 79</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
+<span class="param-type">Promise.&lt;void></span>
 
 
     </dd>
@@ -1050,7 +1122,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Apr 26 2025 19:36:16 GMT-0500 (Central Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Apr 26 2025 19:36:17 GMT-0500 (Central Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

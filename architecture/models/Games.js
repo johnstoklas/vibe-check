@@ -5,6 +5,7 @@ const connection = require('../database').databaseConnection;
 
 /**
  * @module models/Games
+ * @description Handles SQL queries for adding a game to the database and grabbing all the scores.
  */
 
 /**

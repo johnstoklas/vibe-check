@@ -5,6 +5,7 @@ const connection = require('../database').databaseConnection;
 
 /**
  * @module models/Traits
+ * @description Handles SQL queries for traits.
  */
 
 /**

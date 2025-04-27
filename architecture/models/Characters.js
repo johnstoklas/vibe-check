@@ -5,6 +5,7 @@ const connection = require('../database').databaseConnection;
 
 /**
  * @module models/Characters
+ * @description Handles all SQL queries for characters
  */
 
 /**

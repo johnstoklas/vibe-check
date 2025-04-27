@@ -8,6 +8,7 @@ const {fetchAlert, fetchRedirect, fetchAlertRedirect, fetchReload} = require('..
 
 /**
  * @module controllers/account
+ * @description Handles the logic for users wanting to change info about their account and gathering account info whenn the account page is clicked.
  */
 
 /**

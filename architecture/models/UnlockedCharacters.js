@@ -5,6 +5,7 @@ const connection = require('../database').databaseConnection;
 
 /**
  * @module models/UnlockedCharacters
+ * @description Handles SQL queries for unlocking characters and fetching unlocked characters
  */
 
 /**

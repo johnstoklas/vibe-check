@@ -5,6 +5,7 @@ const connection = require('../database').databaseConnection;
 
 /**
  * @module models/Users
+ * @description Handles SQL queries for user functions.
  */
 
 /**

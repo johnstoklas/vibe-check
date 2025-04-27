@@ -8,6 +8,7 @@ const {fetchAlert, fetchRedirect} = require('../utility.js');
 
 /**
  * @module controllers/auth
+ * @description Handles authentication logic including adding a new user, checking valid credentials, checking if they are authenticated, or if they are an admin.
  */
 
 /**
