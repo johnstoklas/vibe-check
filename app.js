@@ -1,6 +1,43 @@
 // requires
 const express = require('express');
 const app = express();
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerOptions = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Vibe Check Documentation',
+        version: '1.0.0',
+        description: 'Documentation for my Node.js + Express backend',
+      },
+      tags: [
+        {
+            name: 'Main Page',
+            description: 'This is the page you arrive at when going to the website'
+        },
+        {
+          name: 'Game',
+          description: 'Endpoints related to game logic and play',
+        },
+        {
+          name: 'Characters',
+          description: 'Endpoints related to character data',
+        },
+        {
+          name: 'Profile',
+          description: 'User profile endpoints',
+        },
+        {
+            name: 'Leaderboard',
+            description: 'Leaderboard endpoints',
+          },
+        ]
+    },
+    apis: ['./architecture/routes/*.js'],
+
+};
 
 const createError = require('http-errors');
 const path = require('path');
@@ -39,14 +76,16 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // routers and URL routes
+app.use(express.json());
+
 const profileRouter = require('./architecture/routes/profile');
 const characterRouter = require('./architecture/routes/character');
 const scoresRouter = require('./architecture/routes/scores');
 const indexRouter = require('./architecture/routes/index');
 const gameRouter = require('./architecture/routes/game');
 
-app.use('/auth', profileRouter);
-app.use('/api', characterRouter);
+app.use('/account', profileRouter);
+app.use('/characters', characterRouter);
 app.use('/leaderboard', scoresRouter);
 app.use('/', indexRouter);
 app.use('/game', gameRouter);
