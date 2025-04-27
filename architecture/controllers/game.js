@@ -2,7 +2,7 @@ const express = require('express');
 
 // models
 const { UnlockedCharacters: unlockedCharactersModel }= require('../models/UnlockedCharacters');
-const gamesModel = require('../models/Games').Games;
+const { Games: gamesModel} = require('../models/Games');
 
 /**
  * @module controllers/game
@@ -219,8 +219,7 @@ class Game {
      * @returns {Promise<void>}
      */
     async runRound(ws, state) {
-
-        if (!game) {
+        if (!this) {
             ws.send(JSON.stringify({ type: "error", message: "Game not initialized yet" }));
             return;
         }

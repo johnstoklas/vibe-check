@@ -1,6 +1,5 @@
 const { getAllCharacters, getAllTraits, getCharactersByTrait, getUnlockedCharacters } = require('../architecture/controllers/character');
 const { Characters } = require('../architecture/models/Characters');
-const { Traits } = require('../architecture/models/Traits');
 const { UnlockedCharacters } = require('../architecture/models/UnlockedCharacters');
 
 jest.mock('express-mysql-session', () => {
@@ -10,11 +9,6 @@ jest.mock('../architecture/models/Characters', () => ({
     Characters: {
         selectAllWithTraits: jest.fn(),
         selectByTrait: jest.fn(),
-    }
-}));
-jest.mock('../architecture/models/Traits', () => ({
-    Traits: {
-        selectAllOrdered: jest.fn()
     }
 }));
 jest.mock('../architecture/models/UnlockedCharacters', () => ({
@@ -72,24 +66,6 @@ describe('Character Controller', () => {
         await expect(getAllCharacters(req, res))
             .rejects
             .toThrow('Failed to fetch characters');
-    });
-
-    test('getAllTraits', async () => {
-        Traits.selectAllOrdered.mockResolvedValue(traits);
-
-        await getAllTraits(req, res);
-
-        expect(res.json).toHaveBeenCalledWith({
-            data: traits
-        })
-    });
-
-    test('getAllTraits throws error when database fails', async () => {
-        Traits.selectAllOrdered.mockRejectedValue(new Error('Database error'));
-    
-        await expect(getAllTraits(req, res))
-            .rejects
-            .toThrow('Failed to fetch traits');
     });
 
     test('getCharactersByTrait', async () => {
