@@ -376,45 +376,8 @@
   
         const characterInfo = document.getElementById('popup-character-description');
         if(characterInfo)
-          console.log(characters[index].character.traits);
-  
-          const traits = createParagraph(character.traits, character.name);
-          console.log(traits);
-  
-          characterInfo.innerText = traits;
-      }
-  
-      // creates a character description based on their traits
-      function createParagraph(t, name) {
-        const traits = t
-          .split(/\),\s*\(/)
-          .map(s => s.replace(/[()]/g, ""))
-          .map(s => {
-            const [name, value] = s.split(",").map(part => part.trim());
-            return {
-              name,
-              goodtrait: value === "1"
-            };
-          });
-  
-          const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
-          const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
-  
-          let sentence = "";
-  
-          sentence += name + ' likes '
-  
-  
-          if (goodTraits.length) {
-            sentence += `${goodTraits.join(" and ")}. `;
-          }
-  
-          if (badTraits.length) {
-            sentence += 'They don\' like ';
-            sentence += `${badTraits.join(" and ")}.`;
-          }
-  
-          return sentence;
+          characterInfo.innerText = characters[index].character.description;
+
       }
   
       // when a character is ignored, we send that info to the backend and close the popup
@@ -436,6 +399,11 @@
           type: "action_selection", 
           action_index: index,
         }));
+
+        const partial = document.getElementById('character-choice-container');
+        if(partial) {
+            partial.style.display = 'none';
+        }
       }
   
       // visually updates character health bar
