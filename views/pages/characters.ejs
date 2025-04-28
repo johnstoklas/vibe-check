@@ -222,6 +222,7 @@
 
   <!-- Popup JavaScript -->
   <script>
+    // shows the character popup
     function showCharacterPopup(character) {
       console.log("Clicked character:", character);
 
@@ -236,43 +237,10 @@
       console.log
       popupImage.src = character.characterimage;
 
-      const paragraph = createParagraph(character.traits, character.name);
-      popupDesc.innerHTML = paragraph;
-
+      popupDesc.innerHTML = character.description;
     }
 
-    function createParagraph(t, name) {
-      const traits = t
-        .split(/\),\s*\(/)
-        .map(s => s.replace(/[()]/g, ""))
-        .map(s => {
-          const [name, value] = s.split(",").map(part => part.trim());
-          return {
-            name,
-            goodtrait: value === "1"
-          };
-        });
-
-        const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
-        const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
-
-        let sentence = "";
-
-        sentence += name + ' likes '
-
-
-        if (goodTraits.length) {
-          sentence += `${goodTraits.join(" and ")}. `;
-        }
-
-        if (badTraits.length) {
-          sentence += 'They don\' like ';
-          sentence += `${badTraits.join(" and ")}.`;
-        }
-
-        return sentence;
-    }
-
+    //closes character popup
     function closeCharacterPopup() {
       const popup = document.getElementById('character-popup');
       popup.style.display = 'none';

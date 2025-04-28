@@ -206,6 +206,7 @@ class Game {
 
         // "initialized" the Game object successful
         console.log("Game initialized successful.");
+        console.log(characters);
 
         // returns the Game object
         const game = new Game(characters, 0, 50, 1, Game.#privateKey);

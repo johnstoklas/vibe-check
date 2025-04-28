@@ -31,6 +31,7 @@ class Characters {
                 name, 
                 difficulty, 
                 characterimage, 
+                description,
                 GROUP_CONCAT(CONCAT('(', t.trait_name, ', ', t.goodtrait, ')')) AS traits
             FROM characters c
             INNER JOIN character_traits ct ON c.characterid=ct.characterid
