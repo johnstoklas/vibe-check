@@ -22,7 +22,7 @@ const leaderboardController = require('../controllers/leaderboard.js');
  * @function
  * @memberof module:routes/score
  */
-router.get('/leaderboard', leaderboardController.getHighScores);
+router.get('/', leaderboardController.getHighScores);
 
 // POST requests
 // TODO: router.post('/onEndGame', gameController.sendScore);
