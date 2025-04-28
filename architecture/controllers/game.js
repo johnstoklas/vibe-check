@@ -259,10 +259,6 @@ class Game {
         // checks if the player has enough money to pay for the action
         if (this.currentActions[actionIndex].cost <= this.money) {
             this.money -= this.currentActions[actionIndex].cost;
-            ws.send(JSON.stringify({
-                type: "valid_action",
-                message: "You don't have enough money for that action!"
-            }));
         }
         else {
             ws.send(JSON.stringify({
@@ -302,7 +298,6 @@ class Game {
             
             const currentChar = this.characters[i];
 
-            currentChar.interactionlessRounds += 1;
             if(i === charIndex)
                 currentChar.interactionlessRounds = 0;
 

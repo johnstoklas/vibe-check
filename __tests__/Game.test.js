@@ -127,7 +127,7 @@ describe('Game Controller', () => {
 
         game.uniqueRandomItems = jest.fn().mockReturnValue(randomActions);
 
-        game.characters[0].difficulty = 2;
+        game.characters[0].character.difficulty = 2;
 
         state.action_index = -1;
         await game.runRound(ws, state);
@@ -148,7 +148,7 @@ describe('Game Controller', () => {
         game.uniqueRandomItems = jest.fn().mockReturnValue(randomActions);
 
 
-        game.characters[0].difficulty = 2;
+        game.characters[0].character.difficulty = 2;
 
         state.action_index = -1;
         await game.runRound(ws, state);
@@ -207,7 +207,7 @@ describe('Game Controller', () => {
 
         game.uniqueRandomItems = jest.fn().mockReturnValue(randomActions);
 
-        game.characters[0].traits = "(Compliments, 1),(Food, 1),(Getting Drive, 1)"; // makes food be a positive trait
+        game.characters[0].character.traits = "(Compliments, 1),(Food, 1),(Getting Drive, 1)"; // makes food be a positive trait
         game.characters[0].health = 68; // sets the health so that when you give the character food, the score goes up but also they give you money
 
         state.action_index = -1;
@@ -249,10 +249,10 @@ describe('Game Controller', () => {
 
         game.uniqueRandomItems = jest.fn().mockReturnValue(randomActions);
 
-        state.was_ignored = true;
-
         state.action_index = -1;
         await game.runRound(ws, state);
+
+        state.was_ignored = true;
         
         state.previous_char_index = 0;
         await game.runRound(ws, state)
@@ -271,13 +271,13 @@ describe('Game Controller', () => {
         game.characters[1].interactionlessRounds = 1;
 
         game.characters[2].health = 80;
-        game.characters[1].interactionlessRounds = 2;
+        game.characters[2].interactionlessRounds = 2;
 
         game.characters[3].health = 42;
-        game.characters[1].interactionlessRounds = 3;
+        game.characters[3].interactionlessRounds = 3;
 
         game.characters[4].health = 16;
-        game.characters[1].interactionlessRounds = 4;
+        game.characters[4].interactionlessRounds = 4;
 
         state.action_index = -1;
         await game.runRound(ws, state);
@@ -287,10 +287,10 @@ describe('Game Controller', () => {
         await game.runRound(ws, state)
 
         expect(game.characters[0].health).toBe(55);  
-        expect(game.characters[1].health).toBe(28);    
-        expect(game.characters[2].health).toBe(76);    
-        expect(game.characters[3].health).toBe(36);    
-        expect(game.characters[4].health).toBe(8);    
+        expect(game.characters[1].health).toBe(29);    
+        expect(game.characters[2].health).toBe(78);    
+        expect(game.characters[3].health).toBe(39);    
+        expect(game.characters[4].health).toBe(12);    
     });
 
     test('interaction resets interactionlessRounds to 0', async () => {
@@ -361,43 +361,42 @@ describe('Game Controller', () => {
         expect(game.hasEnded).toBe(true);    
     });
 
-    test('checks character unlocks when game ends', async () => {
-        // Mock fetch globally
-        global.fetch = jest.fn(() => 
-            Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ isUnlocked: true })
-            })
-        );
-
+    test('handleGameOver unlocks characters based on score, money, and games played', async () => {
         UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
-        const game = await Game.init(ws, req);
         
-        // Set up game to end
-        game.characters[0].health = 5;
-        game.uniqueRandomItems = jest.fn().mockReturnValue(randomActions);
-
-        state.action_index = -1;
-        await game.runRound(ws, state);
-
-        state.action_index = 1; // action that will end game
-        state.previous_char_index = 0;
-        await game.runRound(ws, state);
-
-        // Verify unlock checks were made for characters 9-20
-        expect(global.fetch).toHaveBeenCalledTimes(12); // 12 characters (9-20)
-        for (let i = 9; i <= 20; i++) {
-            expect(global.fetch).toHaveBeenCalledWith(`/api/unlock/${i}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-        }
-
-        // Clean up mock
-        global.fetch.mockClear();
-        delete global.fetch;
+        const game = await Game.init(ws, req);
+    
+        game.score = 30; // we should unlock character 9
+    
+        await game.handleGameOver(ws);
+    
+        // Check the unlock function is called with the expected character IDs
+        expect(UnlockedCharacters.unlock.mock.calls).toEqual(
+            expect.arrayContaining([
+              [1, 9],
+            ])
+          );
+    
+        expect(ws.send).toHaveBeenCalledWith(expect.stringContaining('"type":"end"'));
+    
+        expect(game.hasEnded).toBe(true);
     });
-
+    
+    test('handleGameOver unlocks final character if conditions met', async () => {
+        UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
+        
+        const game = await Game.init(ws, req);
+    
+        game.score = 105;
+        game.money = 105;
+    
+        const gamesModel = require('../architecture/models/Games');
+        gamesModel.checkGamesPlayed = jest.fn().mockResolvedValue(5);
+    
+        await game.handleGameOver(ws);
+    
+        expect(UnlockedCharacters.unlock).toHaveBeenCalledWith(1, 20); // final unlock for 100+ score and 100+ money
+        expect(game.hasEnded).toBe(true);
+    });
+    
 });

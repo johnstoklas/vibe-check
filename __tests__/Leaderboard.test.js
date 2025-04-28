@@ -1,4 +1,4 @@
-const { getHighScores } = require('../architecture/controllers/leaderboard');
+const { getHighScores, getAllScores, deleteScore } = require('../architecture/controllers/leaderboard');
 const { Games } = require('../architecture/models/Games');
 
 
@@ -19,10 +19,15 @@ describe('Leaderboard Controller', () => {
                 isAuth: true,
                 accountID: 1,
             },
-            body: {}
+            body: {},
+            query: {
+                cateogry: 'score',
+            }
         };
         res = {
-            render: jest.fn()
+            render: jest.fn(),
+            json: jest.fn(),
+            status: jest.fn(() => res),
         };
         mockScores = [
             { userid: 1, topscore: 100 },
@@ -43,13 +48,16 @@ describe('Leaderboard Controller', () => {
         await getHighScores(req, res);
 
         expect(res.render).toHaveBeenCalledWith('pages/leaderboard', {
-            gamesArr: [
+            scoresArr: [
                 [1, { userid: 1, topscore: 100 }],
                 [2, { userid: 2, topscore: 90 }],
                 [3, { userid: 3, topscore: 80 }],
                 [4, { userid: 4, topscore: 70 }],
                 [5, { userid: 5, topscore: 60 }]
-            ]
+            ],
+            moneyArr: [],
+            activeCategory: 'score',
+            isAdmin: false
         });
     });
 
@@ -59,13 +67,16 @@ describe('Leaderboard Controller', () => {
         await getHighScores(req, res);
 
         expect(res.render).toHaveBeenCalledWith('pages/leaderboard', {
-            gamesArr: [
+            scoresArr: [
                 [1, { userid: 1, topscore: 100 }],
                 [2, { userid: 2, topscore: 90 }],
                 [3, { userid: 3, topscore: 80 }],
                 [4, { userid: 4, topscore: 70 }],
                 [5, { userid: 5, topscore: 60 }]
-            ]
+            ],
+            moneyArr: [],
+            activeCategory: 'score',
+            isAdmin: false
         });
     });
 
@@ -78,14 +89,17 @@ describe('Leaderboard Controller', () => {
         await getHighScores(req, res);
 
         expect(res.render).toHaveBeenCalledWith('pages/leaderboard', {
-            gamesArr: [
+            scoresArr: [
                 [1, { userid: 1, topscore: 100 }],
                 [2, { userid: 2, topscore: 90 }],
                 [3, { userid: 3, topscore: 80 }],
                 [4, { userid: 4, topscore: 70 }],
                 [5, { userid: 5, topscore: 60 }],
                 [6, { userid: 6, topscore: 50}],
-            ]
+            ],
+            moneyArr: [],
+            activeCategory: 'score',
+            isAdmin: false
         });
     });
 
@@ -98,13 +112,16 @@ describe('Leaderboard Controller', () => {
         await getHighScores(req, res);
 
         expect(res.render).toHaveBeenCalledWith('pages/leaderboard', {
-            gamesArr: [
+            scoresArr: [
                 [1, { userid: 1, topscore: 100 }],
                 [2, { userid: 1, topscore: 90 }],
                 [3, { userid: 3, topscore: 80 }],
                 [4, { userid: 4, topscore: 70 }],
                 [5, { userid: 5, topscore: 60 }],
-            ]
+            ],
+            moneyArr: [],
+            activeCategory: 'score',
+            isAdmin: false
         });
     });
 
@@ -117,8 +134,51 @@ describe('Leaderboard Controller', () => {
         await getHighScores(req, res);
 
         expect(res.render).toHaveBeenCalledWith('pages/leaderboard', {
-            gamesArr: []
+            scoresArr: [],
+            moneyArr: [],
+            activeCategory: 'score',
+            isAdmin: false
         });
+    });
+
+    // getAllScores tests (2)
+    test('getAllScores retrieves all scores and sends them in JSON', async () => {
+        Games.selectTopScores.mockResolvedValue(mockScores);
+
+        await getAllScores(req, res);
+
+        expect(Games.selectTopScores).toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith(mockScores);
+    });
+
+    test('getAllScores handles errors', async () => {
+        Games.selectTopScores.mockRejectedValue(new Error('Database error'));
+
+        await getAllScores(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch scores' });
+    });
+
+    //deleteScore tests (2)
+    test('deleteScore deletes a score and returns success confirmation', async () => {
+        req.params = { id: '10' };
+        Games.removeGame.mockResolvedValue({ affectedRows: 1 });
+
+        await deleteScore(req, res);
+
+        expect(Games.removeGame).toHaveBeenCalledWith('10');
+        expect(res.json).toHaveBeenCalledWith({ success: true, deletedId: '10' });
+    });
+
+    test('deleteScore handles errors', async () => {
+        req.params = { id: '10' };
+        Games.removeGame.mockRejectedValue(new Error('Database error'));
+
+        await deleteScore(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Failed to delete score' });
     });
 
 })
