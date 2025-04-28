@@ -31,22 +31,6 @@
       background: rgba(0, 0, 0, 0.7);
     }
 
-    .nav-link, #home-button {
-      background: white;
-      border: 3px solid black;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: black;
-      font-size: 10px;
-      margin: 0 5px;
-      transition: transform 0.2s;
-    }
-
-    .nav-link:hover, #home-button:hover {
-      transform: scale(1.05);
-      background: lightyellow;
-    }
-
     /* Title */
     #character-title-container {
       text-align: center;
@@ -205,15 +189,7 @@
 </head>
 
 <body>
-
-  <!-- Top Navigation -->
-  <div id="header-container">
-    <a href="/" id="home-button">🏠</a>
-    <div>
-      <a href="/leaderboard" class="nav-link">Leaderboard</a>
-      <a href="/account" class="nav-link">Account</a>
-    </div>
-  </div>
+  <%- include('../partials/nav_partial', { currentPage: 'characters' }) %>
 
   <!-- Title -->
   <div id="character-title-container">

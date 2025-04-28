@@ -52,6 +52,7 @@
   </script>  
   <body>
     <%- include('../partials/nav_partial', { currentPage: 'leaderboard' }) %>
+    
     <div id="toggle">
       <div id="toggle-score" class="toggle-item" onclick="setActive('score')">Score</div>
       <div id="toggle-money" class="toggle-item" onclick="setActive('money')">Money</div>
@@ -65,7 +66,19 @@
     </div>
   </body>
   <style>
+
+h1 {
+  color: white;
+  font-family: 'Pixels'; /* optional: matches your retro font */
+  margin-bottom: 20px; /* optional: space between title and toggle buttons */
+}
+
     body {
+      background-image: url('/images/pixel_art_mall.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
       align-items: center;
       display: flex;
       flex-direction: column;
