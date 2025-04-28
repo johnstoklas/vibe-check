@@ -1,9 +1,10 @@
 # Vibe Check Documentation
 
-This is the documentation for Vibe Check. We used model-view-controller for our architecture which can be seen in our component diagram and 
-our documenation which can be seen by viting `/docs/index.html`.
+This is the documentation for Vibe Check. We used model-view-controller for our architecture, which can be seen in our component diagram and 
+our documentation, which can be seen by visiting `/docs/index.html`.
 
 [Requirements Specifications](https://docs.google.com/document/d/19uKTRGivM5we35rBtd4GNDOvkSwqAgvlWUhv_v7JPTE/edit?usp=sharing)
+[Documentation for Users, Guests, and Admin](https://docs.google.com/document/d/1sUqYl_87Sc1SEAdALiNG2b282veidoEDE_HjJwiv9ZA/edit?usp=sharing)
 
 ## Overview
 
@@ -51,18 +52,18 @@ our documenation which can be seen by viting `/docs/index.html`.
 ## Key Sections
 - `__tests__` handles all of the tests for controllers
 - `.github/workflows` stores script for testing that is run when code is pushed into main
-- `/architecure` handles models, controllers, and routers (you can see a more expanded view of these on the docs website)
+- `/architecture` handles models, controllers, and routers (you can see a more expanded view of these on the docs website)
     - `/controllers` holds all of our controllers
     - `/models` holds all of our models
     - `/routes` holds all of our routers
     - `database.js` handles database connectivity
-    - `utility.js` handles client side alerts
+    - `utility.js` handles client-side alerts
 - `/public` holds all of our assets and documentation
     - `/docs` holds all of our documentation
     - `/fonts` holds custom fonts (in our case PressStart2P is used for most of the website)
     - `/images` holds all of our images for backgrounds, characters, and any other assets
         - `/character_images` holds all of our character images
-        - `/stylesheets` holds styles goes across all pages like font (most of the styling per page is stored in the actual ejs file itself)
+        - `/stylesheets` holds styles that goes across all pages like font (most of the styling for each page is stored in the actual ejs file itself)
 - `/sql_files` contains SQL dump for MySQL setup
 - `/views` holds ejs pages and partials
     - `/pages` holds all of our main pages (script, style, and body are all stored in one file per page)
@@ -71,4 +72,8 @@ our documenation which can be seen by viting `/docs/index.html`.
 - `jsdoc.json` documentation setup file
 - `package-lock.json` dependencies file
 - `package.json` dependencies file
+
+## Documentation Note
+
+If you changed a file or function and you need to update the documentation, you can update it using JSDocs and then run `npm run docs`. Next time you run `npm start` and navigate to the docs page, the updates will be there
 
