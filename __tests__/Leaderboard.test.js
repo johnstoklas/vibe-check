@@ -1,10 +1,12 @@
 const { getHighScores, getAllScores, deleteScore } = require('../architecture/controllers/leaderboard');
 const { Games } = require('../architecture/models/Games');
+const { Users } = require('../architecture/models/Users');
 
 
 jest.mock('express-mysql-session', () => {
     return () => { return class MockSessionStore {}; };
 });
+jest.mock('../architecture/models/Users');
 jest.mock('../architecture/models/Games');
 
 describe('Leaderboard Controller', () => {
@@ -37,6 +39,8 @@ describe('Leaderboard Controller', () => {
             { userid: 5, topscore: 60 },
             { userid: 6, topscore: 50 }
         ];
+        Users.selectByID = jest.fn();
+        Users.selectByID.mockResolvedValue([]);
     });
     
     test('if the user is not authenticated we only grab the top 5 scores', async () => {
