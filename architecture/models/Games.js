@@ -34,6 +34,19 @@ class Games {
         return await connection.query(insertSQL, [userID, score, money]);
     }
 
+     /**
+     * Deletes a game from the database (used by admin).
+     * 
+     * @async
+     * @function deleteGame
+     * @param {int} gameID 
+     * @returns {Promise<Void>} 
+    */
+    static async removeGame(gameID) {
+        const deleteSQL = 'DELETE FROM games WHERE gameid = ?';
+        return await connection.query(deleteSQL, [gameID]);
+    }
+    
     /**
      * Fetches all the scores in order from the database.
      * 

@@ -364,7 +364,13 @@ class Game {
 
         return items;
     }
-
+    
+    /**
+     * @async
+     * @description Checks to see if any of the unlock conditions are true, if so we add a new entry into the unlocked characters table for that user.
+     * @param {WebSocket} ws - The WebSocket connection.
+     * @returns {Promise<void>}
+     */
     async handleGameOver(ws) {
         this.hasEnded = true;
 

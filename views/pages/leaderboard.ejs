@@ -4,140 +4,248 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vibe Check</title>
-    <link rel='stylesheet' href='/stylesheets/styles.css'/>
-  </head>
-  <script>
-    const scoresArr = <%- JSON.stringify(scoresArr) %>;
-    const moneyArr = <%- JSON.stringify(moneyArr) %>;
-    let activeCategory = 'score';
-  
-    function setActive(category) {
-      activeCategory = category;
-  
-      document.getElementById('toggle-score').classList.toggle('active', category === 'score');
-      document.getElementById('toggle-money').classList.toggle('active', category === 'money');
-  
-      const container = document.querySelector('.score-container');
-      container.innerHTML = '';
-  
-      const arr = (activeCategory === 'score') ? scoresArr : moneyArr;
-  
-      arr.slice(0, 5).forEach(([rank, game]) => {
-        const item = document.createElement('div');
-        item.className = 'score-item';
-        item.innerHTML = `
-          <div class="score-rank">${rank}.</div>
-          <div class="score-username">${game.username}</div>
-          <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
-        `;
-        container.appendChild(item);
-      });
-  
-      if (arr.length > 5) {
-        const [rank, game] = arr[5];
-        const item = document.createElement('div');
-        item.className = 'score-item';
-        item.innerHTML = `
-          <div class="score-rank">${rank}.</div>
-          <div class="score-username">${game.username}</div>
-          <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
-        `;
-        container.appendChild(item);
+    <link rel='stylesheet' href='/stylesheets/styles.css'/> 
+    <style>
+      h1 {
+        color: white;
+        font-family: 'Pixels';
+        margin-bottom: 20px; 
       }
-    }
   
-    window.onload = () => {
-      setActive('score');
-    };
-  </script>  
+      body {
+        background-image: url('/images/pixel_art_mall.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+      }
+  
+      #toggle {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+  
+      .toggle-item {
+        background-color: rgb(85, 85, 85);
+        color: white;
+        padding: 5px 10px;
+        border: 3px solid black;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+  
+      .toggle-item.active {
+        background-color: rgb(171, 171, 171);
+        font-weight: bold;
+      }
+  
+      #overall-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 40%;
+      }
+  
+      .score-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background-color: #2e8df7;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+      }
+  
+      .score-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+  
+      .score-rank {
+        margin-right: 10px;
+      }
+  
+      .score-username {
+        text-align: left;
+        width: 80%;
+      }
+  
+      .score-points {
+        font-weight: bold;
+      }
+  
+      #admin-view-button {
+        margin-top: 40px;
+      }
+  
+      #all-leaderboard-scores {
+        display: none;
+        background-color: white;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Arial';
+        width: 800px;
+        height: 300px;
+        overflow-y: scroll;
+        padding: 10px;
+      }
+  
+      .admin-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between; 
+        gap: 10px; 
+        margin-bottom: 10px;
+      }
+  
+      .delete-button {
+        justify-content: end;
+      }
+    </style>
+  </head>
   <body>
+    <!-- Navigation Partial -->
     <%- include('../partials/nav_partial', { currentPage: 'leaderboard' }) %>
     
+    <!-- Toggle between Money and Score -->
     <div id="toggle">
       <div id="toggle-score" class="toggle-item" onclick="setActive('score')">Score</div>
       <div id="toggle-money" class="toggle-item" onclick="setActive('money')">Money</div>
     </div>     
 
+    <!-- Leaderboard Container (updated dynamically)-->
     <h1>LEADERBOARD</h1>
     <div id="overall-container">
       <div id="score-container" class="score-container">
-        <!-- This will be dynamically filled by JavaScript -->
       </div>
     </div>
+
+    <!-- Admin Functionality for Deleting Scores-->
+    <% if (isAdmin) { %>
+      <button id="admin-view-button" class="admin-button" onclick="showAllScores()">View All Scores</button>
+    <% } %>
+
+    <div id="all-leaderboard-scores"></div>
+
+    <script>
+      // we turn the parameters from the render into json
+      const scoresArr = <%- JSON.stringify(scoresArr) %>;
+      const moneyArr = <%- JSON.stringify(moneyArr) %>;
+  
+      // set the activeCategory to score
+      let activeCategory = 'score';
+  
+      // toggles between the money and score leaderboard
+      function setActive(category) {
+        activeCategory = category;
+    
+        document.getElementById('toggle-score').classList.toggle('active', category === 'score');
+        document.getElementById('toggle-money').classList.toggle('active', category === 'money');
+    
+        const container = document.querySelector('.score-container');
+        container.innerHTML = '';
+    
+        const arr = (activeCategory === 'score') ? scoresArr : moneyArr;
+    
+        arr.slice(0, 5).forEach(([rank, game]) => {
+          const item = document.createElement('div');
+          item.className = 'score-item';
+          item.innerHTML = `
+            <div class="score-rank">${rank}.</div>
+            <div class="score-username">${game.username}</div>
+            <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
+          `;
+          container.appendChild(item);
+        });
+    
+        if (arr.length > 5) {
+          const [rank, game] = arr[5];
+          const item = document.createElement('div');
+          item.className = 'score-item';
+          item.innerHTML = `
+            <div class="score-rank">${rank}.</div>
+            <div class="score-username">${game.username}</div>
+            <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
+          `;
+          container.appendChild(item);
+        }
+      }
+  
+      // for admin: allows them to see all scores
+      async function showAllScores() {
+        try {
+          const response = await fetch('/leaderboard/leaderboard-all', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to fetch scores');
+        }
+  
+        const data = await response.json();
+        console.log(data);
+  
+        const allScores = document.getElementById('all-leaderboard-scores');
+        allScores.style.display = 'block';
+        allScores.innerHTML = `
+          <div style="text-align: right; margin-bottom: 10px;">
+            <button class="close-button" onclick="closeAllScores()"> X </button>
+          </div>
+        ` + data.map((game, index) => `
+          <div class="admin-item">
+            <div class="score-rank">${index + 1}.</div>
+            <div class="admin-username">${game.username}</div>
+            <div class="score-points">Score: ${game.topscore} | Money: $${game.topmoney}</div>
+            <button class="delete-button" onclick="deleteScore(${game.gameid})">Delete</button>
+          </div>
+        `).join('');
+        } catch (error) {
+          console.error('Error fetching scores:', error);
+        }
+      }
+  
+      // for admin: allows them to delete score
+      async function deleteScore(gameid) {
+        try {
+          const response = await fetch(`/leaderboard/delete-score/${gameid}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to delete score');
+          }
+  
+          alert('Score deleted successfully!');
+          showAllScores(); // refresh the scores
+        } catch (error) {
+          console.error('Error deleting score:', error);
+          alert('Error deleting score');
+        }
+      }
+  
+      // closes the admin popup
+      function closeAllScores() {
+        const popup = document.getElementById('all-leaderboard-scores');
+        if(popup)
+          popup.style.display = 'none';
+      }
+    
+      window.onload = () => {
+        setActive('score');
+      };
+    </script> 
+
   </body>
-  <style>
-
-h1 {
-  color: white;
-  font-family: 'Pixels'; /* optional: matches your retro font */
-  margin-bottom: 20px; /* optional: space between title and toggle buttons */
-}
-
-    body {
-      background-image: url('/images/pixel_art_mall.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #toggle {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .toggle-item {
-      background-color: rgb(85, 85, 85);
-      color: white;
-      padding: 5px 10px;
-      border: 3px solid black;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .toggle-item.active {
-      background-color: rgb(171, 171, 171);
-      font-weight: bold;
-    }
-
-    #overall-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 40%;
-    }
-
-    .score-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      background-color: #2e8df7;
-      padding: 20px;
-      border-radius: 10px;
-      color: white;
-    }
-
-    .score-item {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .score-rank {
-      margin-right: 10px;
-    }
-
-    .score-username {
-      text-align: left;
-      width: 80%;
-    }
-
-    .score-points {
-      font-weight: bold;
-    }
-  </style>
 </html>
