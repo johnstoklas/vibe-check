@@ -3,8 +3,10 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 
 // models and utility
-const { Users: usersModel } = require('../models/Users.js');
-const {fetchAlert, fetchRedirect} = require('../utility.js');
+const { Users : usersModel } = require('../models/Users.js');
+const {fetchAlert, fetchRedirect, fetchAlertRedirect} = require('../utility.js');
+
+const unlockConditions = require('../models/UnlockedCharacters.js')
 
 /**
  * @module controllers/auth
@@ -73,7 +75,7 @@ async function addNewUser(req, res) {
         // checks for existing email and username
         const emailUsers = await usersModel.selectByEmail(req.body.email);
         if(emailUsers.length > 0)
-            return fetchAlert(req, res, "Account with that email already exists.");
+            return fetchAlertRedirect(req, res, "Account with that email already exists.");
 
         const usernameUsers = await usersModel.selectByUsername(req.body.username);
         if(usernameUsers.length > 0)
@@ -83,7 +85,9 @@ async function addNewUser(req, res) {
         const saltRounds = 10;
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
-
+        for(let i = 1; i <=8; i++)
+            await unlockConditions.unlock(insertInfo.insertId, i);
+        
         // Set up session
         req.session.isAuth = true;
         req.session.accountID = insertInfo.insertId;
