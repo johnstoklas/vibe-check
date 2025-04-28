@@ -12,6 +12,11 @@ jest.mock('../architecture/models/Users', () => ({
         addUser: jest.fn(),
     }
 }));
+jest.mock('../architecture/models/UnlockedCharacters', () => ({
+    UnlockedCharacters: {
+        unlock: jest.fn()
+    }
+}));
 jest.mock('bcrypt');
 
 describe('Auth Controller', () => {
