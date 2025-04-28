@@ -5,229 +5,211 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vibe Check</title>
     <link rel='stylesheet' href='/stylesheets/styles.css'/>
+    <style>
+      body {
+        background-image: url('/images/pixel_art_park.jpg');
+      }
+      #header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.6);
+      }
+      .ui-box {
+        background: white;
+        border: 3px solid black;
+        padding: 8px 12px;
+        text-align: center;
+        min-width: 100px;
+        color: black;
+        font-size: 14px;
+        cursor: pointer;
+      }
+  
+      #score-container {
+        display: flex;
+        gap: 15px;
+      }
+  
+      .stat-label {
+        font-size: 8px;
+        display: block;
+        margin-bottom: 5px;
+      }
+  
+      #all-characters-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 50px;
+        padding: 20px;
+        flex-wrap: wrap;
+      }
+  
+      .character-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+  
+      .character-image-container {
+        height: 200px;
+        width: 200px;
+        border: 3px solid white;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.2s;
+        padding: 5px;
+      }
+  
+      .character-image {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        padding: 0;
+        vertical-align: top;
+        display: flex;
+      }
+  
+      .character-image-container:hover {
+        transform: scale(1.05);
+        border-color: rgb(229, 0, 229);
+      }
+  
+      .character-score-container {
+        width: 200px;
+        height: 20px;
+        border: 2px solid white;
+        position: relative;
+        overflow: hidden;
+      }
+  
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease, background-color 0.3s ease;
+      }
+  
+      .progress-low {
+        background-color: #ff3b3b; 
+      }
+  
+      .progress-medium {
+        background-color: #ffcc00; 
+      }
+  
+      .progress-high {
+        background-color: #4caf50; 
+      }
+  
+      .popup-container {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 4px solid white;
+        z-index: 100;
+        text-align: center;
+      }
+  
+      #character-choice-container {
+        width: 400px;
+      }
+  
+      #popup-character-name {
+        color: white;
+      }
+  
+      #popup-character-description {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: white;
+      }
+  
+      .character-name {
+        font-size: 14px;
+        color: white;
+      }
+  
+      #character-button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+  
+      .character-action-button {
+        font-family: 'Pixels';
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 3px solid black;
+        cursor: pointer;
+        font-size: 12px;
+        width: 100%;
+        transition: all 0.2s;
+      }
+  
+      .character-action-button:hover {
+        background: white;
+        transform: scale(1.02);
+      }
+  
+      #ignore-button {
+        font-family: 'Pixels';
+        padding: 10px;
+        background: red;
+        border: 3px solid black;
+        cursor: pointer;
+        font-size: 12px;
+        width: 100%;
+        transition: all 0.2s;
+        color: black;
+      }
+  
+      #ignore-button:hover {
+        transform: scale(1.02);
+      }
+  
+      #game-over-container {
+        width: 300px;
+        color: white;
+        display: none;
+      }
+  
+      #game-over-button-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+        color: white;
+      }
+  
+      .game-over-button {
+        text-decoration: none;
+        background-color: white;
+        border: 3px solid black;
+        color: black;
+        padding: 10px;
+        transition: all 0.2s;
+        font-size: 12px;
+      }
+  
+      .game-over-button:hover {
+        transform: scale(1.02);
+      }
+    </style>
   </head>
-  <script>
-
-    // initialize our web socket connection
-    const socket = new WebSocket("ws://localhost:8080/game");
-
-    // if the game is refreshed or we are sent to the page by button, a new game is started
-    socket.onopen = () => {
-      socket.send(JSON.stringify({ type: "start_game" }));
-    };
-
-    let selectedCharIndex = null;
-    let selectedActionIndex = null;
-    let characters;
-    let currentScore;
-    let currentMoney;
-    let hasEnded = false;
-
-    // handles sending data to the backend
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("data: ", data);
-
-      // if the data type is initGame, we create a new game, by randomizing characters and updating the gamepage UI
-      if (data.type === "initGame") {
-        console.log("game: ", data.game);
-        characters = data.game.characters;
-
-        const nameDivs = document.getElementsByClassName('character-name');
-        const nameDivsArray = Array.from(nameDivs);
-
-        nameDivsArray.forEach((div, i) => {
-          var name = characters[i].character.name.split(' ');
-          var firstName = name[0][0];
-          var lastName = name[1];
-          console.log(name, firstName, lastName);
-          div.innerText = `${firstName}. ${lastName}`
-        });
-      
-        const images = document.getElementsByClassName('character-image');
-        const imageArray = Array.from(images);
-
-        imageArray.forEach((image, i) => {
-          const imagePath = characters[i].character.characterimage;
-          console.log("images: ", imagePath);
-          if(imagePath) 
-            image.src = imagePath;      
-        });
-
-        currentScore = data.game.score;
-        currentMoney = data.game.money;
-
-        document.getElementById("score").textContent = currentScore
-        document.getElementById("money").textContent = `$${currentMoney}`;
-
-        for(let i = 0; i < 5; i++) {
-          updateCharacterHealth(i, 50);
-        }
-      }
-
-      // if the type is update we are handling score, character health, and money updates
-      else if(data.type === 'update') {
-
-        console.log("update: ", data);
-        const game = data.gameState;
-        console.log(data.actions);
-
-        game.characters.forEach((character, i) => {
-          updateCharacterHealth(i, character.health); 
-        });
-
-        
-        currentScore = game.score;
-        currentMoney = game.money;
-
-        document.getElementById("score").textContent = currentScore;
-        document.getElementById("money").textContent = `$${currentMoney}`;
-
-
-        if (data.actions) {
-          const buttons = document.getElementsByClassName("character-action-button");
-          const buttonsArray = Array.from(buttons);
-
-          console.log(buttons);
-
-          buttonsArray.forEach((btn, i) => {
-            btn.textContent = `${data.actions[i].name} ($${data.actions[i].cost})`;
-            btn.onclick = () => chooseAction(i); 
-          });
-        }
-      }
-
-      // if the player does not have enough money for an action, they will be notified
-      else if (data.type === "invalid_action") {
-        alert(data.message); 
-      }
-
-      else if (data.type === "valid_action") {
-        const choiceContainer = document.getElementById('character-choice-container');
-        if(choiceContainer) {
-            choiceContainer.style.display = 'none';
-        }
-      }
-      // if the type is end, the game is over and we display a game over page where the user can return home or play again
-      else if(data.type === 'end') {
-        hasEnded = true;
-        const partial = document.getElementById('game-over-container');
-        if(partial)
-          partial.style.display = 'flex';
-      }
-    };
-
-    // when a character is chosen, we send that info to the backend, it randomizes three actions, and a popup is displayed
-    function selectCharacter(index) {
-      const choiceContainer = document.getElementById('character-choice-container');
-      const gameOverContainer = document.getElementById('game-over-container');
-      if(choiceContainer.style.display === 'flex' || gameOverContainer.style.display === 'flex')
-        return;
-
-      if(hasEnded) 
-        return;
-
-      selectedCharIndex = index;
-      
-      socket.send(JSON.stringify({ type: "character_selection", char_index: index }));
-
-      const character = characters[index].character;
-
-      if(choiceContainer)
-        choiceContainer.style.display = 'flex';
-
-      const characterName = document.getElementById('popup-character-name');
-      if(characterName)
-        characterName.innerText = character.name;
-
-      const characterInfo = document.getElementById('popup-character-description');
-      if(characterInfo)
-        console.log(characters[index].character.traits);
-
-        const traits = createParagraph(character.traits, character.name);
-        console.log(traits);
-
-        characterInfo.innerText = traits;
-    }
-
-    // creates a character description based on their traits
-    function createParagraph(t, name) {
-      const traits = t
-        .split(/\),\s*\(/)
-        .map(s => s.replace(/[()]/g, ""))
-        .map(s => {
-          const [name, value] = s.split(",").map(part => part.trim());
-          return {
-            name,
-            goodtrait: value === "1"
-          };
-        });
-
-        const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
-        const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
-
-        let sentence = "";
-
-        sentence += name + ' likes '
-
-
-        if (goodTraits.length) {
-          sentence += `${goodTraits.join(" and ")}. `;
-        }
-
-        if (badTraits.length) {
-          sentence += 'They don\' like ';
-          sentence += `${badTraits.join(" and ")}.`;
-        }
-
-        return sentence;
-    }
-
-    // when a character is ignored, we send that info to the backend and close the popup
-    function ignoreCharacter() {
-      socket.send(JSON.stringify({ type: "ignore_character" }));
-
-      const partial = document.getElementById('character-choice-container');
-      if(partial) {
-          partial.style.display = 'none';
-      }
-    }   
-
-    // when an action is chosen, we send that info to the backend and close the popup
-    function chooseAction(index) {
-      selectedActionIndex = index;
-      console.log("char index: ", selectedCharIndex);
-      console.log("action_index: ", index);
-      socket.send(JSON.stringify({ 
-        type: "action_selection", 
-        action_index: index,
-      }));
-    }
-
-    // visually updates character health bar
-    function updateCharacterHealth(characterIndex, happinessScore) {
-      const progressBar = document.getElementById(`character-score-${characterIndex}`);
-      if (!progressBar) return;
-      
-      progressBar.style.width = `${happinessScore}%`;
-      
-      if (happinessScore <= 33) {
-        progressBar.classList.remove("progress-medium", "progress-high");
-        progressBar.classList.add("progress-low");
-      } else if (happinessScore <= 66) {
-        progressBar.classList.remove("progress-low", "progress-high");
-        progressBar.classList.add("progress-medium");
-      } else {
-        progressBar.classList.remove("progress-low", "progress-medium");
-        progressBar.classList.add("progress-high");
-      }
-    }
-
-  </script>
   <body>
+    <!-- Partials for Navigation and for Character Actions -->
     <%-include('../partials/character_choice.ejs')%>
     <%-include('../partials/game_over.ejs')%>
 
+    <!-- Header for Game Page -->
     <div id="header-container"> 
       <a href="/">
         <div id="home-button" class="ui-box">HOME</div>
@@ -243,6 +225,7 @@
         </div>
       </div>
     </div>
+    <!-- Characters to interact with -->
     <div id="all-characters-container">
       <% for (let i = 0; i < 5; i++) { %>
         <div class="character-container">
@@ -255,204 +238,225 @@
           </div>
         </div>
       <% } %>
-    </div>    
+    </div>  
+    
+    <script>
+
+      // initialize our web socket connection
+      const socket = new WebSocket("ws://localhost:8080/game");
+  
+      // if the game is refreshed or we are sent to the page by button, a new game is started
+      socket.onopen = () => {
+        socket.send(JSON.stringify({ type: "start_game" }));
+      };
+  
+      let selectedCharIndex = null;
+      let selectedActionIndex = null;
+      let characters;
+      let currentScore;
+      let currentMoney;
+      let hasEnded = false;
+  
+      // handles sending data to the backend
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("data: ", data);
+  
+        // if the data type is initGame, we create a new game, by randomizing characters and updating the gamepage UI
+        if (data.type === "initGame") {
+          console.log("game: ", data.game);
+          characters = data.game.characters;
+  
+          const nameDivs = document.getElementsByClassName('character-name');
+          const nameDivsArray = Array.from(nameDivs);
+  
+          nameDivsArray.forEach((div, i) => {
+            var name = characters[i].character.name.split(' ');
+            var firstName = name[0][0];
+            var lastName = name[1];
+            console.log(name, firstName, lastName);
+            div.innerText = `${firstName}. ${lastName}`
+          });
+        
+          const images = document.getElementsByClassName('character-image');
+          const imageArray = Array.from(images);
+  
+          imageArray.forEach((image, i) => {
+            const imagePath = characters[i].character.characterimage;
+            console.log("images: ", imagePath);
+            if(imagePath) 
+              image.src = imagePath;      
+          });
+  
+          currentScore = data.game.score;
+          currentMoney = data.game.money;
+  
+          document.getElementById("score").textContent = currentScore
+          document.getElementById("money").textContent = `$${currentMoney}`;
+  
+          for(let i = 0; i < 5; i++) {
+            updateCharacterHealth(i, 50);
+          }
+        }
+  
+        // if the type is update we are handling score, character health, and money updates
+        else if(data.type === 'update') {
+  
+          console.log("update: ", data);
+          const game = data.gameState;
+          console.log(data.actions);
+  
+          game.characters.forEach((character, i) => {
+            updateCharacterHealth(i, character.health); 
+          });
+  
+          
+          currentScore = game.score;
+          currentMoney = game.money;
+  
+          document.getElementById("score").textContent = currentScore;
+          document.getElementById("money").textContent = `$${currentMoney}`;
+  
+  
+          if (data.actions) {
+            const buttons = document.getElementsByClassName("character-action-button");
+            const buttonsArray = Array.from(buttons);
+  
+            console.log(buttons);
+  
+            buttonsArray.forEach((btn, i) => {
+              btn.textContent = `${data.actions[i].name} ($${data.actions[i].cost})`;
+              btn.onclick = () => chooseAction(i); 
+            });
+          }
+        }
+  
+        // if the player does not have enough money for an action, they will be notified
+        else if (data.type === "invalid_action") {
+          alert(data.message); 
+        }
+  
+        else if (data.type === "valid_action") {
+          const choiceContainer = document.getElementById('character-choice-container');
+          if(choiceContainer) {
+              choiceContainer.style.display = 'none';
+          }
+        }
+        // if the type is end, the game is over and we display a game over page where the user can return home or play again
+        else if(data.type === 'end') {
+          hasEnded = true;
+          const partial = document.getElementById('game-over-container');
+          if(partial)
+            partial.style.display = 'flex';
+        }
+      };
+  
+      // when a character is chosen, we send that info to the backend, it randomizes three actions, and a popup is displayed
+      function selectCharacter(index) {
+        const choiceContainer = document.getElementById('character-choice-container');
+        const gameOverContainer = document.getElementById('game-over-container');
+        if(choiceContainer.style.display === 'flex' || gameOverContainer.style.display === 'flex')
+          return;
+  
+        if(hasEnded) 
+          return;
+  
+        selectedCharIndex = index;
+        
+        socket.send(JSON.stringify({ type: "character_selection", char_index: index }));
+  
+        const character = characters[index].character;
+  
+        if(choiceContainer)
+          choiceContainer.style.display = 'flex';
+  
+        const characterName = document.getElementById('popup-character-name');
+        if(characterName)
+          characterName.innerText = character.name;
+  
+        const characterInfo = document.getElementById('popup-character-description');
+        if(characterInfo)
+          console.log(characters[index].character.traits);
+  
+          const traits = createParagraph(character.traits, character.name);
+          console.log(traits);
+  
+          characterInfo.innerText = traits;
+      }
+  
+      // creates a character description based on their traits
+      function createParagraph(t, name) {
+        const traits = t
+          .split(/\),\s*\(/)
+          .map(s => s.replace(/[()]/g, ""))
+          .map(s => {
+            const [name, value] = s.split(",").map(part => part.trim());
+            return {
+              name,
+              goodtrait: value === "1"
+            };
+          });
+  
+          const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
+          const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
+  
+          let sentence = "";
+  
+          sentence += name + ' likes '
+  
+  
+          if (goodTraits.length) {
+            sentence += `${goodTraits.join(" and ")}. `;
+          }
+  
+          if (badTraits.length) {
+            sentence += 'They don\' like ';
+            sentence += `${badTraits.join(" and ")}.`;
+          }
+  
+          return sentence;
+      }
+  
+      // when a character is ignored, we send that info to the backend and close the popup
+      function ignoreCharacter() {
+        socket.send(JSON.stringify({ type: "ignore_character" }));
+  
+        const partial = document.getElementById('character-choice-container');
+        if(partial) {
+            partial.style.display = 'none';
+        }
+      }   
+  
+      // when an action is chosen, we send that info to the backend and close the popup
+      function chooseAction(index) {
+        selectedActionIndex = index;
+        console.log("char index: ", selectedCharIndex);
+        console.log("action_index: ", index);
+        socket.send(JSON.stringify({ 
+          type: "action_selection", 
+          action_index: index,
+        }));
+      }
+  
+      // visually updates character health bar
+      function updateCharacterHealth(characterIndex, happinessScore) {
+        const progressBar = document.getElementById(`character-score-${characterIndex}`);
+        if (!progressBar) return;
+        
+        progressBar.style.width = `${happinessScore}%`;
+        
+        if (happinessScore <= 33) {
+          progressBar.classList.remove("progress-medium", "progress-high");
+          progressBar.classList.add("progress-low");
+        } else if (happinessScore <= 66) {
+          progressBar.classList.remove("progress-low", "progress-high");
+          progressBar.classList.add("progress-medium");
+        } else {
+          progressBar.classList.remove("progress-low", "progress-medium");
+          progressBar.classList.add("progress-high");
+        }
+      }
+  
+    </script>
   </body>  
-  <style>
-    body {
-      background-image: url('/images/pixel_art_park.jpg');
-    }
-    #header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.6);
-    }
-    .ui-box {
-      background: white;
-      border: 3px solid black;
-      padding: 8px 12px;
-      text-align: center;
-      min-width: 100px;
-      color: black;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    #score-container {
-      display: flex;
-      gap: 15px;
-    }
-
-    .stat-label {
-      font-size: 8px;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    #all-characters-container {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 50px;
-      padding: 20px;
-      flex-wrap: wrap;
-    }
-
-    .character-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .character-image-container {
-      height: 200px;
-      width: 200px;
-      border: 3px solid white;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.2);
-      transition: all 0.2s;
-      padding: 5px;
-    }
-
-    .character-image {
-      width: 100%;
-      height: 100%;
-      object-fit: fill;
-      padding: 0;
-      vertical-align: top;
-      display: flex;
-    }
-
-    .character-image-container:hover {
-      transform: scale(1.05);
-      border-color: rgb(229, 0, 229);
-    }
-
-    .character-score-container {
-      width: 200px;
-      height: 20px;
-      border: 2px solid white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease, background-color 0.3s ease;
-    }
-
-    .progress-low {
-      background-color: #ff3b3b; 
-    }
-
-    .progress-medium {
-      background-color: #ffcc00; 
-    }
-
-    .progress-high {
-      background-color: #4caf50; 
-    }
-
-    .popup-container {
-      display: none;
-      flex-direction: column;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.7);
-      border: 4px solid white;
-      z-index: 100;
-      text-align: center;
-    }
-
-    #character-choice-container {
-      width: 400px;
-    }
-
-    #popup-character-name {
-      color: white;
-    }
-
-    #popup-character-description {
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: white;
-    }
-
-    .character-name {
-      font-size: 14px;
-      color: white;
-    }
-
-    #character-button-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .character-action-button {
-      font-family: 'Pixels';
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 3px solid black;
-      cursor: pointer;
-      font-size: 12px;
-      width: 100%;
-      transition: all 0.2s;
-    }
-
-    .character-action-button:hover {
-      background: white;
-      transform: scale(1.02);
-    }
-
-    #ignore-button {
-      font-family: 'Pixels';
-      padding: 10px;
-      background: red;
-      border: 3px solid black;
-      cursor: pointer;
-      font-size: 12px;
-      width: 100%;
-      transition: all 0.2s;
-      color: black;
-    }
-
-    #ignore-button:hover {
-      transform: scale(1.02);
-    }
-
-    #game-over-container {
-      width: 300px;
-      color: white;
-      display: none;
-    }
-
-    #game-over-button-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 10px;
-      color: white;
-    }
-
-    .game-over-button {
-      text-decoration: none;
-      background-color: white;
-      border: 3px solid black;
-      color: black;
-      padding: 10px;
-      transition: all 0.2s;
-      font-size: 12px;
-    }
-
-    .game-over-button:hover {
-      transform: scale(1.02);
-    }
-  </style>
 </html>

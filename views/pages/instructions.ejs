@@ -5,6 +5,28 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Vibe Check</title>
         <link rel='stylesheet' href='/stylesheets/styles.css'/>
+        <style>
+            body {
+                background-color: #2e8df7;
+            }
+            #main-content-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 0 20px;
+            }
+            h1 {
+                color: white;
+                margin-bottom: 50px;
+            }
+            #instructions-container {
+                font-family: "Pixels";
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                line-height: 30px;
+            }
+        </style>
     </head>
     <body>
         <%- include('../partials/nav_partial', { currentPage: null }) %>
@@ -25,26 +47,4 @@
         </div>
         
     </body>
-    <style>
-        body {
-            background-color: #2e8df7;
-        }
-        #main-content-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 20px;
-        }
-        h1 {
-            color: white;
-            margin-bottom: 50px;
-        }
-        #instructions-container {
-            font-family: "Pixels";
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            line-height: 30px;
-        }
-    </style>
 </html>

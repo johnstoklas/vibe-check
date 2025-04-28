@@ -4,7 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vibe Check</title>
-    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/> 
+    <style>
+      h1 {
+        color: white;
+        font-family: 'Pixels';
+        margin-bottom: 20px; 
+      }
+  
+      body {
+        background-image: url('/images/pixel_art_mall.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+      }
+  
+      #toggle {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+  
+      .toggle-item {
+        background-color: rgb(85, 85, 85);
+        color: white;
+        padding: 5px 10px;
+        border: 3px solid black;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+  
+      .toggle-item.active {
+        background-color: rgb(171, 171, 171);
+        font-weight: bold;
+      }
+  
+      #overall-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 40%;
+      }
+  
+      .score-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background-color: #2e8df7;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+      }
+  
+      .score-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+  
+      .score-rank {
+        margin-right: 10px;
+      }
+  
+      .score-username {
+        text-align: left;
+        width: 80%;
+      }
+  
+      .score-points {
+        font-weight: bold;
+      }
+  
+      #admin-view-button {
+        margin-top: 40px;
+      }
+  
+      #all-leaderboard-scores {
+        display: none;
+        background-color: white;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Arial';
+        width: 800px;
+        height: 300px;
+        overflow-y: scroll;
+        padding: 10px;
+      }
+  
+      .admin-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between; 
+        gap: 10px; 
+        margin-bottom: 10px;
+      }
+  
+      .delete-button {
+        justify-content: end;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Partial -->
+    <%- include('../partials/nav_partial', { currentPage: 'leaderboard' }) %>
+    
+    <!-- Toggle between Money and Score -->
+    <div id="toggle">
+      <div id="toggle-score" class="toggle-item" onclick="setActive('score')">Score</div>
+      <div id="toggle-money" class="toggle-item" onclick="setActive('money')">Money</div>
+    </div>     
+
+    <!-- Leaderboard Container (updated dynamically)-->
+    <h1>LEADERBOARD</h1>
+    <div id="overall-container">
+      <div id="score-container" class="score-container">
+      </div>
+    </div>
+
+    <!-- Admin Functionality for Deleting Scores-->
+    <% if (isAdmin) { %>
+      <button id="admin-view-button" class="admin-button" onclick="showAllScores()">View All Scores</button>
+    <% } %>
+
+    <div id="all-leaderboard-scores"></div>
 
     <script>
       // we turn the parameters from the render into json
@@ -116,131 +245,7 @@
       window.onload = () => {
         setActive('score');
       };
-    </script>  
-  </head>
-  <body>
-    <%- include('../partials/nav_partial', { currentPage: 'leaderboard' }) %>
-    
-    <div id="toggle">
-      <div id="toggle-score" class="toggle-item" onclick="setActive('score')">Score</div>
-      <div id="toggle-money" class="toggle-item" onclick="setActive('money')">Money</div>
-    </div>     
+    </script> 
 
-    <h1>LEADERBOARD</h1>
-    <div id="overall-container">
-      <div id="score-container" class="score-container">
-      </div>
-    </div>
-
-    <% if (isAdmin) { %>
-      <button id="admin-view-button" class="admin-button" onclick="showAllScores()">View All Scores</button>
-    <% } %>
-
-    <div id="all-leaderboard-scores"></div>
   </body>
-  <style>
-    h1 {
-      color: white;
-      font-family: 'Pixels';
-      margin-bottom: 20px; 
-    }
-
-    body {
-      background-image: url('/images/pixel_art_mall.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #toggle {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .toggle-item {
-      background-color: rgb(85, 85, 85);
-      color: white;
-      padding: 5px 10px;
-      border: 3px solid black;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .toggle-item.active {
-      background-color: rgb(171, 171, 171);
-      font-weight: bold;
-    }
-
-    #overall-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 40%;
-    }
-
-    .score-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      background-color: #2e8df7;
-      padding: 20px;
-      border-radius: 10px;
-      color: white;
-    }
-
-    .score-item {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .score-rank {
-      margin-right: 10px;
-    }
-
-    .score-username {
-      text-align: left;
-      width: 80%;
-    }
-
-    .score-points {
-      font-weight: bold;
-    }
-
-    #admin-view-button {
-      margin-top: 40px;
-    }
-
-    #all-leaderboard-scores {
-      display: none;
-      background-color: white;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: 'Arial';
-      width: 800px;
-      height: 300px;
-      overflow-y: scroll;
-      padding: 10px;
-    }
-
-    .admin-item {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between; 
-      gap: 10px; 
-      margin-bottom: 10px;
-    }
-
-    .delete-button {
-      justify-content: end;
-    }
-  </style>
 </html>
