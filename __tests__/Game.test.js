@@ -5,6 +5,7 @@ jest.mock('express-mysql-session', () => {
     return () => { return class MockSessionStore {}; };
 });
 jest.mock('../architecture/models/UnlockedCharacters');
+jest.mock('../architecture/models/Games');
 jest.mock('../architecture/utility', () => ({
     alertRedirect: jest.fn(),
     noAlertRedirect: jest.fn()
@@ -20,6 +21,8 @@ describe('Game Controller', () => {
 
     // initializes the game with controlled variables so we know what is happening on each round
     beforeEach(() => {
+        Games.checkGamesPlayed = jest.fn();
+        Games.checkGamesPlayed.mockResolvedValue(0);
         req = {
             session: {
                 isAuth: true,
