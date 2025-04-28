@@ -1,50 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account - Vibe Check</title>
-
-  <!-- Pixel Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/stylesheets/styles.css">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
 
   <style>
     body {
-      background-image: url('/images/pixel_art_camp.png'); /* Change this to your actual background */
+      background-image: url('/images/pixel_art_camp.png'); 
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
       background-attachment: fixed;
-      font-family: 'Press Start 2P', cursive;
+      font-family: "Pixels";
       color: white;
       margin: 0;
       padding: 0;
-    }
-
-    /* Navigation */
-    #header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 20px;
-      background: rgba(0, 0, 0, 0.7);
-    }
-
-    .nav-link, #home-button {
-      background: white;
-      border: 3px solid black;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: black;
-      font-size: 10px;
-      margin: 0 5px;
-      transition: transform 0.2s;
-    }
-
-    .nav-link:hover, #home-button:hover {
-      transform: scale(1.05);
-      background: lightyellow;
     }
 
     /* Title */
@@ -85,7 +57,7 @@
 
     input[type="text"],
     input[type="password"] {
-      font-family: 'Press Start 2P', cursive;
+      font-family: "Pixels";
       font-size: 10px;
       padding: 8px;
       width: 90%;
@@ -94,10 +66,10 @@
     }
 
     .submit_button {
-      font-family: 'Press Start 2P', cursive;
+      font-family: "Pixels";
       font-size: 10px;
       padding: 10px 15px;
-      background: lightblue;
+      background: #2e8df7;
       border: 3px solid black;
       cursor: pointer;
       transition: transform 0.2s;
@@ -106,41 +78,12 @@
 
     .submit_button:hover {
       transform: scale(1.05);
-      background: lightgreen;
-    }
-
-    /* Back Button */
-    #back-button-container {
-      text-align: center;
-      margin: 40px 0;
-    }
-
-    .back-button {
-      background: red;
-      color: white;
-      padding: 10px 20px;
-      border: 2px solid black;
-      text-decoration: none;
-      font-size: 12px;
-      transition: transform 0.2s;
-    }
-
-    .back-button:hover {
-      transform: scale(1.05);
     }
   </style>
 </head>
 
 <body>
-
-  <!-- Navigation -->
-  <div id="header-container">
-    <a href="/" id="home-button">🏠</a>
-    <div>
-      <a href="/characters" class="nav-link">Characters</a>
-      <a href="/leaderboard" class="nav-link">Leaderboard</a>
-    </div>
-  </div>
+  <%- include('../partials/nav_partial', { currentPage: 'account' }) %>
 
   <!-- Title -->
   <h1 id="account-title">ACCOUNT</h1>
@@ -203,44 +146,50 @@
 
   </div>
 
-  <!-- Back Button -->
-  <div id="back-button-container">
-    <a href="/" class="back-button">BACK</a>
-  </div>
-
   <!-- JavaScript -->
   <script>
+    // confirms whether a user wants to delete their account or not
     function deleteConfirm() {
       const isYes = confirm("Are you sure you want to delete your account?");
-      if (isYes)
+      if(isYes)
         alert("Account has been deleted.");
       else
         alert("Account has been spared!");
       return isYes;
     }
 
+    // gets alert for username form
     document.getElementById("change-username-form").addEventListener("submit", async (e) => {
+
       e.preventDefault();
-      const formData = { username: e.target.username.value };
+      const formData = {username: e.target.username.value};
+
       return commonFetch(formData, "/account/username-change");
     });
 
+    // gets alert for email form
     document.getElementById("change-email-form").addEventListener("submit", async (e) => {
+      
       e.preventDefault();
-      const formData = { email: e.target.email.value };
+      const formData = {email: e.target.email.value};
+
       return commonFetch(formData, "/account/email-change");
     });
 
+    // gets alert for password form
     document.getElementById("change-password-form").addEventListener("submit", async (e) => {
+      
       e.preventDefault();
       const formData = {
         password_old: e.target.password_old.value,
         password_new: e.target.password_new.value,
         password_new_repeat: e.target.password_new_repeat.value
       };
+
       return commonFetch(formData, "/account/password-change");
     });
 
+    // deals with logout
     document.getElementById("logout-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       return commonFetch({}, "/account/logout");
