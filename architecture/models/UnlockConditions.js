@@ -58,11 +58,11 @@ class UnlockConditions {
 
             // Special unlocks (19-20)
             case 19:
-                return await this.checkMoneyUnlock(userID, 10000);
+                return await this.checkMoneyUnlock(userID, 70);
             case 20:
-                // Perfect game - score 100 and earn at least 5000 money
+                // score 100 and earn at least 100 money
                 const [perfect] = await connection.query(
-                    'SELECT COUNT(*) as count FROM games WHERE userid = ? AND topscore = 100 AND topmoney >= 5000',
+                    'SELECT COUNT(*) as count FROM games WHERE userid = ? AND topscore >= 100 AND topmoney >= 100',
                     [userID]
                 );
                 return perfect[0].count > 0;

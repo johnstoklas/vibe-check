@@ -8,7 +8,7 @@
   </head>
   <script>
 
-    // initalize our web socket connection
+    // initialize our web socket connection
     const socket = new WebSocket("ws://localhost:8080/game");
 
     // if the game is refreshed or we are sent to the page by button, a new game is started
@@ -49,9 +49,9 @@
 
         imageArray.forEach((image, i) => {
           const imagePath = characters[i].character.characterimage;
-          if(imagePath)
-            image.src = imagePath;
-            
+          console.log("images: ", imagePath);
+          if(imagePath) 
+            image.src = imagePath;      
         });
 
         currentScore = data.game.score;
@@ -312,14 +312,16 @@
       cursor: pointer;
       background: rgba(255, 255, 255, 0.2);
       transition: all 0.2s;
+      padding: 5px;
     }
 
     .character-image {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      padding: 5px;
-      box-sizing: border-box;
+      object-fit: fill;
+      padding: 0;
+      vertical-align: top;
+      display: flex;
     }
 
     .character-image-container:hover {
@@ -383,7 +385,7 @@
 
     .character-name {
       font-size: 14px;
-      color: black;
+      color: white;
     }
 
     #character-button-container {

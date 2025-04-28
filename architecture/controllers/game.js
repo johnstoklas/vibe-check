@@ -112,6 +112,8 @@ async function playGame(ws, req) {
             // stores the game in the database, including the score and money, once the game ends
             if (game.hasEnded) {
                 await gamesModel.addGame(req.session.accountID, game.score, game.money);
+                for(let i = 9; i <=20; i++)
+                    await unlockConditions.unlock(insertInfo.insertId, i);
                 ws.send(JSON.stringify({ type: "end", message: "Game over!", gameState: game }));
             }
         }

@@ -35,7 +35,6 @@ class Characters {
             FROM characters c
             INNER JOIN character_traits ct ON c.characterid=ct.characterid
             INNER JOIN traits t ON ct.trait_id=t.id
-
             GROUP BY c.characterid
             ORDER BY c.difficulty ASC
         `);

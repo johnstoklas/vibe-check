@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Characters</title>
-  <link rel="stylesheet" href="/stylesheets/styles.css">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Check</title>
+    <link rel='stylesheet' href='/stylesheets/styles.css'/>
+
   <style>
     body {
-      background-image: url('/images/pixel_art_living_room.jpg');
+      background-image: url('/images/pixel_art_livingroom.jpg');
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
-      font-family: 'Press Start 2P', sans-serif;
+      background-attachment: fixed;
+      font-family: 'Pixels';
       color: white;
       margin: 0;
       padding: 0;
@@ -25,147 +28,256 @@
       background: rgba(0, 0, 0, 0.7);
     }
 
-    .nav-link, #home-button {
-      background: white;
-      border: 3px solid black;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: black;
-      font-size: 12px;
-      margin: 0 5px;
-      transition: transform 0.2s;
-    }
-
-    .nav-link:hover, #home-button:hover {
-      transform: scale(1.05);
-      background: lightyellow;
-    }
-
-    /* Title and Progress */
+    /* Title */
     #character-title-container {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 50px;
+      margin-bottom: 20px;
     }
 
-    #character-title-container h1 {
+    #characters-page-title {
       font-size: 24px;
-      margin-bottom: 10px;
+      color: white;
+      text-shadow: 2px 2px 4px black;
     }
 
+    /* Section Wrapper */
+    #character-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    /* Progress Bar */
     #progress-bar-container {
-      width: 300px;
+      width: 500px;
       background: lightgray;
-      margin: 10px auto;
-      height: 20px;
-      border-radius: 10px;
+      margin-bottom: 30px;
+      height: 24px;
+      border-radius: 12px;
       overflow: hidden;
       border: 2px solid black;
     }
 
-    #character-progress-text {
-      margin-top: 5px;
-      font-size: 14px;
+    #progress-bar-fill {
+      height: 100%;
+      background: #2e8df7;
+      transition: width 0.4s ease;
     }
 
     /* Character Grid */
     #character-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin: 30px 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
       gap: 20px;
+      justify-content: center;
+      margin: 0 auto;
+      padding: 20px;
     }
 
+    /* Character Cards */
     .character-card {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       background: rgba(255, 255, 255, 0.8);
       border: 3px solid black;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
+      transition: transform 0.2s;
+      cursor: pointer;
     }
 
-    .character-image {
-      width: 80px;
-      height: 80px;
+    .character-card:hover {
+      transform: scale(1.05);
+    }
+
+    .character-image, .lock-image {
+      width: 100px;
+      height: 100px;
       object-fit: cover;
     }
 
     .locked {
-      background: rgba(0, 0, 0, 0.7);
-    }
-
-    .lock-image {
-      width: 50px;
-      height: 50px;
-    }
-
-    /* Back Button */
-    #back-button-container {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .back-button {
-      background: red;
+      background: rgba(0, 0, 0, 0.8);
       color: white;
-      padding: 10px 20px;
-      border: 2px solid black;
-      text-decoration: none;
-      font-size: 14px;
-      transition: transform 0.2s;
+      font-size: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: default;
     }
 
-    .back-button:hover {
-      transform: scale(1.05);
+    /* Popup Modal Styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border: 4px solid black;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 24px;
+      color: black;
+    }
+
+    .popup-character-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+
+    #popup-info {
+      padding: 0 20px;
+      text-align: left;
+    }
+
+    #popup-desc, #popup-name {
+      color: black;
+      font-size: 10px;
+      margin: 5px 0;
+    }
+
+    #popup-name {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 
 <body>
+  <%- include('../partials/nav_partial', { currentPage: 'characters' }) %>
 
-  <!-- Top Navigation -->
-  <div id="header-container">
-    <a href="/" id="home-button">🏠</a>
-    <div>
-      <a href="/characters" class="nav-link">Characters</a>
-      <a href="/leaderboard" class="nav-link">Leaderboard</a>
-      <a href="/account" class="nav-link">Account</a>
-    </div>
-  </div>
-
-  <!-- Title and Progress -->
+  <!-- Title -->
   <div id="character-title-container">
-    <h1>CHARACTERS</h1>
+    <h1 id="characters-page-title">CHARACTERS</h1>
+  </div>
+
+  <!-- Section: Progress Bar + Grid -->
+  <div id="character-section">
     <div id="progress-bar-container">
-      <div id="progress-bar-fill" style="width: <%= Math.floor((unlockedCount / totalCount) * 100) %>%; height: 100%; background: lightblue; transition: width 0.4s ease;"></div>
+      <div id="progress-bar-fill" style="width: <%= Math.floor((unlockedCount / totalCount) * 100) %>%;">
+      </div>
     </div>
-    <div id="character-progress-text">
-      <%= unlockedCount %> / <%= totalCount %>
+
+    <div id="character-grid">
+      <% characters.forEach(character => { %>
+        <% if (character.unlocked) { %>
+          <div class="character-card" onclick='showCharacterPopup(<%- JSON.stringify(character) %>)'>
+            <img src="<%= character.characterimage %>"" class="character-image">
+          </div>
+        <% } else { %>
+          <div class="character-card locked">
+            <img src="/images/locked_character.png" class="lock-image">
+          </div>
+        <% } %>
+      <% }); %>
     </div>
   </div>
 
-  <!-- Character Grid (Pure Collage) -->
-  <div id="character-grid">
-    <% characters.forEach(character => { %>
-      <% if (character.unlocked) { %>
-        <div class="character-card">
-          <img src="<%= character.image %>" alt="Character" class="character-image">
-        </div>
-      <% } else { %>
-        <div class="character-card locked">
-          <img src="/images/lock_icon.png" alt="Locked" class="lock-image">
-        </div>
-      <% } %>
-    <% }); %>
+  <!-- Popup Modal -->
+  <div id="character-popup" class="popup-overlay">
+    <div class="popup-content">
+      <span class="popup-close" onclick="closeCharacterPopup()">×</span>
+      <img id="popup-image" src="" alt="Character Image" class="popup-character-image">
+      <div id="popup-info">
+        <div id="popup-name"></div>
+        <div id="popup-desc"></div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- Back Button -->
-  <div id="back-button-container">
-    <a href="/" class="back-button">BACK</a>
-  </div>
+  <!-- Popup JavaScript -->
+  <script>
+    function showCharacterPopup(character) {
+      console.log("Clicked character:", character);
+
+      const popup = document.getElementById('character-popup');
+      const popupImage = document.getElementById('popup-image');
+      const popupName = document.getElementById('popup-name');
+      const popupDesc = document.getElementById('popup-desc');
+
+      popup.style.display = 'flex';
+
+      popupName.innerHTML = character.name;
+      console.log
+      popupImage.src = character.characterimage;
+
+      const paragraph = createParagraph(character.traits, character.name);
+      popupDesc.innerHTML = paragraph;
+
+    }
+
+    function createParagraph(t, name) {
+      const traits = t
+        .split(/\),\s*\(/)
+        .map(s => s.replace(/[()]/g, ""))
+        .map(s => {
+          const [name, value] = s.split(",").map(part => part.trim());
+          return {
+            name,
+            goodtrait: value === "1"
+          };
+        });
+
+        const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
+        const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
+
+        let sentence = "";
+
+        sentence += name + ' likes '
+
+
+        if (goodTraits.length) {
+          sentence += `${goodTraits.join(" and ")}. `;
+        }
+
+        if (badTraits.length) {
+          sentence += 'They don\' like ';
+          sentence += `${badTraits.join(" and ")}.`;
+        }
+
+        return sentence;
+    }
+
+    function closeCharacterPopup() {
+      const popup = document.getElementById('character-popup');
+      popup.style.display = 'none';
+    }
+  </script>
 
 </body>
 </html>
