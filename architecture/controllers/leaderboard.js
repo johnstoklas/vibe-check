@@ -81,6 +81,15 @@ async function getHighScores(req, res) {
     });
 };
 
+/**
+ * @async
+ * @function getAllScores
+ * @memberof module:controllers/character
+ * @description Gets all the scores from the database (used for admin purposes).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {void}
+ */
 async function getAllScores(req, res) {
     try {
         const games = await gamesModel.selectTopScores();
@@ -91,6 +100,15 @@ async function getAllScores(req, res) {
     }
 }
 
+/**
+ * @async
+ * @function getAllScores
+ * @memberof module:controllers/character
+ * @description Deletes a score from the database (used for admin purposes).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {void}
+ */
 async function deleteScore(req, res) {
     try {
         const { id } = req.params;
