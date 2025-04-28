@@ -1,43 +1,6 @@
 // requires
 const express = require('express');
 const app = express();
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
-
-const swaggerOptions = {
-    definition: {
-      openapi: '3.0.0',
-      info: {
-        title: 'Vibe Check Documentation',
-        version: '1.0.0',
-        description: 'Documentation for my Node.js + Express backend',
-      },
-      tags: [
-        {
-            name: 'Main Page',
-            description: 'This is the page you arrive at when going to the website'
-        },
-        {
-          name: 'Game',
-          description: 'Endpoints related to game logic and play',
-        },
-        {
-          name: 'Characters',
-          description: 'Endpoints related to character data',
-        },
-        {
-          name: 'Profile',
-          description: 'User profile endpoints',
-        },
-        {
-            name: 'Leaderboard',
-            description: 'Leaderboard endpoints',
-          },
-        ]
-    },
-    apis: ['./architecture/routes/*.js'],
-
-};
 
 const createError = require('http-errors');
 const path = require('path');

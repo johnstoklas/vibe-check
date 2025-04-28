@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div class="nav-header">
+    <div class="nav-left">
+      <a href="/" class="nav-link">Home</a>
+    </div>
+  
+    <div class="nav-right">
+      <% if (currentPage !== 'characters') { %>
+        <a href="/characters" class="nav-link">Characters</a>
+      <% } %>
+
+      <% if (currentPage !== 'leaderboard') { %>
+        <a href="/account" class="nav-link"> Leaderboard</a>
+      <% } %>
+  
+      <% if (currentPage !== 'account') { %>
+        <a href="/leaderboard" class="nav-link">Account</a>
+      <% } %>
+    </div>
+  </div>
+  </body>
+  <style>
+    .nav-header {
+        background-color: #2c9eff;
+        padding: 20px 10px;
+        width: 100vw;
+        box-sizing: border-box;
+        margin-bottom: 30px;
+    }
+
+    .nav-left {
+      float: left;
+    }
+
+    .nav-right {
+        float: right;
+    }
+
+    .nav-link {
+        color: black;
+        text-decoration: none;
+        margin: 0 10px;
+        font-size: 14px;
+    }
+  </style>
+</html>
+  
