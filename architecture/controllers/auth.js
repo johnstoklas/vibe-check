@@ -7,8 +7,6 @@ const { Users : usersModel } = require('../models/Users.js');
 const { UnlockedCharacters: unlockedCharactersModel } = require('../models/UnlockedCharacters.js')
 const {fetchAlert, fetchRedirect, fetchAlertRedirect} = require('../utility.js');
 
-const unlockConditions = require('../models/UnlockedCharacters.js')
-
 /**
  * @module controllers/auth
  * @description Handles authentication logic including adding a new user, checking valid credentials, checking if they are authenticated, or if they are an admin.

@@ -7,26 +7,44 @@
         <link rel='stylesheet' href='/stylesheets/styles.css'/>
     </head>
     <body>
-        <h1> Welcome to Vibe Check! </h1>
-        <p> The ultimate game to test if you can manage people. 
-            Each character has a different difficulty level (1,2,3). 
-            When a character is interacted with they can have a positive, negative, or neutral reaction to an action.
-            There score will always increase by 5 (on a positive action) and decrease by 10 on a negative action.
-            Your score will increase or decrease based on 5 multiplied by the character difficulty.
-            Some actions cost money (you start with $50). 
-            If you don't have enough money for any of the actions, you can ignore a character (although this will negatively affect your score).
-            If you don't interact with a character for multiple rounds, their health will be affected.
-            If you make a character happy enough they might start paying you back.
-            But if they lose all their health, you lose the game.
+        <%- include('../partials/nav_partial', { currentPage: null }) %>
+        <div id="main-content-container">
+            <h1> Welcome to Vibe Check! </h1>
+            <div id="instructions-container"> 
+                The ultimate game to test if you can manage people. 
+                Each character has a different difficulty level (1,2,3). 
+                When a character is interacted with they can have a positive, negative, or neutral reaction to an action.
+                There score will always increase by 5 (on a positive action) and decrease by 10 on a negative action.
+                Your score will increase or decrease based on 5 multiplied by the character difficulty.
+                Some actions cost money (you start with $50). 
+                If you don't have enough money for any of the actions, you can ignore a character (although this will negatively affect your score).
+                If you don't interact with a character for multiple rounds, their health will be affected.
+                If you make a character happy enough they might start paying you back.
+                But if they lose all their health, you lose the game.
+            </div>
+        </div>
+        
     </body>
     <style>
         body {
+            background-color: #2e8df7;
+        }
+        #main-content-container {
             display: flex;
             flex-direction: column;
-            padding: 10px;
+            justify-content: center;
+            padding: 0 20px;
         }
-        p {
+        h1 {
+            color: white;
+            margin-bottom: 50px;
+        }
+        #instructions-container {
             font-family: "Pixels";
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 30px;
         }
     </style>
 </html>
