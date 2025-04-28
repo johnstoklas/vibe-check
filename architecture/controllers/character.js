@@ -78,7 +78,6 @@ async function getUnlockedCharacters(req, res) {
         
         const formattedCharacters = characters.map(char => ({
             ...char,
-            traits: char.traits ? char.traits.split(',') : [],
             unlocked: true,  
             image: char.image_path 
         }));
