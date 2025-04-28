@@ -36,17 +36,6 @@ router.get('/characters', characterController.getAllCharacters);
  */
 router.get('/characters/bytrait/:traitId', characterController.getCharactersByTrait);
 
-/**
- * GET
- * 
- * Routing for checking if a character is unlocked.
- *
- * @name checkingCharacterUnlocked
- * @function
- * @memberof module:routes/character
- */
-router.get('/unlock/:characterId', characterController.checkCharacterUnlock);
-
 // protected routes - require authentication
 /**
  * GET

@@ -108,6 +108,12 @@ async function playGame(ws, req) {
 
             // runs a round of the game
             await game.runRound(ws, state);
+
+            // stores the game in the database, including the score and money, once the game ends
+            if (game.hasEnded) {
+                await gamesModel.addGame(req.session.accountID, game.score, game.money);
+                ws.send(JSON.stringify({ type: "end", message: "Game over!", gameState: game }));
+            }
         }
     });
 
