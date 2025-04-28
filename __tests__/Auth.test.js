@@ -9,7 +9,6 @@ jest.mock('../architecture/models/Users', () => ({
     Users: {
         selectByUsername: jest.fn(),
         selectByEmail: jest.fn(),
-        selectByUsername: jest.fn(),
         addUser: jest.fn(),
     }
 }));
