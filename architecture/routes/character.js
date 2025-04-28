@@ -12,9 +12,39 @@ const characterController = require('../controllers/character.js');
 const authController = require('../controllers/auth');
 
 // GET requests
+
 // public routes
+/**
+ * GET
+ * 
+ * Routing for getting all characters.
+ *
+ * @name allCharactersRoute
+ * @function
+ * @memberof module:routes/character
+ */
 router.get('/characters', characterController.getAllCharacters);
+
+/**
+ * GET
+ * 
+ * Routing for getting characters by a trait.
+ *
+ * @name allCharactersByTraitRoute
+ * @function
+ * @memberof module:routes/character
+ */
 router.get('/characters/bytrait/:traitId', characterController.getCharactersByTrait);
+
+/**
+ * GET
+ * 
+ * Routing for checking if a character is unlocked.
+ *
+ * @name checkingCharacterUnlocked
+ * @function
+ * @memberof module:routes/character
+ */
 router.get('/unlock/:characterId', character.checkCharacterUnlock);
 
 // protected routes - require authentication
