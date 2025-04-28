@@ -17,13 +17,25 @@
     <section id="main-header">
       <div style="float: right;">
         <% if(!isAuth) { %>
-          <button onclick="showLogSign()">P</button>
+          <button class="profile-button" onclick="showLogSign()">
+            <div class="image-container">
+              <img src="/images/profile_icon.png">
+            </div>
+          </button>
         <% } else { %>
-          <button onclick="location.href='/account'">P</button>
+          <button class="profile-button" onclick="location.href='/account'">
+            <div class="image-container">
+              <img src="/images/profile_icon.png">
+            </div>
+          </button>
         <% } %>
       </div>
       <div>
-        <button onclick="location.href='/leaderboard'">L</button>
+        <button onclick="location.href='/leaderboard'">
+          <div class="image-container">
+            <img src="/images/trophy.png">
+          </div>
+        </button>
       </div>
     </section>
     <section id="main-screen-container"> 
@@ -40,6 +52,17 @@
     body {
       background-image: url('/images/pixel_art_bar.png');
     }
+
+    .image-container {
+      width: 40px;
+      height: 40px;
+    }
+
+    .image-container > img {
+      width: 100%;
+      object-fit: cover;
+    }
+
     #main-header {
       padding: 10px 20px;
     }
@@ -47,8 +70,8 @@
     #main-header button {
       width: 60px;
       height: 60px;
-      border: 3px solid white;
-      background-color: black;
+      border: 3px solid black;
+      background-color: white;
       color: white;
       font-family: 'Pixels';
       border-radius: 5px;
