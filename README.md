@@ -3,8 +3,8 @@
 This is the documentation for Vibe Check. We used model-view-controller for our architecture, which can be seen in our component diagram and 
 our documentation, which can be seen by visiting `/docs/index.html`.
 
-[Requirements Specifications](https://docs.google.com/document/d/19uKTRGivM5we35rBtd4GNDOvkSwqAgvlWUhv_v7JPTE/edit?usp=sharing)
-[Documentation for Users, Guests, and Admin](https://docs.google.com/document/d/1sUqYl_87Sc1SEAdALiNG2b282veidoEDE_HjJwiv9ZA/edit?usp=sharing)
+- [Requirements Specifications](https://docs.google.com/document/d/19uKTRGivM5we35rBtd4GNDOvkSwqAgvlWUhv_v7JPTE/edit?usp=sharing)
+- [Documentation for Users, Guests, and Admin](https://docs.google.com/document/d/1sUqYl_87Sc1SEAdALiNG2b282veidoEDE_HjJwiv9ZA/edit?usp=sharing)
 
 ## Overview
 
