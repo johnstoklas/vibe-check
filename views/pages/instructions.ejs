@@ -1,50 +1,73 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Vibe Check</title>
-        <link rel='stylesheet' href='/stylesheets/styles.css'/>
-        <style>
-            body {
-                background-color: #2e8df7;
-            }
-            #main-content-container {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                padding: 0 20px;
-            }
-            h1 {
-                color: white;
-                margin-bottom: 50px;
-            }
-            #instructions-container {
-                font-family: "Pixels";
-                color: white;
-                padding: 20px;
-                border-radius: 10px;
-                line-height: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <%- include('../partials/nav_partial', { currentPage: null }) %>
-        <div id="main-content-container">
-            <h1> Welcome to Vibe Check! </h1>
-            <div id="instructions-container"> 
-                The ultimate game to test if you can manage people. 
-                Each character has a different difficulty level (1,2,3). 
-                When a character is interacted with they can have a positive, negative, or neutral reaction to an action.
-                There score will always increase by 5 (on a positive action) and decrease by 10 on a negative action.
-                Your score will increase or decrease based on 5 multiplied by the character difficulty.
-                Some actions cost money (you start with $50). 
-                If you don't have enough money for any of the actions, you can ignore a character (although this will negatively affect your score).
-                If you don't interact with a character for multiple rounds, their health will be affected.
-                If you make a character happy enough they might start paying you back.
-                But if they lose all their health, you lose the game.
-            </div>
-        </div>
-        
-    </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Check - How to Play</title>
+  <link rel='stylesheet' href='/stylesheets/styles.css'/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('/images/pixel_art_park.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      font-family: "Press Start 2P", cursive;
+    }
+
+    #main-content-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      max-width: 800px;
+      margin-top: 50px;
+    }
+
+    h1 {
+      color: white;
+      font-size: 24px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    #instructions-container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 25px;
+      border: 4px solid white;
+      border-radius: 10px;
+      color: white;
+      line-height: 28px;
+      font-size: 10px;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../partials/nav_partial', { currentPage: null }) %>
+
+  <div id="main-content-container">
+    <h1>WELCOME TO VIBE CHECK!</h1>
+    <div id="instructions-container">
+      The ultimate game to test if you can manage people.<br><br>
+      Each character has a different difficulty level (1, 2, or 3).<br><br>
+      When you interact with a character:<br>
+      - Positive actions increase their health by 5.<br>
+      - Negative actions decrease their health by 10.<br><br>
+      Your score changes based on 5 × the character's difficulty.<br><br>
+      Some actions cost money. You start with $50!<br>
+      If you can't afford any actions, you can ignore a character (but it will hurt your score).<br><br>
+      Ignoring characters over multiple rounds also decreases their health.<br><br>
+      Make a character happy enough, and they may start paying you!<br><br>
+      But beware — if a character loses all their health, the game is over!
+    </div>
+  </div>
+
+</body>
 </html>
