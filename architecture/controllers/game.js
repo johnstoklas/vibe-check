@@ -3,7 +3,6 @@ const express = require('express');
 // models
 const { UnlockedCharacters: unlockedCharactersModel }= require('../models/UnlockedCharacters');
 const { Games: gamesModel} = require('../models/Games');
-const { UnlockConditions } = require('../models/UnlockConditions');
 
 /**
  * @module controllers/game
@@ -363,7 +362,7 @@ class Game {
     async handleGameOver(ws) {
         this.hasEnded = true;
 
-        const gamesPlayed = (await UnlockConditions.checkGamesPlayedUnlock(this.accountID)) + 1;
+        const gamesPlayed = (await gamesModel.checkGamesPlayed(this.accountID)) + 1;
 
         const unlockCharacterArray = [];
 

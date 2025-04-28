@@ -63,6 +63,21 @@ class Games {
             ORDER BY g.topmoney DESC`);
         return games;
     }
+
+    /**
+     * Fetches how many games a user has played
+     * 
+     * @async
+     * @function checkGamesPlayed
+     * @returns {Promise<Int>} 
+    */
+    static async checkGamesPlayed(userID) {
+        const [rows] = await connection.query(
+            'SELECT COUNT(*) as gameCount FROM games WHERE userid = ?',
+            [userID]
+        );
+        return rows[0].gameCount;
+    }
 }
 
 module.exports = { Games };
