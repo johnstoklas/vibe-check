@@ -75,11 +75,36 @@ async function getUnlockedCharacters(req, res) {
         }
 
         const characters = await unlockedCharactersModel.selectAllWithTraits(req.session.accountID);
-        res.json({
-            data: characters.map(char => ({
-                ...char,
-                traits: char.traits ? char.traits.split(',') : []
-            }))
+        
+        const formattedCharacters = characters.map(char => ({
+            ...char,
+            traits: char.traits ? char.traits.split(',') : [],
+            unlocked: true,  
+            image: char.image_path 
+        }));
+
+        const unlockedCount = formattedCharacters.length;
+        const totalCount = 20; 
+        const allCharacters = [];
+
+        // Fill with unlocked characters first
+        for (let i = 0; i < formattedCharacters.length; i++) {
+            allCharacters.push(formattedCharacters[i]);
+        }
+
+        // Fill remaining slots with locked placeholders
+        for (let i = formattedCharacters.length; i < totalCount; i++) {
+            allCharacters.push({
+                unlocked: false,
+                image: '/images/lock_icon.png'
+            });
+        }
+
+        res.render('pages/characters', {
+            characters: allCharacters,
+            unlockedCount,
+            totalCount,
+            isAuth: req.session.isAuth
         });
     } catch (error) {
         return Promise.reject(new Error('Failed to fetch unlocked characters'));
