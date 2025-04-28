@@ -27,7 +27,7 @@ router.get('/unlock/:characterId', character.checkCharacterUnlock);
  * @function
  * @memberof module:routes/character
  */
-router.get('/unlocked-characters', authController.isAuthenticated, characterController.getUnlockedCharacters);
+router.get('/', authController.isAuthenticated, characterController.getUnlockedCharacters);
 
 
 module.exports = router;

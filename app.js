@@ -33,10 +33,8 @@ app.use(
 );
 
 // Web Sockets port
-const port = process.env.PORT || 8080;
-if (process.env.NODE_ENV !== 'test') {
-    app.listen(port);
-}
+app.listen(8080);
+
 
 // routers and URL routes
 app.use(express.json());

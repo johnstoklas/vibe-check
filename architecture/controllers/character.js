@@ -41,11 +41,10 @@ async function getCharactersByTrait(req, res) {
 // Gets unlocked characters for current user
 async function getUnlockedCharacters(req, res) {
     try {
-        if (!req.session.accountID)
-            throw new Error('User not authenticated');
-
-        // Check for new unlocks
-        
+        if (!req.session.isAuth || !req.session.accountID) {
+            // Return rejected promise instead of throwing
+            return Promise.reject(new Error('User not authenticated'));
+        }
 
         const characters = await unlockedCharactersModel.selectAllWithTraits(req.session.accountID);
         res.json({
@@ -55,9 +54,9 @@ async function getUnlockedCharacters(req, res) {
             }))
         });
     } catch (error) {
-        throw new Error('Failed to fetch unlocked characters');
+        return Promise.reject(new Error('Failed to fetch unlocked characters'));
     }
-};
+}
 
 // Check unlock conditions for a specific character
 async function checkCharacterUnlock(req, res) {

@@ -360,4 +360,44 @@ describe('Game Controller', () => {
         expect(game.characters[1].health).toBe(0);
         expect(game.hasEnded).toBe(true);    
     });
-})
+
+    test('checks character unlocks when game ends', async () => {
+        // Mock fetch globally
+        global.fetch = jest.fn(() => 
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ isUnlocked: true })
+            })
+        );
+
+        UnlockedCharacters.selectRandomWithTraits.mockResolvedValue([testCharacter, {}, {}, {}, {}]);
+        const game = await Game.init(ws, req);
+        
+        // Set up game to end
+        game.characters[0].health = 5;
+        game.uniqueRandomItems = jest.fn().mockReturnValue(randomActions);
+
+        state.action_index = -1;
+        await game.runRound(ws, state);
+
+        state.action_index = 1; // action that will end game
+        state.previous_char_index = 0;
+        await game.runRound(ws, state);
+
+        // Verify unlock checks were made for characters 9-20
+        expect(global.fetch).toHaveBeenCalledTimes(12); // 12 characters (9-20)
+        for (let i = 9; i <= 20; i++) {
+            expect(global.fetch).toHaveBeenCalledWith(`/api/unlock/${i}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
+
+        // Clean up mock
+        global.fetch.mockClear();
+        delete global.fetch;
+    });
+
+});

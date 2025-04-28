@@ -24,9 +24,9 @@ const authController = require('../controllers/auth.js');
 router.get('/', (req, res) => {
     res.render('pages/main', {isAuth: req.session.isAuth});
 });
-/* TODO: router.get('/instructions', (req, res) => {
+router.get('/instructions', (req, res) => {
     res.render('pages/instructions');
-});*/
+});
 
 // POST requests
 router.post('/login', authController.checkCredentials);
