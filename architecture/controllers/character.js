@@ -5,7 +5,20 @@ const { Characters: charactersModel } = require('../models/Characters');
 const { UnlockConditions } = require('../models/UnlockConditions');
 const { UnlockedCharacters: unlockedCharactersModel } = require('../models/UnlockedCharacters'); // <-- ADD THIS
 
-// Gets all characters
+/**
+ * @module controllers/character
+ * @description Handles all of the logic for fetching character data that is then sent to various pages.
+ */
+
+/**
+ * @async
+ * @function getAllCharacters
+ * @memberof module:controllers/character
+ * @description Gets all characters even if they are not unlocked (SQL query is in Characters model).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise<Void>}
+ */
 async function getAllCharacters(req, res) {
     try {
         const characters = await charactersModel.selectAllWithTraits();
@@ -20,8 +33,15 @@ async function getAllCharacters(req, res) {
     }
 };
 
-
-// Gets characters by trait
+/**
+ * @async
+ * @function getCharactersByTrait
+ * @memberof module:controllers/character
+ * @description Gets all the character with a specific trait using traitID (SQL query is in the Characters model).
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise<Void>}
+ */
 async function getCharactersByTrait(req, res) {
     try {
         const { traitID } = req.params;
@@ -38,7 +58,15 @@ async function getCharactersByTrait(req, res) {
     }
 };
 
-// Gets unlocked characters for current user
+/**
+ * @async
+ * @function getUnlockedCharacters
+ * @memberof module:controllers/character
+ * @description Gets all the unlocked characters for a specific user based on the session's user id.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise<Void>}
+ */
 async function getUnlockedCharacters(req, res) {
     try {
         if (!req.session.isAuth || !req.session.accountID) {
@@ -58,7 +86,15 @@ async function getUnlockedCharacters(req, res) {
     }
 }
 
-// Check unlock conditions for a specific character
+/**
+ * @async
+ * @function checkCharacterUnlock
+ * @memberof module:controllers/character
+ * @description Checks if a character was unlocked during the game that was just played.
+ * @param {express.Request} req - The Express request object, expected to contain a session with `isAuth`.
+ * @param {express.Response} res - The Express response object used to render the page or redirect.
+ * @returns {Promise<Void>}
+ */
 async function checkCharacterUnlock(req, res) {
     try {
         if (!req.session.accountID) {

@@ -24,12 +24,47 @@ const authController = require('../controllers/auth.js');
 router.get('/', (req, res) => {
     res.render('pages/main', {isAuth: req.session.isAuth});
 });
+
+/**
+ * GET
+ * 
+ * Renders the instructions page of the application using the 'instruction' EJS template.
+ *
+ * @name instructionsPageRoute
+ * @function
+ * @memberof module:routes/index
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ */
 router.get('/instructions', (req, res) => {
     res.render('pages/instructions');
 });
 
 // POST requests
+/**
+ * POST
+ * 
+ * Reroutes to auth controller for login functionality.
+ *
+ * @name loginRoute
+ * @function
+ * @memberof module:routes/index
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ */
 router.post('/login', authController.checkCredentials);
+
+/**
+ * POST
+ * 
+ * Reroutes to auth controller for sign up functionality.
+ *
+ * @name signUpRoute
+ * @function
+ * @memberof module:routes/index
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ */
 router.post('/signup', authController.addNewUser);
 
 // exports
