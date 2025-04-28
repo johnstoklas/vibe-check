@@ -45,7 +45,7 @@ router.get('/characters/bytrait/:traitId', characterController.getCharactersByTr
  * @function
  * @memberof module:routes/character
  */
-router.get('/unlock/:characterId', character.checkCharacterUnlock);
+router.get('/unlock/:characterId', characterController.checkCharacterUnlock);
 
 // protected routes - require authentication
 /**
