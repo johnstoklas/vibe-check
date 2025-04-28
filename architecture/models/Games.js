@@ -49,4 +49,5 @@ class Games {
     }
 }
 
-exports.Games = Games;
+
+module.exports = { Games };
