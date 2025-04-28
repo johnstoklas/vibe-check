@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 
 // models and utility
 const { Users : usersModel } = require('../models/Users.js');
+const { UnlockedCharacters: unlockedCharactersModel } = require('../models/UnlockedCharacters.js')
 const {fetchAlert, fetchRedirect, fetchAlertRedirect} = require('../utility.js');
 
 const unlockConditions = require('../models/UnlockedCharacters.js')
@@ -86,7 +87,7 @@ async function addNewUser(req, res) {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         const insertInfo = await usersModel.addUser(req.body.email, req.body.username, hash);
         for(let i = 1; i <=8; i++)
-            await unlockConditions.unlock(insertInfo.insertId, i);
+            await unlockedCharactersModel.unlock(insertInfo.insertId, i);
         
         // Set up session
         req.session.isAuth = true;
