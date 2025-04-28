@@ -3,6 +3,7 @@ const express = require('express');
 // models
 const { UnlockedCharacters: unlockedCharactersModel }= require('../models/UnlockedCharacters');
 const { Games: gamesModel} = require('../models/Games');
+const { UnlockConditions } = require('../models/UnlockConditions');
 
 /**
  * @module controllers/game
@@ -108,14 +109,6 @@ async function playGame(ws, req) {
 
             // runs a round of the game
             await game.runRound(ws, state);
-
-            // stores the game in the database, including the score and money, once the game ends
-            if (game.hasEnded) {
-                await gamesModel.addGame(req.session.accountID, game.score, game.money);
-                for(let i = 9; i <=20; i++)
-                    await unlockConditions.unlock(insertInfo.insertId, i);
-                ws.send(JSON.stringify({ type: "end", message: "Game over!", gameState: game }));
-            }
         }
     });
 
@@ -210,7 +203,9 @@ class Game {
         console.log("Game initialized successful.");
 
         // returns the Game object
-        return new Game(characters, 0, 50, 1, Game.#privateKey);
+        const game = new Game(characters, 0, 50, 1, Game.#privateKey);
+        game.accountID = req.session.accountID;
+        return game;
     };
 
     /**
@@ -237,39 +232,10 @@ class Game {
         if(state.was_ignored) {
             this.characters[state.char_index].decrementHealth(5);
 
-            // Check if any character's health is 0 (game over condition)
-            for (const char of this.characters) {
-                if (char.health <= 0) {
-                    this.hasEnded = true;
-                    
-                    // Check unlocks for characters 9-20 when game ends
-                    try {
-                        for (let i = 9; i <= 20; i++) {
-                            await fetch(`/api/unlock/${i}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Failed to check character unlocks:', error);
-                    }
-
-                    ws.send(JSON.stringify({ 
-                        type: "end", 
-                        message: "Game over!", 
-                        gameState: this 
-                    }));
-                    return;
-                }
+            if (this.characters[state.char_index].health <= 0) {
+                await this.handleGameOver(ws);
+                return;
             }
-
-            ws.send(JSON.stringify({
-                type: "update",
-                gameState: this,
-            }));
-            return;
         }
 
         // checks if we should rerandomize the actions
@@ -342,27 +308,7 @@ class Game {
         // Check if any character's health is 0 (game over condition)
         for (const char of this.characters) {
             if (char.health <= 0) {
-                this.hasEnded = true;
-                
-                // Check unlocks for characters 9-20 when game ends
-                try {
-                    for (let i = 9; i <= 20; i++) {
-                        await fetch(`/api/unlock/${i}`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        });
-                    }
-                } catch (error) {
-                    console.error('Failed to check character unlocks:', error);
-                }
-
-                ws.send(JSON.stringify({ 
-                    type: "end", 
-                    message: "Game over!", 
-                    gameState: this 
-                }));
+                await this.handleGameOver(ws);
                 return;
             }
         }
@@ -413,6 +359,69 @@ class Game {
 
         return items;
     }
+
+    async handleGameOver(ws) {
+        this.hasEnded = true;
+
+        const gamesPlayed = (await UnlockConditions.checkGamesPlayedUnlock(this.accountID)) + 1;
+
+        const unlockCharacterArray = [];
+
+        // Score-based unlocks
+        if (this.score >= 100) {
+            unlockCharacterArray.push(13);
+        }
+        if (this.score >= 75) {
+            unlockCharacterArray.push(12);
+        }
+        if (this.score >= 50) {
+            unlockCharacterArray.push(11);
+        }
+        if (this.score >= 40) {
+            unlockCharacterArray.push(10);
+        }
+        if (this.score >= 30) {
+            unlockCharacterArray.push(9);
+        }
+
+        // Games played unlocks
+        if (gamesPlayed >= 60) {
+            unlockCharacterArray.push(18);
+        }
+        if (gamesPlayed >= 40) {
+            unlockCharacterArray.push(17);
+        }
+        if (gamesPlayed >= 25) {
+            unlockCharacterArray.push(16);
+        }
+        if (gamesPlayed >= 10) {
+            unlockCharacterArray.push(15);
+        }
+        if (gamesPlayed >= 5) {
+            unlockCharacterArray.push(14);
+        }
+
+        // money-based unlocks
+        if (this.money >= 70) {
+            unlockCharacterArray.push(19);
+        }
+
+        // final character
+        if (this.score >= 100 && this.money >= 100) {
+            unlockCharacterArray.push(20);
+        }
+        
+        for (const characterID of unlockCharacterArray) {
+            await unlockedCharactersModel.unlock(this.accountID, characterID);
+        }
+        
+        ws.send(JSON.stringify({ 
+            type: "end", 
+            message: "Game over!", 
+            gameState: this 
+        }));
+    }
+    
 }
 
 module.exports = {startGame, playGame, Game};

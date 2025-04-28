@@ -10,12 +10,12 @@ class UnlockConditions {
         return scores.length > 0 && scores[0].topscore >= requiredScore;
     }
 
-    static async checkGamesPlayedUnlock(userID, requiredGames) {
-        const [games] = await connection.query(
+    static async checkGamesPlayedUnlock(userID) {
+        const [rows] = await connection.query(
             'SELECT COUNT(*) as gameCount FROM games WHERE userid = ?',
             [userID]
         );
-        return games[0].gameCount >= requiredGames;
+        return rows[0].gameCount;
     }
 
     static async checkMoneyUnlock(userID, requiredMoney) {
