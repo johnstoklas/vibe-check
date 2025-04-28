@@ -42,6 +42,7 @@ describe('Leaderboard Controller', () => {
         Users.selectByID = jest.fn();
         Users.selectByID.mockResolvedValue([]);
         Games.removeGame = jest.fn();
+        Games.selectTopScores = jest.fn();
     });
     
     test('if the user is not authenticated we only grab the top 5 scores', async () => {
