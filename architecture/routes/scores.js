@@ -7,8 +7,6 @@ const router = express.Router();
  */
 
 // controllers
-const characterController = require('../controllers/auth.js');
-const gameController = require('../controllers/game.js');
 const leaderboardController = require('../controllers/leaderboard.js');
 
 // GET requests
@@ -22,7 +20,7 @@ const leaderboardController = require('../controllers/leaderboard.js');
  * @function
  * @memberof module:routes/score
  */
-router.get('/leaderboard', leaderboardController.getHighScores);
+router.get('/', leaderboardController.getHighScores);
 
 // POST requests
 // TODO: router.post('/onEndGame', gameController.sendScore);

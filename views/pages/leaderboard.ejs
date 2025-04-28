@@ -6,10 +6,125 @@
     <title>Vibe Check</title>
     <link rel='stylesheet' href='/stylesheets/styles.css'/>
   </head>
+  <script>
+    const scoresArr = <%- JSON.stringify(scoresArr) %>;
+    const moneyArr = <%- JSON.stringify(moneyArr) %>;
+    let activeCategory = 'score';
+  
+    function setActive(category) {
+      activeCategory = category;
+  
+      document.getElementById('toggle-score').classList.toggle('active', category === 'score');
+      document.getElementById('toggle-money').classList.toggle('active', category === 'money');
+  
+      const container = document.querySelector('.score-container');
+      container.innerHTML = '';
+  
+      const arr = (activeCategory === 'score') ? scoresArr : moneyArr;
+  
+      arr.slice(0, 5).forEach(([rank, game]) => {
+        const item = document.createElement('div');
+        item.className = 'score-item';
+        item.innerHTML = `
+          <div class="score-rank">${rank}.</div>
+          <div class="score-username">${game.username}</div>
+          <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
+        `;
+        container.appendChild(item);
+      });
+  
+      if (arr.length > 5) {
+        const [rank, game] = arr[5];
+        const item = document.createElement('div');
+        item.className = 'score-item';
+        item.innerHTML = `
+          <div class="score-rank">${rank}.</div>
+          <div class="score-username">${game.username}</div>
+          <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
+        `;
+        container.appendChild(item);
+      }
+    }
+  
+    window.onload = () => {
+      setActive('score');
+    };
+  </script>  
   <body>
-    Leaderboard
-    <% gamesArr.forEach((game) => {%>
-      <%= [JSON.stringify(game[0]), JSON.stringify(game[1])] %>
-    <% }); %>
+    <%- include('../partials/nav_partial', { currentPage: 'leaderboard' }) %>
+    <div id="toggle">
+      <div id="toggle-score" class="toggle-item" onclick="setActive('score')">Score</div>
+      <div id="toggle-money" class="toggle-item" onclick="setActive('money')">Money</div>
+    </div>     
+
+    <h1>LEADERBOARD</h1>
+    <div id="overall-container">
+      <div id="score-container" class="score-container">
+        <!-- This will be dynamically filled by JavaScript -->
+      </div>
+    </div>
   </body>
+  <style>
+    body {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-item {
+      background-color: rgb(85, 85, 85);
+      color: white;
+      padding: 5px 10px;
+      border: 3px solid black;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .toggle-item.active {
+      background-color: rgb(171, 171, 171);
+      font-weight: bold;
+    }
+
+    #overall-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 40%;
+    }
+
+    .score-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background-color: #2e8df7;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+    }
+
+    .score-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .score-rank {
+      margin-right: 10px;
+    }
+
+    .score-username {
+      text-align: left;
+      width: 80%;
+    }
+
+    .score-points {
+      font-weight: bold;
+    }
+  </style>
 </html>

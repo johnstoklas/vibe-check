@@ -12,12 +12,40 @@ const characterController = require('../controllers/character.js');
 const authController = require('../controllers/auth');
 
 // GET requests
+
 // public routes
+/**
+ * GET
+ * 
+ * Routing for getting all characters.
+ *
+ * @name allCharactersRoute
+ * @function
+ * @memberof module:routes/character
+ */
 router.get('/characters', characterController.getAllCharacters);
-router.get('/traits', characterController.getAllTraits);
-router.get('/goodtraits', characterController.getOnlyGoodTraits);
+
+/**
+ * GET
+ * 
+ * Routing for getting characters by a trait.
+ *
+ * @name allCharactersByTraitRoute
+ * @function
+ * @memberof module:routes/character
+ */
 router.get('/characters/bytrait/:traitId', characterController.getCharactersByTrait);
-router.get('/unlock/:characterId', character.checkCharacterUnlock);
+
+/**
+ * GET
+ * 
+ * Routing for checking if a character is unlocked.
+ *
+ * @name checkingCharacterUnlocked
+ * @function
+ * @memberof module:routes/character
+ */
+router.get('/unlock/:characterId', characterController.checkCharacterUnlock);
 
 // protected routes - require authentication
 /**
@@ -29,7 +57,7 @@ router.get('/unlock/:characterId', character.checkCharacterUnlock);
  * @function
  * @memberof module:routes/character
  */
-router.get('/unlocked-characters', authController.isAuthenticated, characterController.getUnlockedCharacters);
+router.get('/', authController.isAuthenticated, characterController.getUnlockedCharacters);
 
 
 module.exports = router;

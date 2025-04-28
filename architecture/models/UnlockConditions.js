@@ -34,15 +34,15 @@ class UnlockConditions {
 
             // Score-based unlocks (9-13)
             case 9:
-                return await this.checkScoreUnlock(userID, 500);
+                return await this.checkScoreUnlock(userID, 30);
             case 10:
-                return await this.checkScoreUnlock(userID, 1000);
+                return await this.checkScoreUnlock(userID, 40);
             case 11:
-                return await this.checkScoreUnlock(userID, 2000);
+                return await this.checkScoreUnlock(userID, 50);
             case 12:
-                return await this.checkScoreUnlock(userID, 3500);
+                return await this.checkScoreUnlock(userID, 75);
             case 13:
-                return await this.checkScoreUnlock(userID, 5000);
+                return await this.checkScoreUnlock(userID, 100);
 
             // Games played unlocks (14-18)
             case 14:
@@ -52,17 +52,17 @@ class UnlockConditions {
             case 16:
                 return await this.checkGamesPlayedUnlock(userID, 25);
             case 17:
-                return await this.checkGamesPlayedUnlock(userID, 50);
+                return await this.checkGamesPlayedUnlock(userID, 40);
             case 18:
-                return await this.checkGamesPlayedUnlock(userID, 100);
+                return await this.checkGamesPlayedUnlock(userID, 60);
 
             // Special unlocks (19-20)
             case 19:
-                return await this.checkMoneyUnlock(userID, 10000);
+                return await this.checkMoneyUnlock(userID, 70);
             case 20:
-                // Perfect game - score 100 and earn at least 5000 money
+                // score 100 and earn at least 100 money
                 const [perfect] = await connection.query(
-                    'SELECT COUNT(*) as count FROM games WHERE userid = ? AND topscore = 100 AND topmoney >= 5000',
+                    'SELECT COUNT(*) as count FROM games WHERE userid = ? AND topscore >= 100 AND topmoney >= 100',
                     [userID]
                 );
                 return perfect[0].count > 0;

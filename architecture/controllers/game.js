@@ -1,8 +1,8 @@
 const express = require('express');
 
 // models
-const unlockedCharactersModel = require('../models/UnlockedCharacters').UnlockedCharacters;
-const gamesModel = require('../models/Games').Games;
+const { UnlockedCharacters: unlockedCharactersModel }= require('../models/UnlockedCharacters');
+const { Games: gamesModel} = require('../models/Games');
 
 /**
  * @module controllers/game
@@ -221,8 +221,7 @@ class Game {
      * @returns {Promise<void>}
      */
     async runRound(ws, state) {
-
-        if (!game) {
+        if (!this) {
             ws.send(JSON.stringify({ type: "error", message: "Game not initialized yet" }));
             return;
         }
@@ -238,10 +237,33 @@ class Game {
         if(state.was_ignored) {
             this.characters[state.char_index].decrementHealth(5);
 
-            // checks whether any characters' health is equal to zero
-            for(const char of this.characters)
-                if(char.health === 0)
+            // Check if any character's health is 0 (game over condition)
+            for (const char of this.characters) {
+                if (char.health <= 0) {
                     this.hasEnded = true;
+                    
+                    // Check unlocks for characters 9-20 when game ends
+                    try {
+                        for (let i = 9; i <= 20; i++) {
+                            await fetch(`/api/unlock/${i}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Failed to check character unlocks:', error);
+                    }
+
+                    ws.send(JSON.stringify({ 
+                        type: "end", 
+                        message: "Game over!", 
+                        gameState: this 
+                    }));
+                    return;
+                }
+            }
 
             ws.send(JSON.stringify({
                 type: "update",
@@ -317,10 +339,33 @@ class Game {
                 currentChar.decrementHealth(1 * currentChar.interactionlessRounds);
         }
 
-        // checks whether any characters' health is equal to zero
-        for(const char of this.characters)
-            if(char.health === 0)
+        // Check if any character's health is 0 (game over condition)
+        for (const char of this.characters) {
+            if (char.health <= 0) {
                 this.hasEnded = true;
+                
+                // Check unlocks for characters 9-20 when game ends
+                try {
+                    for (let i = 9; i <= 20; i++) {
+                        await fetch(`/api/unlock/${i}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Failed to check character unlocks:', error);
+                }
+
+                ws.send(JSON.stringify({ 
+                    type: "end", 
+                    message: "Game over!", 
+                    gameState: this 
+                }));
+                return;
+            }
+        }
 
         // given that the game has not ended yet, the user should be rewarded money for happy characters
         if(!this.hasEnded) {

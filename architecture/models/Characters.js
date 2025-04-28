@@ -94,4 +94,4 @@ class Characters {
 
 }
 
-module.exports = Characters;
+module.exports = { Characters };

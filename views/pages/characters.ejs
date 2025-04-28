@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Characters</title>
+
+  <!-- Import Press Start 2P Pixel Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/stylesheets/styles.css">
+
+  <style>
+    body {
+      background-image: url('/images/pixel_art_livingroom.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Press Start 2P', cursive; /* ✅ Now whole page uses pixel font */
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Header Navigation */
+    #header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .nav-link, #home-button {
+      background: white;
+      border: 3px solid black;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: black;
+      font-size: 10px;
+      margin: 0 5px;
+      transition: transform 0.2s;
+    }
+
+    .nav-link:hover, #home-button:hover {
+      transform: scale(1.05);
+      background: lightyellow;
+    }
+
+    /* Title */
+    #character-title-container {
+      text-align: center;
+      margin-top: 50px;
+      margin-bottom: 20px;
+    }
+
+    #characters-page-title {
+      font-size: 24px;
+      color: white;
+      text-shadow: 2px 2px 4px black;
+    }
+
+    /* Section Wrapper */
+    #character-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    /* Progress Bar */
+    #progress-bar-container {
+      width: 500px;
+      background: lightgray;
+      margin-bottom: 30px;
+      height: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid black;
+    }
+
+    #progress-bar-fill {
+      height: 100%;
+      background: lightblue;
+      transition: width 0.4s ease;
+    }
+
+    /* Character Grid */
+    #character-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
+      gap: 20px;
+      justify-content: center;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Character Cards */
+    .character-card {
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 3px solid black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+
+    .character-card:hover {
+      transform: scale(1.05);
+    }
+
+    .character-image, .lock-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+    }
+
+    .locked {
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: default;
+    }
+
+    /* Back Button */
+    #back-button-container {
+      text-align: center;
+      margin: 40px 0;
+    }
+
+    .back-button {
+      background: red;
+      color: white;
+      padding: 10px 20px;
+      border: 2px solid black;
+      text-decoration: none;
+      font-size: 12px;
+      transition: transform 0.2s;
+    }
+
+    .back-button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Popup Modal Styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border: 4px solid black;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 24px;
+      color: black;
+    }
+
+    .popup-character-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+
+    #popup-info p {
+      color: black;
+      font-size: 10px;
+      margin: 5px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Navigation -->
+  <div id="header-container">
+    <a href="/" id="home-button">🏠</a>
+    <div>
+      <a href="/leaderboard" class="nav-link">Leaderboard</a>
+      <a href="/account" class="nav-link">Account</a>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div id="character-title-container">
+    <h1 id="characters-page-title">CHARACTERS</h1>
+  </div>
+
+  <!-- Section: Progress Bar + Grid -->
+  <div id="character-section">
+    <div id="progress-bar-container">
+      <div id="progress-bar-fill" style="width: <%= Math.floor((unlockedCount / totalCount) * 100) %>%;">
+      </div>
+    </div>
+
+    <div id="character-grid">
+      <% characters.forEach(character => { %>
+        <% if (character.unlocked) { %>
+          <div class="character-card" onclick='showCharacterPopup(<%- JSON.stringify(character) %>)'>
+            <img src="<%= character.image %>" alt="Character" class="character-image">
+          </div>
+        <% } else { %>
+          <div class="character-card locked">
+            <img src="/images/lock_icon.png" alt="Locked" class="lock-image">
+          </div>
+        <% } %>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div id="back-button-container">
+    <a href="/" class="back-button">BACK</a>
+  </div>
+
+  <!-- Popup Modal -->
+  <div id="character-popup" class="popup-overlay">
+    <div class="popup-content">
+      <span class="popup-close" onclick="closeCharacterPopup()">×</span>
+      <img id="popup-image" src="" alt="Character Image" class="popup-character-image">
+      <div id="popup-info">
+        <p id="popup-likes"></p>
+        <p id="popup-dislikes"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup JavaScript -->
+  <script>
+    function showCharacterPopup(character) {
+      console.log("Clicked character:", character);
+
+      const popup = document.getElementById('character-popup');
+      const popupImage = document.getElementById('popup-image');
+      const popupLikes = document.getElementById('popup-likes');
+      const popupDislikes = document.getElementById('popup-dislikes');
+
+      popup.style.display = 'flex';
+      popupImage.src = character.image;
+
+      const traits = character.traits || [];
+
+      const goodTraits = traits.filter(t => t.goodtrait).map(t => t.name);
+      const badTraits = traits.filter(t => !t.goodtrait).map(t => t.name);
+
+      popupLikes.innerHTML = `<strong>Likes:</strong> ${goodTraits.length > 0 ? goodTraits.join(", ") : "None"}`;
+      popupDislikes.innerHTML = `<strong>Dislikes:</strong> ${badTraits.length > 0 ? badTraits.join(", ") : "None"}`;
+    }
+
+    function closeCharacterPopup() {
+      const popup = document.getElementById('character-popup');
+      popup.style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 const express = require('express');
 
 // models
-const gamesModel = require('../models/Games').Games;
+const { Games: gamesModel } = require('../models/Games');
 
 /**
  * @module controllers/leaderboard
@@ -28,22 +28,48 @@ async function getHighScores(req, res) {
     // we then fetch all the scores in descending order from the games model
     games = await gamesModel.selectTopScores();
 
-
     // we then loop through, grab the top 5 scores and if the user is logged in their top score as well
-    let gamesArr = [];
+    let scoresArr = [];
     for(let i = 0; i < games.length; i++) {
-        if(i < 5)
-            gamesArr.push([i+1, games[i]]);
+        if(i < 5) {
+            scoresArr.push([i+1, games[i]]);
+            if(accountID === games[i].userid)
+                accountID = 0;
+        }
         else if(accountID === 0)
             break;
         else if(accountID === games[i].userid) {
-            gamesArr.push([i+1, games[i]]);
+            scoresArr.push([i+1, games[i]]);
             break;
         }
     }
 
+    // we then fetch all the scores in descending order (by money) from the games model
+    moneyGames = await gamesModel.selectTopMoney();
+
+    // we then loop through, grab the top 5 highest money games and if the user is logged in their top money as well
+    let moneyArr = [];
+    for(let i = 0; i < moneyGames.length; i++) {
+        if(i < 5) {
+            moneyArr.push([i+1, moneyGames[i]]);
+            if(accountID === moneyGames[i].userid)
+                accountID = 0;
+        }
+        else if(accountID === 0)
+            break;
+        else if(accountID === moneyGames[i].userid) {
+            moneyArr.push([i+1, moneyGames[i]]);
+            break;
+        }
+    }
+
+    const activeCategory = req.query.category || 'score';
     // renders the leaderboard page
-    res.render('pages/leaderboard', {gamesArr});
+    res.render('pages/leaderboard', {
+        scoresArr, 
+        moneyArr,
+        activeCategory,
+    });
 };
 
 module.exports = {getHighScores};

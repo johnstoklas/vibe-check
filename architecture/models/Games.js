@@ -18,6 +18,7 @@ const connection = require('../database').databaseConnection;
  */
 
 class Games {
+
     /**
      * Adds a game to the database once the game is over.
      * 
@@ -33,7 +34,7 @@ class Games {
         return await connection.query(insertSQL, [userID, score, money]);
     }
 
-     /**
+    /**
      * Fetches all the scores in order from the database.
      * 
      * @async
@@ -42,11 +43,26 @@ class Games {
     */
     static async selectTopScores() {
         const [games] = await connection.query(`
-            SELECT g.gameid, g.userid, g.topscore, g.topmoney FROM games g
-            INNER JOIN accounts a WHERE g.userid = a.userid
+            SELECT g.gameid, g.userid, g.topscore, g.topmoney, a.username FROM games g
+            INNER JOIN accounts a ON g.userid = a.userid
             ORDER BY g.topscore DESC`);
+        return games;
+    }
+
+    /**
+     * Fetches all the money in order from the database.
+     * 
+     * @async
+     * @function selectTopMoney
+     * @returns {Promise<Array<Games>>} 
+    */
+    static async selectTopMoney() {
+        const [games] = await connection.query(`
+            SELECT g.gameid, g.userid, g.topscore, g.topmoney, a.username FROM games g
+            INNER JOIN accounts a ON g.userid = a.userid
+            ORDER BY g.topmoney DESC`);
         return games;
     }
 }
 
-module.exports = Games;
+module.exports = { Games };
