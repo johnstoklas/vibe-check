@@ -10,7 +10,6 @@ const router = express.Router();
 const leaderboardController = require('../controllers/leaderboard.js');
 
 // GET requests
-// TODO: router.get('/play', characterController.getUnlockedCharacters);
 /**
  * GET
  * 
@@ -22,8 +21,9 @@ const leaderboardController = require('../controllers/leaderboard.js');
  */
 router.get('/', leaderboardController.getHighScores);
 
-// POST requests
-// TODO: router.post('/onEndGame', gameController.sendScore);
+router.get('/leaderboard-all', leaderboardController.getAllScores);
+
+router.delete('/delete-score/:id', leaderboardController.deleteScore)
 
 // exports
 module.exports = router;
