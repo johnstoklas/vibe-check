@@ -57,17 +57,19 @@ async function getHighScores(req, res) {
 
     // we then loop through, grab the top 5 highest money games and if the user is logged in their top money as well
     let moneyArr = [];
-    for(let i = 0; i < moneyGames.length; i++) {
-        if(i < 5) {
-            moneyArr.push([i+1, moneyGames[i]]);
-            if(accountID === moneyGames[i].userid)
-                accountID = 0;
-        }
-        else if(accountID === 0)
-            break;
-        else if(accountID === moneyGames[i].userid) {
-            moneyArr.push([i+1, moneyGames[i]]);
-            break;
+    if(moneyGames) {
+        for(let i = 0; i < moneyGames.length; i++) {
+            if(i < 5) {
+                moneyArr.push([i+1, moneyGames[i]]);
+                if(accountID === moneyGames[i].userid)
+                    accountID = 0;
+            }
+            else if(accountID === 0)
+                break;
+            else if(accountID === moneyGames[i].userid) {
+                moneyArr.push([i+1, moneyGames[i]]);
+                break;
+            }
         }
     }
 

@@ -31,7 +31,10 @@ describe('Character Controller', () => {
             },
             body: {},
         };
-        res = { json: jest.fn() };
+        res = { 
+            json: jest.fn(),
+            render: jest.fn(),
+         };
 
         characters =  [
             { name: 'Character1', traits: "(Compliments, 1),(Food, 0),(Getting Drive, 1)", difficulty: 1},
@@ -98,12 +101,15 @@ describe('Character Controller', () => {
 
         await getUnlockedCharacters(req, res);
 
-        expect(res.json).toHaveBeenCalledWith({
-            data: characters.map(char => ({
-                ...char,
-                traits: char.traits ? char.traits.split(',') : []
-            }))
-        })
+        expect(res.render).toHaveBeenCalledWith(
+            "pages/characters",
+            expect.objectContaining({
+                unlockedCount: characters.length,
+                totalCount: 20,
+                isAuth: true,
+            })
+        );
+        
     });
 
     test('getUnlockedCharacters throws error when database fails', async () => {
