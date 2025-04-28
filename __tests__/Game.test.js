@@ -1,5 +1,6 @@
 const { Game } = require('../architecture/controllers/game');
 const { UnlockedCharacters } = require('../architecture/models/UnlockedCharacters');
+const { Games } = require('../architecture/models/Games');
 
 jest.mock('express-mysql-session', () => {
     return () => { return class MockSessionStore {}; };
