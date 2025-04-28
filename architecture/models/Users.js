@@ -40,6 +40,14 @@ class Users {
         return info;
     }
 
+    /**
+     * Deletes a user from the database.
+     * 
+     * @static
+     * @async
+     * @function deleteUser
+     * @returns {Promise<Void>} 
+    */
     static async deleteUser(userID) {
         return await connection.query('DELETE FROM accounts WHERE userid=?', [userID]);
     }
