@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 
 // models and utility
 const { Users: usersModel } = require('../models/Users');
+const { Games: gamesModel } = require('../models/Games');
 const { fetchAlert, fetchRedirect, fetchAlertRedirect } = require('../utility');
 
 /**

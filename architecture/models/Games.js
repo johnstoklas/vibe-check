@@ -72,7 +72,7 @@ class Games {
     */
     static async selectUserScore(userID) {
         const [games] = await connection.query(`
-            SELECT topscore, topmoney 
+            SELECT topscore, topmoney
             FROM games 
             WHERE userid = ?
             ORDER BY topscore DESC 
