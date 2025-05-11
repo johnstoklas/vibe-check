@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Check</title>
-    <link rel='stylesheet' href='/stylesheets/styles.css'/>
-  </head>
-  <script>
-    function logSignShow(elemID) {
-      const partial = document.getElementById(elemID);
-      const logSign = document.getElementById('log-sign-container');
-      if (partial) {
-        partial.style.display = 'block';
-        logSign.style.display = 'none';
-      }
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Check</title>
+  <link rel='stylesheet' href='/stylesheets/styles.css' />
+</head>
+<script>
+  function logSignShow(elemID) {
+    const partial = document.getElementById(elemID);
+    const logSign = document.getElementById('log-sign-container');
+    if (partial) {
+      partial.style.display = 'block';
+      logSign.style.display = 'none';
     }
-  </script>
-  <body>
-    <section id="log-sign-container" class="log-sign-container">
-        <h1>Welcome!</h1>
-        <div id="log-sign-button-container">
-          <button onclick="logSignShow('log-in-container')">Log In</button>
-          <button onclick="logSignShow('sign-up-container')">Sign Up</button>
-        </div>
-        <button class="exit-button" onclick="location.href='/'">X</button>
-    </section>
-    <%- include('../partials/log_in.ejs') %>
+  }
+</script>
+
+<body>
+  <section id="log-sign-container" class="log-sign-container">
+    <h1>Welcome!</h1>
+    <div id="log-sign-button-container">
+      <button onclick="logSignShow('log-in-container')">Log In</button>
+      <button onclick="logSignShow('sign-up-container')">Sign Up</button>
+    </div>
+    <button class="exit-button" onclick="location.href='/'" style="font-family: 'Pixels'; font-size: medium;">X</button>
+  </section>
+  <%- include('../partials/log_in.ejs') %>
     <%- include('../partials/sign_up.ejs') %>
-  </body>
+</body>
+
 </html>
