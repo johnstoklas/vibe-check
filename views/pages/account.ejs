@@ -92,17 +92,6 @@
   <!-- Account Content -->
   <div id="account-container">
 
-    <!-- Username Section -->
-    <div class="account-section">
-      <h2>Username: <%= username %></h2>
-      <form name="change-username-form" id="change-username-form">
-        <label for="username"><h3>Change Username:</h3></label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <input class="submit_button" type="submit" value="Change Username">
-      </form>
-    </div>
-
     <div class="account-section"
       style="display: flex; justify-content: space-around; align-items: center; background: #e3f2fd;">
       <div>
@@ -117,6 +106,17 @@
             %>
         </div>
       </div>
+    </div>
+
+    <!-- Username Section -->
+    <div class="account-section">
+      <h2>Username: <%= username %></h2>
+      <form name="change-username-form" id="change-username-form">
+        <label for="username"><h3>Change Username:</h3></label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <input class="submit_button" type="submit" value="Change Username">
+      </form>
     </div>
 
     <!-- Email Section -->
