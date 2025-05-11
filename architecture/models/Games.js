@@ -34,19 +34,19 @@ class Games {
         return await connection.query(insertSQL, [userID, score, money]);
     }
 
-     /**
-     * Deletes a game from the database (used by admin).
-     * 
-     * @async
-     * @function deleteGame
-     * @param {int} gameID 
-     * @returns {Promise<Void>} 
-    */
+    /**
+    * Deletes a game from the database (used by admin).
+    * 
+    * @async
+    * @function deleteGame
+    * @param {int} gameID 
+    * @returns {Promise<Void>} 
+   */
     static async removeGame(gameID) {
         const deleteSQL = 'DELETE FROM games WHERE gameid = ?';
         return await connection.query(deleteSQL, [gameID]);
     }
-    
+
     /**
      * Fetches all the scores in order from the database.
      * 
@@ -59,6 +59,24 @@ class Games {
             SELECT g.gameid, g.userid, g.topscore, g.topmoney, a.username FROM games g
             INNER JOIN accounts a ON g.userid = a.userid
             ORDER BY g.topscore DESC`);
+        return games;
+    }
+
+    /**
+     * Fetches the scores and topmoney for a specific user.
+     * 
+     * @async
+     * @function selectUserScore
+     * @param {int} userID
+     * @returns {Promise<Array<Games>>}
+    */
+    static async selectUserScore(userID) {
+        const [games] = await connection.query(`
+            SELECT topscore, topmoney
+            FROM games 
+            WHERE userid = ?
+            ORDER BY topscore DESC 
+            LIMIT 1`, [userID]);
         return games;
     }
 

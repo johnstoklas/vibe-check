@@ -92,6 +92,22 @@
   <!-- Account Content -->
   <div id="account-container">
 
+    <div class="account-section"
+      style="display: flex; justify-content: space-around; align-items: center; background: #e3f2fd;">
+      <div>
+        <h2 style="color: #1976d2; margin-bottom: 5px;">High Score</h2>
+        <div style="font-size: 22px; font-weight: bold; color: #333;">
+          <%= typeof highscore !=='undefined' ? highscore : 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <h2 style="color: #388e3c; margin-bottom: 5px;">Top Money</h2>
+        <div style="font-size: 22px; font-weight: bold; color: #333;">$<%= typeof topmoney !=='undefined' ? topmoney : 'N/A'
+            %>
+        </div>
+      </div>
+    </div>
+
     <!-- Username Section -->
     <div class="account-section">
       <h2>Username: <%= username %></h2>

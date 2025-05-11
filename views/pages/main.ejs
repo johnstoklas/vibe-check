@@ -238,9 +238,15 @@
     <section id="main-screen-container"> 
       <h1>VIBE CHECK</h1>
       <div id="button-container"> 
-        <a href="/game"> Play Game </a>
-        <a href="/characters">View Characters</a>
-        <a href="/instructions">Instructions</a>
+        <% if (isAuth) { %>
+          <a href="/game"> Play Game </a>
+          <a href="/characters">View Characters</a>
+          <a href="/instructions">Instructions</a>
+        <% } else { %>
+          <button onclick="showLogSign()" style="font-size: 20px; padding: 10px 20px; background-color: black; color: white; border: 3px solid white; border-radius: 10px; font-family: 'Pixels';">
+            Log In / Sign Up
+          </button>
+        <% } %>
       </div>
     </section> 
     <!-- Log In and Sign Up Partial -->

@@ -150,9 +150,18 @@
         document.getElementById('toggle-score').classList.toggle('active', category === 'score');
         document.getElementById('toggle-money').classList.toggle('active', category === 'money');
     
-        const container = document.querySelector('.score-container');
+        const container = document.getElementById('score-container');
+        const overallContainer = document.getElementById('overall-container');
+
+        // Clear existing content to avoid duplicates
         container.innerHTML = '';
-    
+        const userScoreContainer = document.getElementById('user-score-container');
+        if (userScoreContainer) {
+          userScoreContainer.remove(); // Remove the user score container if it exists
+        }
+        // Clear existing content to avoid duplicates
+        container.innerHTML = '';
+        
         const arr = (activeCategory === 'score') ? scoresArr : moneyArr;
     
         arr.slice(0, 5).forEach(([rank, game]) => {
@@ -166,18 +175,30 @@
           container.appendChild(item);
         });
     
-        if (arr.length > 5) {
-          const [rank, game] = arr[5];
-          const item = document.createElement('div');
-          item.className = 'score-item';
-          item.innerHTML = `
-            <div class="score-rank">${rank}.</div>
-            <div class="score-username">${game.username}</div>
-            <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
-          `;
-          container.appendChild(item);
-        }
-      }
+        // Check if there are more than 5 scores and display the 6th score in a separate container
+    if (arr.length > 5) {
+      const [rank, game] = arr[5];
+
+      // Create a new container for the user's score
+      const newUserScoreContainer = document.createElement('div');
+      newUserScoreContainer.id = 'user-score-container';
+      newUserScoreContainer.className = 'score-container';
+      newUserScoreContainer.innerHTML = `
+        <div class="score-item">
+          <div class="score-rank">${rank}.</div>
+          <div class="score-username">${game.username}</div>
+          <div class="score-points">${activeCategory === 'money' ? '$' + game.topmoney : game.topscore}</div>
+        </div>
+      `;
+
+      // Append the user's score container below the top 5 scores
+      overallContainer.appendChild(newUserScoreContainer);
+    }
+  }
+
+  window.onload = () => {
+    setActive('score');
+  };
   
       // for admin: allows them to see all scores
       async function showAllScores() {

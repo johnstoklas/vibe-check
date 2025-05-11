@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 
 // models and utility
 const { Users: usersModel } = require('../models/Users');
-const {fetchAlert, fetchRedirect, fetchAlertRedirect } = require('../utility');
+const { Games: gamesModel } = require('../models/Games');
+const { fetchAlert, fetchRedirect, fetchAlertRedirect } = require('../utility');
 
 /**
  * @module controllers/account
@@ -21,24 +22,32 @@ const {fetchAlert, fetchRedirect, fetchAlertRedirect } = require('../utility');
  * @returns {Promise<Void>}
  */
 async function gatherAccountData(req, res) {
-
     try {
-        if(!req.session.isAuth)
+        if (!req.session.isAuth)
             return fetchAlertRedirect(req, res, "Authentication is required to access the account page.");
 
-        users = await usersModel.selectByID(req.session.accountID);
-        if(users.length > 1) {
+        const users = await usersModel.selectByID(req.session.accountID);
+        if (users.length > 1) {
             console.assert(false, "Problem with MySQL database: duplicate entries found");
             return res.redirect('/');
         }
 
-        res.render('pages/account', {username: users[0].username, email: users[0].email});
+        const userStats = await gamesModel.selectUserScore(req.session.accountID);
+        const highscore = userStats.length > 0 ? userStats[0].topscore : 'N/A';
+        const topmoney = userStats.length > 0 ? userStats[0].topmoney : 'N/A';
+
+        res.render('pages/account', {
+            username: users[0].username,
+            email: users[0].email,
+            highscore,
+            topmoney
+        });
 
     } catch (error) {
         console.error("Account error: ", error);
         return fetchAlertRedirect(req, res, "An error occurred while trying to gather account data.");
     }
-};
+}
 
 /**
  * @async
@@ -54,7 +63,7 @@ async function changeUsername(req, res) {
     try {
         // checks for existing username
         const usernameUsers = await usersModel.selectByUsername(req.body.username);
-        if(usernameUsers.length > 0)
+        if (usernameUsers.length > 0)
             return fetchAlertRedirect(req, res, "Username already taken.");
 
         // changes the username to the new username
@@ -83,7 +92,7 @@ async function changeEmail(req, res) {
     try {
         // checks for existing email
         const emailUsers = await usersModel.selectByEmail(req.body.email);
-        if(emailUsers.length > 0)
+        if (emailUsers.length > 0)
             return fetchAlertRedirect(req, res, "Account with that email already exists.");
 
         // changes the username to the new username
@@ -112,7 +121,7 @@ async function changePassword(req, res) {
     try {
 
         // checks that new passwords match
-        if(req.body.password_new !== req.body.password_new_repeat)
+        if (req.body.password_new !== req.body.password_new_repeat)
             return fetchAlertRedirect(req, res, "New passwords do not match.");
 
         // grabs the user information and checks that the old password matches the password in the database
@@ -122,7 +131,7 @@ async function changePassword(req, res) {
         const storedHash = users[0].password;
 
         isEqual = await bcrypt.compare(oldPassword, storedHash);
-        if(!isEqual)
+        if (!isEqual)
             return fetchAlertRedirect(req, res, "Old password does not match.");
 
         // hashes and salts the new password and updates it
@@ -180,7 +189,7 @@ async function logOut(req, res) {
 async function deleteAccount(req, res) {
 
     try {
-        
+
         // resets some session data
         req.session.isAuth = false;
 
